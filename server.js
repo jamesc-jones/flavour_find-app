@@ -1,0 +1,54 @@
+const express = require('express');
+const path = require('path');
+const cors = require('cors');
+const db = require('./database');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.static('public'));
+
+// API Routes
+app.get('/api/moods', (req, res) => {
+    try {
+        const moods = db.getMoods();
+        res.json(moods);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/recipes/:mood', (req, res) => {
+    try {
+        const { mood } = req.params;
+        const recipes = db.getRecipesByMood(mood);
+        res.json(recipes);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/recipe/:mood/random', (req, res) => {
+    try {
+        const { mood } = req.params;
+        const recipe = db.getRandomRecipe(mood);
+        if (!recipe) {
+            return res.status(404).json({ error: 'No recipes found for this mood' });
+        }
+        res.json(recipe);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Serve frontend
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});
