@@ -3,3 +3,4 @@ recipes.db
 .DS_Store
 *.log
 .env
+.claude/commands/settings.local.json
