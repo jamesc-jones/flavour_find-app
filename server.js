@@ -1,12 +1,27 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+const helmet = require('helmet');
+const compression = require('compression');
+const pino = require('pino');
+const pinoHttp = require('pino-http');
 const db = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const logger = pino();
 
 // Middleware
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+            'script-src': ["'self'", 'https://cdn.tailwindcss.com'],
+        },
+    },
+}));
+app.use(compression());
+app.use(pinoHttp({ logger }));
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
@@ -50,5 +65,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    logger.info(`Server running on http://localhost:${PORT}`);
 });
