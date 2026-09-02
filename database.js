@@ -7,6 +7,8 @@ const db = new Database(dbPath);
 
 // Initialize database
 function initDatabase() {
+    db.pragma('foreign_keys = ON');
+
     // Create tables
     db.exec(`
         CREATE TABLE IF NOT EXISTS moods (

@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -5,6 +7,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const pino = require('pino');
 const pinoHttp = require('pino-http');
+const { clerkMiddleware } = require('@clerk/express');
 const db = require('./database');
 
 const app = express();
@@ -25,6 +28,7 @@ app.use(pinoHttp({ logger }));
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
+app.use(clerkMiddleware());
 
 // API Routes
 app.get('/api/moods', (req, res) => {
