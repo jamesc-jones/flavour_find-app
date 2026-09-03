@@ -50,6 +50,14 @@ function initDatabase() {
           UNIQUE(user_id, recipe_id),
           FOREIGN KEY (recipe_id) REFERENCES recipes(id)
         );
+
+        CREATE TABLE IF NOT EXISTS mood_history (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id TEXT NOT NULL,
+          mood TEXT NOT NULL,
+          recipe_id INTEGER,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
     `);
 
     // Check if database is already populated
@@ -984,11 +992,48 @@ function getRecipesByMood(moodName) {
     });
 }
 
-function getRandomRecipe(moodName) {
+function getRandomRecipe(moodName, excludeIds = []) {
     const recipes = getRecipesByMood(moodName);
     if (recipes.length === 0) return null;
-    const randomIndex = Math.floor(Math.random() * recipes.length);
-    return recipes[randomIndex];
+
+    const available = excludeIds.length > 0
+        ? recipes.filter(r => !excludeIds.includes(r.id))
+        : recipes;
+
+    const pool = available.length > 0 ? available : recipes;
+    const randomIndex = Math.floor(Math.random() * pool.length);
+    return pool[randomIndex];
+}
+
+function logMoodHistory(userId, mood, recipeId) {
+    const stmt = db.prepare(`
+        INSERT INTO mood_history (user_id, mood, recipe_id)
+        VALUES (?, ?, ?)
+    `);
+    return stmt.run(userId, mood, recipeId);
+}
+
+function getRecentRecipeIdsForMood(userId, mood, limit = 5) {
+    const stmt = db.prepare(`
+        SELECT recipe_id FROM mood_history
+        WHERE user_id = ? AND mood = ? AND recipe_id IS NOT NULL
+        ORDER BY created_at DESC
+        LIMIT ?
+    `);
+    return stmt.all(userId, mood, limit).map(row => row.recipe_id);
+}
+
+function getMoodHistory(userId) {
+    const stmt = db.prepare(`
+        SELECT mh.id, mh.mood, mh.recipe_id, r.name as recipe_name,
+               r.emoji as recipe_emoji, mh.created_at
+        FROM mood_history mh
+        LEFT JOIN recipes r ON mh.recipe_id = r.id
+        WHERE mh.user_id = ?
+        ORDER BY mh.created_at DESC
+        LIMIT 50
+    `);
+    return stmt.all(userId);
 }
 
 function saveRecipe(userId, recipeId) {
@@ -1028,5 +1073,8 @@ module.exports = {
     getRandomRecipe,
     saveRecipe,
     unsaveRecipe,
-    getSavedRecipes
+    getSavedRecipes,
+    logMoodHistory,
+    getRecentRecipeIdsForMood,
+    getMoodHistory
 };

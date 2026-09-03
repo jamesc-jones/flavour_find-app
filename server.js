@@ -9,7 +9,14 @@ const pino = require('pino');
 const pinoHttp = require('pino-http');
 const { clerkMiddleware, getAuth } = require('@clerk/express');
 const db = require('./database');
-const { saveRecipe, unsaveRecipe, getSavedRecipes } = require('./database');
+const {
+    saveRecipe,
+    unsaveRecipe,
+    getSavedRecipes,
+    logMoodHistory,
+    getRecentRecipeIdsForMood,
+    getMoodHistory
+} = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -52,16 +59,25 @@ app.get('/api/recipes/:mood', (req, res) => {
 });
 
 app.get('/api/recipe/:mood/random', (req, res) => {
-    try {
-        const { mood } = req.params;
-        const recipe = db.getRandomRecipe(mood);
-        if (!recipe) {
-            return res.status(404).json({ error: 'No recipes found for this mood' });
-        }
-        res.json(recipe);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+    const { mood } = req.params;
+    const { isAuthenticated, userId } = getAuth(req);
+
+    let excludeIds = [];
+    if (isAuthenticated) {
+        excludeIds = getRecentRecipeIdsForMood(userId, mood, 5);
     }
+
+    const recipe = db.getRandomRecipe(mood, excludeIds);
+    if (!recipe) {
+        res.status(404).json({ error: 'No recipes found for this mood' });
+        return;
+    }
+
+    if (isAuthenticated) {
+        logMoodHistory(userId, mood, recipe.id);
+    }
+
+    res.json(recipe);
 });
 
 // POST /api/user/saved
@@ -136,6 +152,21 @@ app.get('/api/user/saved', (req, res) => {
         res.json(recipes);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch saved recipes' });
+    }
+});
+
+// GET /api/user/mood-history
+app.get('/api/user/mood-history', (req, res) => {
+    const { isAuthenticated, userId } = getAuth(req);
+    if (!isAuthenticated) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+    }
+    try {
+        const history = getMoodHistory(userId);
+        res.json(history);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch mood history' });
     }
 });
 
