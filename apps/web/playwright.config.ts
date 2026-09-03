@@ -21,12 +21,13 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'node ../../server.js',
+      command: 'node server.js',
       url: 'http://localhost:3000/api/moods',
       reuseExistingServer: !process.env.CI,
       timeout: 30_000,
       stderr: 'pipe',
       stdout: 'pipe',
+      cwd: path.resolve(__dirname, '../..'),
     },
     {
       command: 'npm --workspace=apps/web run dev',
