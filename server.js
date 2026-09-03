@@ -18,7 +18,8 @@ const {
     getMoodHistory,
     addMealPlan,
     removeMealPlan,
-    getMealPlan
+    getMealPlan,
+    getGroceryList
 } = require('./database');
 
 const app = express();
@@ -260,6 +261,26 @@ app.get('/api/user/meal-plan', (req, res) => {
         res.json(plan);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch meal plan' });
+    }
+});
+
+// GET /api/user/grocery-list?week=YYYY-MM-DD
+app.get('/api/user/grocery-list', (req, res) => {
+    const { isAuthenticated, userId } = getAuth(req);
+    if (!isAuthenticated) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+    }
+    const weekStart = req.query.week;
+    if (!weekStart || !isValidDate(weekStart)) {
+        res.status(400).json({ error: 'week must be a valid YYYY-MM-DD date' });
+        return;
+    }
+    try {
+        const items = getGroceryList(userId, weekStart);
+        res.json({ items });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to generate grocery list' });
     }
 });
 

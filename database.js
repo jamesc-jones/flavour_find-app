@@ -1104,6 +1104,19 @@ function getMealPlan(userId, weekStart) {
     return stmt.all(userId, weekStart, weekStart);
 }
 
+function getGroceryList(userId, weekStart) {
+    const stmt = db.prepare(`
+        SELECT DISTINCT i.ingredient
+        FROM meal_plan mp
+        JOIN ingredients i ON mp.recipe_id = i.recipe_id
+        WHERE mp.user_id = ?
+          AND mp.planned_date >= ?
+          AND mp.planned_date < date(?, '+7 days')
+        ORDER BY i.ingredient
+    `);
+    return stmt.all(userId, weekStart, weekStart).map(row => row.ingredient);
+}
+
 // Initialize database on module load
 initDatabase();
 
@@ -1119,5 +1132,6 @@ module.exports = {
     getMoodHistory,
     addMealPlan,
     removeMealPlan,
-    getMealPlan
+    getMealPlan,
+    getGroceryList
 };
