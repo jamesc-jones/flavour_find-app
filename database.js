@@ -58,6 +58,17 @@ function initDatabase() {
           recipe_id INTEGER,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
+
+        CREATE TABLE IF NOT EXISTS meal_plan (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id TEXT NOT NULL,
+          recipe_id INTEGER NOT NULL,
+          planned_date DATE NOT NULL,
+          meal_slot TEXT NOT NULL CHECK(
+            meal_slot IN ('breakfast','lunch','dinner','snack')
+          ),
+          FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+        );
     `);
 
     // Check if database is already populated
@@ -1064,6 +1075,35 @@ function getSavedRecipes(userId) {
     return stmt.all(userId);
 }
 
+function addMealPlan(userId, recipeId, plannedDate, mealSlot) {
+    const stmt = db.prepare(`
+        INSERT INTO meal_plan (user_id, recipe_id, planned_date, meal_slot)
+        VALUES (?, ?, ?, ?)
+    `);
+    return stmt.run(userId, recipeId, plannedDate, mealSlot);
+}
+
+function removeMealPlan(userId, mealPlanId) {
+    const stmt = db.prepare(`
+        DELETE FROM meal_plan WHERE id = ? AND user_id = ?
+    `);
+    return stmt.run(mealPlanId, userId);
+}
+
+function getMealPlan(userId, weekStart) {
+    const stmt = db.prepare(`
+        SELECT mp.id, mp.planned_date, mp.meal_slot,
+               r.id as recipe_id, r.name, r.emoji, r.description
+        FROM meal_plan mp
+        JOIN recipes r ON mp.recipe_id = r.id
+        WHERE mp.user_id = ?
+          AND mp.planned_date >= ?
+          AND mp.planned_date < date(?, '+7 days')
+        ORDER BY mp.planned_date, mp.meal_slot
+    `);
+    return stmt.all(userId, weekStart, weekStart);
+}
+
 // Initialize database on module load
 initDatabase();
 
@@ -1076,5 +1116,8 @@ module.exports = {
     getSavedRecipes,
     logMoodHistory,
     getRecentRecipeIdsForMood,
-    getMoodHistory
+    getMoodHistory,
+    addMealPlan,
+    removeMealPlan,
+    getMealPlan
 };

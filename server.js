@@ -15,7 +15,10 @@ const {
     getSavedRecipes,
     logMoodHistory,
     getRecentRecipeIdsForMood,
-    getMoodHistory
+    getMoodHistory,
+    addMealPlan,
+    removeMealPlan,
+    getMealPlan
 } = require('./database');
 
 const app = express();
@@ -167,6 +170,96 @@ app.get('/api/user/mood-history', (req, res) => {
         res.json(history);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch mood history' });
+    }
+});
+
+// Validation helpers — Task 3.4 meal-plan route section
+const DATE_RE_MP = /^\d{4}-\d{2}-\d{2}$/;
+function isValidDate(str) {
+    if (!DATE_RE_MP.test(str)) return false;
+    const [y, m, d] = str.split('-').map(Number);
+    const date = new Date(Date.UTC(y, m - 1, d));
+    return (
+        date.getUTCFullYear() === y &&
+        date.getUTCMonth() === m - 1 &&
+        date.getUTCDate() === d
+    );
+}
+const VALID_MEAL_SLOTS = new Set(['breakfast', 'lunch', 'dinner', 'snack']);
+
+// POST /api/user/meal-plan
+app.post('/api/user/meal-plan', (req, res) => {
+    const { isAuthenticated, userId } = getAuth(req);
+    if (!isAuthenticated) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+    }
+    const { recipeId, plannedDate, mealSlot } = req.body;
+
+    const recipeIdInt = parseInt(recipeId, 10);
+    const recipeIdNum = Number(recipeId);
+    if (!recipeId || !Number.isInteger(recipeIdNum) || recipeIdNum <= 0) {
+        res.status(400).json({ error: 'recipeId must be a positive integer' });
+        return;
+    }
+    if (!plannedDate || !isValidDate(plannedDate)) {
+        res.status(400).json({ error: 'plannedDate must be a valid YYYY-MM-DD date' });
+        return;
+    }
+    if (!mealSlot || !VALID_MEAL_SLOTS.has(mealSlot)) {
+        res.status(400).json({ error: 'mealSlot must be breakfast, lunch, dinner, or snack' });
+        return;
+    }
+
+    try {
+        const result = addMealPlan(userId, recipeIdInt, plannedDate, mealSlot);
+        res.status(201).json({ id: result.lastInsertRowid });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to add meal plan' });
+    }
+});
+
+// DELETE /api/user/meal-plan/:id
+app.delete('/api/user/meal-plan/:id', (req, res) => {
+    const { isAuthenticated, userId } = getAuth(req);
+    if (!isAuthenticated) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+    }
+    const mealPlanId = parseInt(req.params.id, 10);
+    if (isNaN(mealPlanId) || mealPlanId <= 0) {
+        res.status(400).json({ error: 'Invalid id' });
+        return;
+    }
+    try {
+        const result = removeMealPlan(userId, mealPlanId);
+        if (result.changes === 0) {
+            res.status(404).json({ error: 'Not found' });
+            return;
+        }
+        res.json({ ok: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to remove meal plan' });
+    }
+});
+
+// GET /api/user/meal-plan?week=YYYY-MM-DD
+app.get('/api/user/meal-plan', (req, res) => {
+    const { isAuthenticated, userId } = getAuth(req);
+    if (!isAuthenticated) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+    }
+    const weekStart = req.query.week;
+    if (!weekStart || !isValidDate(weekStart)) {
+        res.status(400).json({ error: 'week must be a valid YYYY-MM-DD date' });
+        return;
+    }
+    try {
+        const plan = getMealPlan(userId, weekStart);
+        res.json(plan);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch meal plan' });
     }
 });
 
