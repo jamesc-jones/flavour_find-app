@@ -41,6 +41,15 @@ function initDatabase() {
             step_number INTEGER,
             FOREIGN KEY (recipe_id) REFERENCES recipes(id)
         );
+
+        CREATE TABLE IF NOT EXISTS user_saved_recipes (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id TEXT NOT NULL,
+          recipe_id INTEGER NOT NULL,
+          saved_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(user_id, recipe_id),
+          FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+        );
     `);
 
     // Check if database is already populated
@@ -982,11 +991,42 @@ function getRandomRecipe(moodName) {
     return recipes[randomIndex];
 }
 
+function saveRecipe(userId, recipeId) {
+    const stmt = db.prepare(`
+        INSERT OR IGNORE INTO user_saved_recipes (user_id, recipe_id)
+        VALUES (?, ?)
+    `);
+    return stmt.run(userId, recipeId);
+}
+
+function unsaveRecipe(userId, savedId) {
+    const stmt = db.prepare(`
+        DELETE FROM user_saved_recipes
+        WHERE id = ? AND user_id = ?
+    `);
+    return stmt.run(savedId, userId);
+}
+
+function getSavedRecipes(userId) {
+    const stmt = db.prepare(`
+        SELECT usr.id as saved_id, r.id, r.name, r.emoji, r.description,
+               usr.saved_at
+        FROM user_saved_recipes usr
+        JOIN recipes r ON usr.recipe_id = r.id
+        WHERE usr.user_id = ?
+        ORDER BY usr.saved_at DESC
+    `);
+    return stmt.all(userId);
+}
+
 // Initialize database on module load
 initDatabase();
 
 module.exports = {
     getMoods,
     getRecipesByMood,
-    getRandomRecipe
+    getRandomRecipe,
+    saveRecipe,
+    unsaveRecipe,
+    getSavedRecipes
 };
