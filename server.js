@@ -8,6 +8,7 @@ const compression = require('compression');
 const pino = require('pino');
 const pinoHttp = require('pino-http');
 const { clerkMiddleware, getAuth } = require('@clerk/express');
+const { chatSchema } = require('@flavour-find/shared');
 const db = require('./database');
 const {
     saveRecipe,
@@ -19,7 +20,8 @@ const {
     addMealPlan,
     removeMealPlan,
     getMealPlan,
-    getGroceryList
+    getGroceryList,
+    insertChatUsage
 } = require('./database');
 
 const app = express();
@@ -282,6 +284,27 @@ app.get('/api/user/grocery-list', (req, res) => {
     } catch (err) {
         res.status(500).json({ error: 'Failed to generate grocery list' });
     }
+});
+
+// POST /api/v1/chat — Phase 4 stub (returns 501 until Phase 5)
+app.post('/api/v1/chat', (req, res) => {
+    const { isAuthenticated, userId } = getAuth(req);
+    if (!isAuthenticated) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+    }
+    const parsed = chatSchema.safeParse(req.body);
+    if (!parsed.success) {
+        res.status(400).json({ error: parsed.error.flatten() });
+        return;
+    }
+    try {
+        insertChatUsage(userId);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to log chat attempt' });
+        return;
+    }
+    res.status(501).json({ ok: false, error: 'AI integration pending (Phase 5)' });
 });
 
 // Serve frontend

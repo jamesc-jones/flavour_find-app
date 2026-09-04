@@ -69,6 +69,16 @@ function initDatabase() {
           ),
           FOREIGN KEY (recipe_id) REFERENCES recipes(id)
         );
+
+        CREATE TABLE IF NOT EXISTS chat_usage (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            model TEXT NOT NULL DEFAULT 'pending',
+            tokens_in INTEGER NOT NULL DEFAULT 0,
+            tokens_out INTEGER NOT NULL DEFAULT 0,
+            cost_usd REAL NOT NULL DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
     `);
 
     // Check if database is already populated
@@ -1117,6 +1127,14 @@ function getGroceryList(userId, weekStart) {
     return stmt.all(userId, weekStart, weekStart).map(row => row.ingredient);
 }
 
+function insertChatUsage(userId) {
+    const stmt = db.prepare(`
+        INSERT INTO chat_usage (user_id, model, tokens_in, tokens_out, cost_usd)
+        VALUES (?, 'pending', 0, 0, 0)
+    `);
+    return stmt.run(userId);
+}
+
 // Initialize database on module load
 initDatabase();
 
@@ -1133,5 +1151,6 @@ module.exports = {
     addMealPlan,
     removeMealPlan,
     getMealPlan,
-    getGroceryList
+    getGroceryList,
+    insertChatUsage
 };
