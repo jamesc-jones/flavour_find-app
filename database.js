@@ -79,6 +79,9 @@ function initDatabase() {
             cost_usd REAL NOT NULL DEFAULT 0,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
+
+        CREATE INDEX IF NOT EXISTS idx_chat_usage_user_time
+        ON chat_usage(user_id, created_at);
     `);
 
     // Check if database is already populated
@@ -1127,12 +1130,43 @@ function getGroceryList(userId, weekStart) {
     return stmt.all(userId, weekStart, weekStart).map(row => row.ingredient);
 }
 
-function insertChatUsage(userId) {
+function checkChatLimit(userId, limit) {
+    const row = db.prepare(
+        `SELECT COUNT(*) as count FROM chat_usage
+         WHERE user_id = ? AND created_at > datetime('now', '-24 hours')`
+    ).get(userId);
+    const used = row ? row.count : 0;
+    const allowed = used < limit;
+
+    // Only needed when blocked: the oldest request in the current rolling window is the
+    // one that must age out (created_at + 24h) before the count drops back under `limit`.
+    let resetAt = null;
+    if (!allowed) {
+        const oldest = db.prepare(
+            `SELECT created_at FROM chat_usage
+             WHERE user_id = ? AND created_at > datetime('now', '-24 hours')
+             ORDER BY created_at ASC LIMIT 1`
+        ).get(userId);
+        if (oldest && oldest.created_at) {
+            const oldestUtc = new Date(oldest.created_at.replace(' ', 'T') + 'Z');
+            resetAt = new Date(oldestUtc.getTime() + 24 * 60 * 60 * 1000).toISOString();
+        }
+    }
+
+    return {
+        allowed,
+        used,
+        remaining: Math.max(0, limit - used),
+        resetAt,
+    };
+}
+
+function insertChatUsage(userId, model = 'pending', tokensIn = 0, tokensOut = 0, costUsd = 0) {
     const stmt = db.prepare(`
         INSERT INTO chat_usage (user_id, model, tokens_in, tokens_out, cost_usd)
-        VALUES (?, 'pending', 0, 0, 0)
+        VALUES (?, ?, ?, ?, ?)
     `);
-    return stmt.run(userId);
+    return stmt.run(userId, model, tokensIn, tokensOut, costUsd);
 }
 
 // Initialize database on module load
@@ -1152,5 +1186,6 @@ module.exports = {
     removeMealPlan,
     getMealPlan,
     getGroceryList,
-    insertChatUsage
+    insertChatUsage,
+    checkChatLimit
 };

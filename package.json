@@ -28,6 +28,7 @@
     "typescript": "5.7.2"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "0.123.0",
     "@clerk/express": "1.7.82",
     "better-sqlite3": "^9.2.2",
     "compression": "^1.8.1",
