@@ -12,6 +12,7 @@ const Anthropic = require('@anthropic-ai/sdk');
 const { chatSchema } = require('@flavour-find/shared');
 const db = require('./database');
 const {
+    dbReady,
     saveRecipe,
     unsaveRecipe,
     getSavedRecipes,
@@ -76,49 +77,53 @@ app.use(express.static('public'));
 app.use(clerkMiddleware());
 
 // API Routes
-app.get('/api/moods', (req, res) => {
+app.get('/api/moods', async (req, res) => {
     try {
-        const moods = db.getMoods();
+        const moods = await db.getMoods();
         res.json(moods);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-app.get('/api/recipes/:mood', (req, res) => {
+app.get('/api/recipes/:mood', async (req, res) => {
     try {
         const { mood } = req.params;
-        const recipes = db.getRecipesByMood(mood);
+        const recipes = await db.getRecipesByMood(mood);
         res.json(recipes);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-app.get('/api/recipe/:mood/random', (req, res) => {
+app.get('/api/recipe/:mood/random', async (req, res) => {
     const { mood } = req.params;
     const { isAuthenticated, userId } = getAuth(req);
 
-    let excludeIds = [];
-    if (isAuthenticated) {
-        excludeIds = getRecentRecipeIdsForMood(userId, mood, 5);
-    }
+    try {
+        let excludeIds = [];
+        if (isAuthenticated) {
+            excludeIds = await getRecentRecipeIdsForMood(userId, mood, 5);
+        }
 
-    const recipe = db.getRandomRecipe(mood, excludeIds);
-    if (!recipe) {
-        res.status(404).json({ error: 'No recipes found for this mood' });
-        return;
-    }
+        const recipe = await db.getRandomRecipe(mood, excludeIds);
+        if (!recipe) {
+            res.status(404).json({ error: 'No recipes found for this mood' });
+            return;
+        }
 
-    if (isAuthenticated) {
-        logMoodHistory(userId, mood, recipe.id);
-    }
+        if (isAuthenticated) {
+            await logMoodHistory(userId, mood, recipe.id);
+        }
 
-    res.json(recipe);
+        res.json(recipe);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // POST /api/user/saved
-app.post('/api/user/saved', (req, res) => {
+app.post('/api/user/saved', async (req, res) => {
     const { isAuthenticated, userId } = getAuth(req);
 
     if (!isAuthenticated) {
@@ -138,7 +143,7 @@ app.post('/api/user/saved', (req, res) => {
     }
 
     try {
-        saveRecipe(userId, recipeIdInt);
+        await saveRecipe(userId, recipeIdInt);
         res.status(201).json({ ok: true });
     } catch (err) {
         res.status(500).json({ error: 'Failed to save recipe' });
@@ -146,7 +151,7 @@ app.post('/api/user/saved', (req, res) => {
 });
 
 // DELETE /api/user/saved/:id
-app.delete('/api/user/saved/:id', (req, res) => {
+app.delete('/api/user/saved/:id', async (req, res) => {
     const { isAuthenticated, userId } = getAuth(req);
 
     if (!isAuthenticated) {
@@ -162,7 +167,7 @@ app.delete('/api/user/saved/:id', (req, res) => {
     }
 
     try {
-        const result = unsaveRecipe(userId, savedId);
+        const result = await unsaveRecipe(userId, savedId);
 
         if (result.changes === 0) {
             res.status(404).json({ error: 'Not found' });
@@ -176,7 +181,7 @@ app.delete('/api/user/saved/:id', (req, res) => {
 });
 
 // GET /api/user/saved
-app.get('/api/user/saved', (req, res) => {
+app.get('/api/user/saved', async (req, res) => {
     const { isAuthenticated, userId } = getAuth(req);
 
     if (!isAuthenticated) {
@@ -185,7 +190,7 @@ app.get('/api/user/saved', (req, res) => {
     }
 
     try {
-        const recipes = getSavedRecipes(userId);
+        const recipes = await getSavedRecipes(userId);
         res.json(recipes);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch saved recipes' });
@@ -193,14 +198,14 @@ app.get('/api/user/saved', (req, res) => {
 });
 
 // GET /api/user/mood-history
-app.get('/api/user/mood-history', (req, res) => {
+app.get('/api/user/mood-history', async (req, res) => {
     const { isAuthenticated, userId } = getAuth(req);
     if (!isAuthenticated) {
         res.status(401).json({ error: 'Unauthorized' });
         return;
     }
     try {
-        const history = getMoodHistory(userId);
+        const history = await getMoodHistory(userId);
         res.json(history);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch mood history' });
@@ -222,7 +227,7 @@ function isValidDate(str) {
 const VALID_MEAL_SLOTS = new Set(['breakfast', 'lunch', 'dinner', 'snack']);
 
 // POST /api/user/meal-plan
-app.post('/api/user/meal-plan', (req, res) => {
+app.post('/api/user/meal-plan', async (req, res) => {
     const { isAuthenticated, userId } = getAuth(req);
     if (!isAuthenticated) {
         res.status(401).json({ error: 'Unauthorized' });
@@ -246,7 +251,7 @@ app.post('/api/user/meal-plan', (req, res) => {
     }
 
     try {
-        const result = addMealPlan(userId, recipeIdInt, plannedDate, mealSlot);
+        const result = await addMealPlan(userId, recipeIdInt, plannedDate, mealSlot);
         res.status(201).json({ id: result.lastInsertRowid });
     } catch (err) {
         res.status(500).json({ error: 'Failed to add meal plan' });
@@ -254,7 +259,7 @@ app.post('/api/user/meal-plan', (req, res) => {
 });
 
 // DELETE /api/user/meal-plan/:id
-app.delete('/api/user/meal-plan/:id', (req, res) => {
+app.delete('/api/user/meal-plan/:id', async (req, res) => {
     const { isAuthenticated, userId } = getAuth(req);
     if (!isAuthenticated) {
         res.status(401).json({ error: 'Unauthorized' });
@@ -266,7 +271,7 @@ app.delete('/api/user/meal-plan/:id', (req, res) => {
         return;
     }
     try {
-        const result = removeMealPlan(userId, mealPlanId);
+        const result = await removeMealPlan(userId, mealPlanId);
         if (result.changes === 0) {
             res.status(404).json({ error: 'Not found' });
             return;
@@ -277,8 +282,20 @@ app.delete('/api/user/meal-plan/:id', (req, res) => {
     }
 });
 
+// PostgreSQL DATE columns come back from node-pg as JS Date objects, which
+// JSON-serialize as full ISO-8601 timestamps. planned_date is a date-only
+// field (see MealPlanEntry.planned_date: string in MealPlanner.tsx, consumed
+// as a bare string) — normalize back to YYYY-MM-DD so the API contract is
+// unchanged from the pre-Phase-6 SQLite response shape.
+function formatPlannedDate(value) {
+    if (value instanceof Date) {
+        return value.toISOString().slice(0, 10);
+    }
+    return typeof value === 'string' ? value.slice(0, 10) : value;
+}
+
 // GET /api/user/meal-plan?week=YYYY-MM-DD
-app.get('/api/user/meal-plan', (req, res) => {
+app.get('/api/user/meal-plan', async (req, res) => {
     const { isAuthenticated, userId } = getAuth(req);
     if (!isAuthenticated) {
         res.status(401).json({ error: 'Unauthorized' });
@@ -290,15 +307,18 @@ app.get('/api/user/meal-plan', (req, res) => {
         return;
     }
     try {
-        const plan = getMealPlan(userId, weekStart);
-        res.json(plan);
+        const plan = await getMealPlan(userId, weekStart);
+        res.json(plan.map((entry) => ({
+            ...entry,
+            planned_date: formatPlannedDate(entry.planned_date),
+        })));
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch meal plan' });
     }
 });
 
 // GET /api/user/grocery-list?week=YYYY-MM-DD
-app.get('/api/user/grocery-list', (req, res) => {
+app.get('/api/user/grocery-list', async (req, res) => {
     const { isAuthenticated, userId } = getAuth(req);
     if (!isAuthenticated) {
         res.status(401).json({ error: 'Unauthorized' });
@@ -310,7 +330,7 @@ app.get('/api/user/grocery-list', (req, res) => {
         return;
     }
     try {
-        const items = getGroceryList(userId, weekStart);
+        const items = await getGroceryList(userId, weekStart);
         res.json({ items });
     } catch (err) {
         res.status(500).json({ error: 'Failed to generate grocery list' });
@@ -333,7 +353,13 @@ app.post('/api/v1/chat', async (req, res) => {
 
     // Single universal authenticated-user limit (OD-P5-TIER, resolved). No tier/premium logic.
     const limit = parseInt(process.env.AI_CHAT_LIMIT_FREE ?? '20', 10);
-    const { allowed, remaining, resetAt } = checkChatLimit(userId, limit);
+    let allowed, remaining, resetAt;
+    try {
+        ({ allowed, remaining, resetAt } = await checkChatLimit(userId, limit));
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to check chat limit' });
+        return;
+    }
     if (!allowed) {
         res.status(429).json({
             error: 'Rate limit exceeded',
@@ -413,7 +439,7 @@ app.post('/api/v1/chat', async (req, res) => {
         }
     } finally {
         try {
-            insertChatUsage(userId, CHAT_MODEL, tokensIn, tokensOut, costUsd);
+            await insertChatUsage(userId, CHAT_MODEL, tokensIn, tokensOut, costUsd);
         } catch (logErr) {
             logger.error({ message: logErr.message }, 'Failed to log chat usage');
         }
@@ -428,6 +454,12 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => {
-    logger.info(`Server running on http://localhost:${PORT}`);
-});
+// Await the existing T6.A.3 dbReady initialization Promise (the single
+// initDatabase() invocation already kicked off at database.js module load)
+// before accepting requests, without invoking initDatabase() a second time.
+(async () => {
+    await dbReady;
+    app.listen(PORT, () => {
+        logger.info(`Server running on http://localhost:${PORT}`);
+    });
+})();

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from '@clerk/react';
 
 interface GroceryListProps {
     weekStart: string;
@@ -22,7 +22,7 @@ export function GroceryList({ weekStart }: GroceryListProps) {
             try {
                 const token = await getToken();
 
-                const res = await fetch(`/api/user/grocery-list?week=${weekStart}`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/user/grocery-list?week=${weekStart}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from '@clerk/react';
 
 interface SavedRecipe {
     saved_id: number;
@@ -27,7 +27,7 @@ export function SavedRecipes() {
             try {
                 const token = await getToken();
 
-                const res = await fetch('/api/user/saved', {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/user/saved`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -45,7 +45,7 @@ export function SavedRecipes() {
     async function handleUnsave(savedId: number) {
         const token = await getToken();
 
-        const res = await fetch(`/api/user/saved/${savedId}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/user/saved/${savedId}`, {
             method: 'DELETE',
             headers: {
                 Authorization: `Bearer ${token}`,

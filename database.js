@@ -1,24 +1,22 @@
-const Database = require('better-sqlite3');
-const path = require('path');
-const fs = require('fs');
+const { Pool } = require('pg');
 
-const dbPath = path.join(__dirname, 'recipes.db');
-const db = new Database(dbPath);
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+});
 
 // Initialize database
-function initDatabase() {
-    db.pragma('foreign_keys = ON');
-
+async function initDatabase() {
     // Create tables
-    db.exec(`
+    await pool.query(`
         CREATE TABLE IF NOT EXISTS moods (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             name TEXT UNIQUE NOT NULL,
             emoji TEXT
         );
 
         CREATE TABLE IF NOT EXISTS recipes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             mood_id INTEGER NOT NULL,
             name TEXT NOT NULL,
             emoji TEXT,
@@ -27,7 +25,7 @@ function initDatabase() {
         );
 
         CREATE TABLE IF NOT EXISTS ingredients (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             recipe_id INTEGER NOT NULL,
             ingredient TEXT NOT NULL,
             order_index INTEGER,
@@ -35,7 +33,7 @@ function initDatabase() {
         );
 
         CREATE TABLE IF NOT EXISTS instructions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             recipe_id INTEGER NOT NULL,
             instruction TEXT NOT NULL,
             step_number INTEGER,
@@ -43,24 +41,24 @@ function initDatabase() {
         );
 
         CREATE TABLE IF NOT EXISTS user_saved_recipes (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id SERIAL PRIMARY KEY,
           user_id TEXT NOT NULL,
           recipe_id INTEGER NOT NULL,
-          saved_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          saved_at TIMESTAMPTZ DEFAULT NOW(),
           UNIQUE(user_id, recipe_id),
           FOREIGN KEY (recipe_id) REFERENCES recipes(id)
         );
 
         CREATE TABLE IF NOT EXISTS mood_history (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id SERIAL PRIMARY KEY,
           user_id TEXT NOT NULL,
           mood TEXT NOT NULL,
           recipe_id INTEGER,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          created_at TIMESTAMPTZ DEFAULT NOW()
         );
 
         CREATE TABLE IF NOT EXISTS meal_plan (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id SERIAL PRIMARY KEY,
           user_id TEXT NOT NULL,
           recipe_id INTEGER NOT NULL,
           planned_date DATE NOT NULL,
@@ -71,13 +69,13 @@ function initDatabase() {
         );
 
         CREATE TABLE IF NOT EXISTS chat_usage (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             user_id TEXT NOT NULL,
             model TEXT NOT NULL DEFAULT 'pending',
             tokens_in INTEGER NOT NULL DEFAULT 0,
             tokens_out INTEGER NOT NULL DEFAULT 0,
-            cost_usd REAL NOT NULL DEFAULT 0,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            cost_usd NUMERIC(10,6) NOT NULL DEFAULT 0,
+            created_at TIMESTAMPTZ DEFAULT NOW()
         );
 
         CREATE INDEX IF NOT EXISTS idx_chat_usage_user_time
@@ -85,45 +83,56 @@ function initDatabase() {
     `);
 
     // Check if database is already populated
-    const recipeCount = db.prepare('SELECT COUNT(*) as count FROM recipes').get();
-    if (recipeCount.count === 0) {
-        populateDatabase();
+    const { rows } = await pool.query('SELECT COUNT(*) as count FROM recipes');
+    if (Number(rows[0].count) === 0) {
+        await populateDatabase();
     }
 }
 
-function populateDatabase() {
-    const insertMood = db.prepare('INSERT INTO moods (name, emoji) VALUES (?, ?)');
-    const insertRecipe = db.prepare('INSERT INTO recipes (mood_id, name, emoji, description) VALUES (?, ?, ?, ?)');
-    const insertIngredient = db.prepare('INSERT INTO ingredients (recipe_id, ingredient, order_index) VALUES (?, ?, ?)');
-    const insertInstruction = db.prepare('INSERT INTO instructions (recipe_id, instruction, step_number) VALUES (?, ?, ?)');
+async function populateDatabase() {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
 
-    const transaction = db.transaction((recipesData) => {
+        const recipesData = getRecipesData();
         for (const [moodName, recipes] of Object.entries(recipesData)) {
             const moodEmoji = getMoodEmoji(moodName);
-            const moodResult = insertMood.run(moodName, moodEmoji);
-            const moodId = moodResult.lastInsertRowid;
+            const moodResult = await client.query(
+                'INSERT INTO moods (name, emoji) VALUES ($1, $2) RETURNING id',
+                [moodName, moodEmoji]
+            );
+            const moodId = moodResult.rows[0].id;
 
             for (const recipe of recipes) {
-                const recipeResult = insertRecipe.run(
-                    moodId,
-                    recipe.name,
-                    recipe.emoji,
-                    recipe.description
+                const recipeResult = await client.query(
+                    'INSERT INTO recipes (mood_id, name, emoji, description) VALUES ($1, $2, $3, $4) RETURNING id',
+                    [moodId, recipe.name, recipe.emoji, recipe.description]
                 );
-                const recipeId = recipeResult.lastInsertRowid;
+                const recipeId = recipeResult.rows[0].id;
 
-                recipe.ingredients.forEach((ingredient, index) => {
-                    insertIngredient.run(recipeId, ingredient, index);
-                });
+                for (let index = 0; index < recipe.ingredients.length; index++) {
+                    await client.query(
+                        'INSERT INTO ingredients (recipe_id, ingredient, order_index) VALUES ($1, $2, $3)',
+                        [recipeId, recipe.ingredients[index], index]
+                    );
+                }
 
-                recipe.instructions.forEach((instruction, index) => {
-                    insertInstruction.run(recipeId, instruction, index + 1);
-                });
+                for (let index = 0; index < recipe.instructions.length; index++) {
+                    await client.query(
+                        'INSERT INTO instructions (recipe_id, instruction, step_number) VALUES ($1, $2, $3)',
+                        [recipeId, recipe.instructions[index], index + 1]
+                    );
+                }
             }
         }
-    });
 
-    transaction(getRecipesData());
+        await client.query('COMMIT');
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+    }
 }
 
 function getMoodEmoji(mood) {
@@ -976,48 +985,52 @@ function getRecipesData() {
 }
 
 // Database functions
-function getMoods() {
-    return db.prepare('SELECT * FROM moods').all();
+async function getMoods() {
+    await dbReady;
+    const { rows } = await pool.query('SELECT * FROM moods');
+    return rows;
 }
 
-function getRecipesByMood(moodName) {
-    const mood = db.prepare('SELECT id FROM moods WHERE name = ?').get(moodName);
+async function getRecipesByMood(moodName) {
+    await dbReady;
+    const { rows: moodRows } = await pool.query('SELECT id FROM moods WHERE name = $1', [moodName]);
+    const mood = moodRows[0];
     if (!mood) return [];
 
-    const recipes = db.prepare(`
-        SELECT id, name, emoji, description 
-        FROM recipes 
-        WHERE mood_id = ?
-    `).all(mood.id);
+    const { rows: recipes } = await pool.query(`
+        SELECT id, name, emoji, description
+        FROM recipes
+        WHERE mood_id = $1
+    `, [mood.id]);
 
-    return recipes.map(recipe => {
-        const ingredients = db.prepare(`
-            SELECT ingredient 
-            FROM ingredients 
-            WHERE recipe_id = ? 
+    return Promise.all(recipes.map(async (recipe) => {
+        const { rows: ingredientRows } = await pool.query(`
+            SELECT ingredient
+            FROM ingredients
+            WHERE recipe_id = $1
             ORDER BY order_index
-        `).all(recipe.id).map(row => row.ingredient);
+        `, [recipe.id]);
 
-        const instructions = db.prepare(`
-            SELECT instruction 
-            FROM instructions 
-            WHERE recipe_id = ? 
+        const { rows: instructionRows } = await pool.query(`
+            SELECT instruction
+            FROM instructions
+            WHERE recipe_id = $1
             ORDER BY step_number
-        `).all(recipe.id).map(row => row.instruction);
+        `, [recipe.id]);
 
         return {
             id: recipe.id,
             name: recipe.name,
             emoji: recipe.emoji,
             description: recipe.description,
-            ingredients,
-            instructions
+            ingredients: ingredientRows.map(row => row.ingredient),
+            instructions: instructionRows.map(row => row.instruction)
         };
-    });
+    }));
 }
 
-function getRandomRecipe(moodName, excludeIds = []) {
-    const recipes = getRecipesByMood(moodName);
+async function getRandomRecipe(moodName, excludeIds = []) {
+    const recipes = await getRecipesByMood(moodName);
     if (recipes.length === 0) return null;
 
     const available = excludeIds.length > 0
@@ -1029,127 +1042,144 @@ function getRandomRecipe(moodName, excludeIds = []) {
     return pool[randomIndex];
 }
 
-function logMoodHistory(userId, mood, recipeId) {
-    const stmt = db.prepare(`
+async function logMoodHistory(userId, mood, recipeId) {
+    await dbReady;
+    const result = await pool.query(`
         INSERT INTO mood_history (user_id, mood, recipe_id)
-        VALUES (?, ?, ?)
-    `);
-    return stmt.run(userId, mood, recipeId);
+        VALUES ($1, $2, $3)
+        RETURNING id
+    `, [userId, mood, recipeId]);
+    return { changes: result.rowCount, lastInsertRowid: result.rows[0]?.id ?? null };
 }
 
-function getRecentRecipeIdsForMood(userId, mood, limit = 5) {
-    const stmt = db.prepare(`
+async function getRecentRecipeIdsForMood(userId, mood, limit = 5) {
+    await dbReady;
+    const { rows } = await pool.query(`
         SELECT recipe_id FROM mood_history
-        WHERE user_id = ? AND mood = ? AND recipe_id IS NOT NULL
+        WHERE user_id = $1 AND mood = $2 AND recipe_id IS NOT NULL
         ORDER BY created_at DESC
-        LIMIT ?
-    `);
-    return stmt.all(userId, mood, limit).map(row => row.recipe_id);
+        LIMIT $3
+    `, [userId, mood, limit]);
+    return rows.map(row => row.recipe_id);
 }
 
-function getMoodHistory(userId) {
-    const stmt = db.prepare(`
+async function getMoodHistory(userId) {
+    await dbReady;
+    const { rows } = await pool.query(`
         SELECT mh.id, mh.mood, mh.recipe_id, r.name as recipe_name,
                r.emoji as recipe_emoji, mh.created_at
         FROM mood_history mh
         LEFT JOIN recipes r ON mh.recipe_id = r.id
-        WHERE mh.user_id = ?
+        WHERE mh.user_id = $1
         ORDER BY mh.created_at DESC
         LIMIT 50
-    `);
-    return stmt.all(userId);
+    `, [userId]);
+    return rows;
 }
 
-function saveRecipe(userId, recipeId) {
-    const stmt = db.prepare(`
-        INSERT OR IGNORE INTO user_saved_recipes (user_id, recipe_id)
-        VALUES (?, ?)
-    `);
-    return stmt.run(userId, recipeId);
+async function saveRecipe(userId, recipeId) {
+    await dbReady;
+    const result = await pool.query(`
+        INSERT INTO user_saved_recipes (user_id, recipe_id)
+        VALUES ($1, $2)
+        ON CONFLICT (user_id, recipe_id) DO NOTHING
+        RETURNING id
+    `, [userId, recipeId]);
+    return { changes: result.rowCount, lastInsertRowid: result.rows[0]?.id ?? null };
 }
 
-function unsaveRecipe(userId, savedId) {
-    const stmt = db.prepare(`
+async function unsaveRecipe(userId, savedId) {
+    await dbReady;
+    const result = await pool.query(`
         DELETE FROM user_saved_recipes
-        WHERE id = ? AND user_id = ?
-    `);
-    return stmt.run(savedId, userId);
+        WHERE id = $1 AND user_id = $2
+    `, [savedId, userId]);
+    return { changes: result.rowCount };
 }
 
-function getSavedRecipes(userId) {
-    const stmt = db.prepare(`
+async function getSavedRecipes(userId) {
+    await dbReady;
+    const { rows } = await pool.query(`
         SELECT usr.id as saved_id, r.id, r.name, r.emoji, r.description,
                usr.saved_at
         FROM user_saved_recipes usr
         JOIN recipes r ON usr.recipe_id = r.id
-        WHERE usr.user_id = ?
+        WHERE usr.user_id = $1
         ORDER BY usr.saved_at DESC
-    `);
-    return stmt.all(userId);
+    `, [userId]);
+    return rows;
 }
 
-function addMealPlan(userId, recipeId, plannedDate, mealSlot) {
-    const stmt = db.prepare(`
+async function addMealPlan(userId, recipeId, plannedDate, mealSlot) {
+    await dbReady;
+    const result = await pool.query(`
         INSERT INTO meal_plan (user_id, recipe_id, planned_date, meal_slot)
-        VALUES (?, ?, ?, ?)
-    `);
-    return stmt.run(userId, recipeId, plannedDate, mealSlot);
+        VALUES ($1, $2, $3, $4)
+        RETURNING id
+    `, [userId, recipeId, plannedDate, mealSlot]);
+    return { changes: result.rowCount, lastInsertRowid: result.rows[0]?.id ?? null };
 }
 
-function removeMealPlan(userId, mealPlanId) {
-    const stmt = db.prepare(`
-        DELETE FROM meal_plan WHERE id = ? AND user_id = ?
-    `);
-    return stmt.run(mealPlanId, userId);
+async function removeMealPlan(userId, mealPlanId) {
+    await dbReady;
+    const result = await pool.query(`
+        DELETE FROM meal_plan WHERE id = $1 AND user_id = $2
+    `, [mealPlanId, userId]);
+    return { changes: result.rowCount };
 }
 
-function getMealPlan(userId, weekStart) {
-    const stmt = db.prepare(`
+async function getMealPlan(userId, weekStart) {
+    await dbReady;
+    const { rows } = await pool.query(`
         SELECT mp.id, mp.planned_date, mp.meal_slot,
                r.id as recipe_id, r.name, r.emoji, r.description
         FROM meal_plan mp
         JOIN recipes r ON mp.recipe_id = r.id
-        WHERE mp.user_id = ?
-          AND mp.planned_date >= ?
-          AND mp.planned_date < date(?, '+7 days')
+        WHERE mp.user_id = $1
+          AND mp.planned_date >= $2
+          AND mp.planned_date < ($3::date + INTERVAL '7 days')
         ORDER BY mp.planned_date, mp.meal_slot
-    `);
-    return stmt.all(userId, weekStart, weekStart);
+    `, [userId, weekStart, weekStart]);
+    return rows;
 }
 
-function getGroceryList(userId, weekStart) {
-    const stmt = db.prepare(`
+async function getGroceryList(userId, weekStart) {
+    await dbReady;
+    const { rows } = await pool.query(`
         SELECT DISTINCT i.ingredient
         FROM meal_plan mp
         JOIN ingredients i ON mp.recipe_id = i.recipe_id
-        WHERE mp.user_id = ?
-          AND mp.planned_date >= ?
-          AND mp.planned_date < date(?, '+7 days')
+        WHERE mp.user_id = $1
+          AND mp.planned_date >= $2
+          AND mp.planned_date < ($3::date + INTERVAL '7 days')
         ORDER BY i.ingredient
-    `);
-    return stmt.all(userId, weekStart, weekStart).map(row => row.ingredient);
+    `, [userId, weekStart, weekStart]);
+    return rows.map(row => row.ingredient);
 }
 
-function checkChatLimit(userId, limit) {
-    const row = db.prepare(
+async function checkChatLimit(userId, limit) {
+    await dbReady;
+    const { rows: countRows } = await pool.query(
         `SELECT COUNT(*) as count FROM chat_usage
-         WHERE user_id = ? AND created_at > datetime('now', '-24 hours')`
-    ).get(userId);
-    const used = row ? row.count : 0;
+         WHERE user_id = $1 AND created_at > NOW() - INTERVAL '24 hours'`,
+        [userId]
+    );
+    const used = countRows[0] ? Number(countRows[0].count) : 0;
     const allowed = used < limit;
 
     // Only needed when blocked: the oldest request in the current rolling window is the
     // one that must age out (created_at + 24h) before the count drops back under `limit`.
     let resetAt = null;
     if (!allowed) {
-        const oldest = db.prepare(
+        const { rows: oldestRows } = await pool.query(
             `SELECT created_at FROM chat_usage
-             WHERE user_id = ? AND created_at > datetime('now', '-24 hours')
-             ORDER BY created_at ASC LIMIT 1`
-        ).get(userId);
+             WHERE user_id = $1 AND created_at > NOW() - INTERVAL '24 hours'
+             ORDER BY created_at ASC LIMIT 1`,
+            [userId]
+        );
+        const oldest = oldestRows[0];
         if (oldest && oldest.created_at) {
-            const oldestUtc = new Date(oldest.created_at.replace(' ', 'T') + 'Z');
-            resetAt = new Date(oldestUtc.getTime() + 24 * 60 * 60 * 1000).toISOString();
+            resetAt = new Date(oldest.created_at.getTime() + 24 * 60 * 60 * 1000).toISOString();
         }
     }
 
@@ -1161,18 +1191,26 @@ function checkChatLimit(userId, limit) {
     };
 }
 
-function insertChatUsage(userId, model = 'pending', tokensIn = 0, tokensOut = 0, costUsd = 0) {
-    const stmt = db.prepare(`
+async function insertChatUsage(userId, model = 'pending', tokensIn = 0, tokensOut = 0, costUsd = 0) {
+    await dbReady;
+    const result = await pool.query(`
         INSERT INTO chat_usage (user_id, model, tokens_in, tokens_out, cost_usd)
-        VALUES (?, ?, ?, ?, ?)
-    `);
-    return stmt.run(userId, model, tokensIn, tokensOut, costUsd);
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING id
+    `, [userId, model, tokensIn, tokensOut, costUsd]);
+    return { changes: result.rowCount, lastInsertRowid: result.rows[0]?.id ?? null };
 }
 
-// Initialize database on module load
-initDatabase();
+// Initialize database on module load; every exported function above awaits
+// this same promise first so no query can run before tables exist, without
+// requiring callers of this module to invoke or await initDatabase() themselves.
+const dbReady = initDatabase().catch((err) => {
+    console.error('Database initialization failed:', err);
+    throw err;
+});
 
 module.exports = {
+    dbReady,
     getMoods,
     getRecipesByMood,
     getRandomRecipe,

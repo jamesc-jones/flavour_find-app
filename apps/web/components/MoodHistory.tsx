@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from '@clerk/react';
 
 interface HistoryEntry {
     id: number;
@@ -19,7 +19,7 @@ export function MoodHistory() {
         if (!isSignedIn) return;
         (async () => {
             const token = await getToken();
-            const res = await fetch('/api/user/mood-history', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/user/mood-history`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (res.ok) setHistory((await res.json()) as HistoryEntry[]);

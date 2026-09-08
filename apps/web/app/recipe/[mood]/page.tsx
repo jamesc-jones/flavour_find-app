@@ -1,9 +1,14 @@
 import type { Metadata } from 'next';
 import { RecipePageClient } from '@/components/RecipePageClient';
+import { KNOWN_MOODS } from '@/lib/moods';
 
 type PageProps = {
   params: Promise<{ mood: string }>;
 };
+
+export async function generateStaticParams() {
+  return KNOWN_MOODS.map((mood) => ({ mood }));
+}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { mood } = await params;

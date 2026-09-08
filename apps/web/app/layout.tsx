@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
-import { ClerkProvider } from '@clerk/nextjs';
+import { ClerkClientProvider } from '@/components/ClerkClientProvider';
 import './globals.css';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <ClerkProvider>{children}</ClerkProvider>
+        <ClerkClientProvider>{children}</ClerkClientProvider>
       </body>
     </html>
   );

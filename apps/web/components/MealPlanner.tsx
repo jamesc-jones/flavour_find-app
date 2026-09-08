@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from '@clerk/react';
 
 interface MealPlanEntry {
     id: number;
@@ -34,7 +34,7 @@ export function MealPlanner() {
                 const token = await getToken();
                 const week = todayAsWeekStart();
 
-                const res = await fetch(`/api/user/meal-plan?week=${week}`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/user/meal-plan?week=${week}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -52,7 +52,7 @@ export function MealPlanner() {
     async function handleRemove(id: number) {
         const token = await getToken();
 
-        const res = await fetch(`/api/user/meal-plan/${id}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/user/meal-plan/${id}`, {
             method: 'DELETE',
             headers: {
                 Authorization: `Bearer ${token}`,

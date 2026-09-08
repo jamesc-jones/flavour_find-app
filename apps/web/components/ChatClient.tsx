@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from '@clerk/react';
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 
 type ChatMessage = { role: 'user' | 'assistant'; content: string };
@@ -46,7 +46,7 @@ export function ChatClient() {
 
         try {
             const token = await getToken();
-            const response = await fetch('/api/v1/chat', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/v1/chat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
