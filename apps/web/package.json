@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@capacitor/core": "8.5.1",
     "@clerk/react": "6.15.1",
     "@flavour-find/types": "0.1.0",
     "next": "15.2.9",
@@ -17,6 +18,8 @@
     "react-dom": "19.0.3"
   },
   "devDependencies": {
+    "@capacitor/android": "8.5.1",
+    "@capacitor/cli": "8.5.1",
     "@clerk/testing": "1.14.9",
     "@eslint/eslintrc": "3.2.0",
     "@playwright/test": "1.49.1",

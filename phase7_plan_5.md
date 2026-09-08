@@ -1,11 +1,11 @@
 # Phase 7 Planning Specification — Corrected
 ## Flavour Find — Monorepo SaaS Project
 
-**Document version:** 2.1.3
-**Supersedes:** this document's own v2.1.2 revision — see §1F for this surgical state/governance reconciliation
+**Document version:** 2.1.4
+**Supersedes:** this document's own v2.1.3 revision — see §1G for this surgical state/governance reconciliation
 **Also supersedes:** `phase7_plan_4.md` (v2.1.1), `phase7_plan_3.md` (v2.1.0), `phase7_plan_2.md` (v2.0.0), `phase7_plan_1.md` (v1.0.0)
 **Planning session date:** 2026-09-08
-**State reconciliation date:** 2026-09-08
+**State reconciliation date:** 2026-09-08 (v2.1.3); 2026-09-08 (v2.1.4)
 **Prepared by:** Claude (read-only audit + authorized state reconciliation) — planning specification only
 
 ---
@@ -13,8 +13,9 @@
 ## STATUS BLOCK
 
 ```
-STATUS:             PHASE 7 IN PROGRESS — DELIVERABLE B CHECKPOINT COMPLETE; DELIVERABLE A PARTIALLY
-                    IMPLEMENTED (B2–B5 ONLY) — PRODUCTION BUILD/SYNC (B6/B7) NOT AUTHORIZED
+STATUS:             PHASE 7 IN PROGRESS — DELIVERABLE B CHECKPOINT COMPLETE; DELIVERABLE A
+                    IMPLEMENTATION COMPLETE THROUGH B7 — CAPACITOR CHECKPOINT NOT YET TAGGED —
+                    PRODUCTION-DEPENDENT RUNTIME ACCEPTANCE DEFERRED PENDING PHASE 10
 
 PHASE 5:            COMPLETE / FROZEN
 PHASE 5 CHECKPOINT: phase-5-checkpoint-1
@@ -32,21 +33,33 @@ PHASE 7 DELIVERABLE B (WIDGET):   COMPLETE / CHECKPOINTED / PUSHED
 PHASE 7 WIDGET CHECKPOINT:        phase-7-widget-checkpoint-1
 PHASE 7 WIDGET COMMIT:            fcca2f1e8ee3d59b6fb0aa87fb7fe918f987e81b
 
-PHASE 7 DELIVERABLE A (CAPACITOR): IN PROGRESS — B2–B5 COMPLETE (packages installed, config
-                                    created, native Android project generated, INTERNET
-                                    permission verified). B6 (production build) and B7
-                                    (`npx cap sync`) NOT authorized/performed. No
-                                    `phase-7-capacitor-checkpoint-1` tag exists.
-PHASE 7A REMAINING BLOCKER:        Decision 3 — human-supplied production API URL (not yet
-                                    supplied; must not be invented). See §12, Decision 3.
+PHASE 7 DELIVERABLE A (CAPACITOR): IMPLEMENTATION COMPLETE THROUGH B7. B2–B5 complete (packages
+                                    installed, config created, native Android project generated,
+                                    INTERNET permission verified). B6 (production build) —
+                                    COMPLETE: `apps/web/out/` built with
+                                    `NEXT_PUBLIC_API_URL=https://api.flavourfind.com`. B7
+                                    (`npx cap sync`) — COMPLETE: synced into
+                                    `apps/web/android/app/src/main/assets/public/`, independently
+                                    verified fresh/non-stale. No `phase-7-capacitor-checkpoint-1`
+                                    tag exists yet — checkpoint commit/tag/push each remain
+                                    separate, ungranted authorization gates (§11.3).
+PHASE 7A PRODUCTION-DEPENDENT
+RUNTIME ACCEPTANCE:                DEFERRED — PENDING PHASE 10 PRODUCTION DEPLOYMENT (Android
+                                    runtime API connectivity, authenticated production sign-in,
+                                    live `/chat` SSE, widget behavior against a live backend,
+                                    DNS/HTTPS/Caddy, B8–B10 Android build/emulator/manual testing
+                                    — none of these are marked complete by B6/B7's completion).
 
-AUTHORIZED:         Deliverable B implementation — DONE. Deliverable A steps B2–B5 — DONE.
-                    Deliverable A steps B6 onward — NOT AUTHORIZED.
+AUTHORIZED:         Deliverable B implementation — DONE. Deliverable A steps B2–B7 — DONE.
+                    Capacitor checkpoint commit/tag/push — NOT AUTHORIZED. Phase 10 production
+                    deployment work — NOT AUTHORIZED, NOT PERFORMED.
 
 CAPACITOR:          Phase 7 scope — mobile packaging of static build (Deliverable A).
                     `apps/web/capacitor.config.ts` created; `@capacitor/core`/`@capacitor/cli`/
                     `@capacitor/android` 8.5.1 installed in `apps/web/`; `apps/web/android/`
-                    generated via `npx cap add android`.
+                    generated via `npx cap add android`; production build and sync completed
+                    through B7 using the human-designated production API origin (see §12,
+                    Decision 3).
 WIDGET:             Phase 7 scope — floating chat widget (Deliverable B, see SAAS_ROADMAP.md
                     §7.8). Implemented, validated, committed, tagged, and pushed. See §11.1.
 
@@ -60,6 +73,26 @@ NODE.JS RUNTIME:    v22.19.0 (accepted working runtime)
 This document is a planning specification, not implementation authorization. No sentence in this document authorizes Phase 7 implementation. Phase 7 implementation requires a separate, explicit human implementation authorization issued after this planning document is reviewed and accepted.
 
 The document is structured to be used as the authoritative baseline from which narrowly scoped Claude CLI implementation authorizations are later issued, one deliverable at a time.
+
+---
+
+## §1G — Changes From v2.1.3 → v2.1.4 (Surgical State/Governance Reconciliation)
+
+This is a state/governance reconciliation only, mirroring the §1F pattern. It records facts about work (B6, B7) that was separately, explicitly authorized and independently verified successful (by both the `repository-reviewer` and `pr-reviewer` read-only review agents) after v2.1.3 was committed. It does **not** redesign, broaden, or re-architect any part of the plan, and it does not itself authorize any further implementation, Git operation, or Phase 10 work.
+
+**Historical note preserved:** v2.1.3 (committed at `52e16e85af11d65ca00231ce0c098acd1994d71e`) accurately described the state *at the time it was written* — B6 and B7 had not yet been authorized or performed, and Decision 3 was genuinely still open. Those v2.1.3 statements are not being erased as a record of what was true then; they are being superseded here because B6 and B7 were subsequently authorized and completed in later sessions, which v2.1.3 could not have reflected. See §1F for the full v2.1.2→v2.1.3 changelog, left unmodified below.
+
+| # | Reconciliation item |
+|---|---|
+| 1 | STATUS BLOCK updated: Deliverable A (Capacitor) now recorded as "IMPLEMENTATION COMPLETE THROUGH B7" — B6 (production build using `NEXT_PUBLIC_API_URL=https://api.flavourfind.com`, producing `apps/web/out/`) and B7 (`npx cap sync` into `apps/web/android/app/src/main/assets/public/`) both recorded COMPLETE. No `phase-7-capacitor-checkpoint-1` tag recorded as existing; commit/tag/push explicitly recorded as still-ungranted separate authorization gates. Production-dependent runtime acceptance explicitly recorded as DEFERRED — PENDING PHASE 10 PRODUCTION DEPLOYMENT |
+| 2 | §2A Layer 1 Established Facts: the two v2.1.3 facts stating B6/B7 "have not been performed" superseded with facts recording B6/B7 as complete, including the verified baked-in API origin (`https://api.flavourfind.com`, no `/api` suffix, no `localhost`, no DigitalOcean IP) and sync freshness |
+| 3 | §12 Open Decisions: Decision 3 (production API URL) status updated from "STILL OPEN — BLOCKING" to **RESOLVED for Phase 7 mechanical implementation purposes** — `https://api.flavourfind.com` recorded as the human-designated production API origin used in the B6 build and B7 sync. Explicitly distinguished from live/verified production status: the actual endpoint is **NOT YET LIVE** — no DNS, Caddy, HTTPS/TLS, or API deployment exists for it. Phase 10 remains responsible for all of that. This resolution applies only to unblocking the Phase 7 build/sync mechanics (B6/B7); it does not resolve, satisfy, or substitute for any production-dependent runtime acceptance criterion |
+| 4 | §13 Track B: B6 and B7 rows annotated COMPLETE with evidence; the existing narrow-authorization note (B2–B5 authorized separately from a single bundled B1) extended to record B6/B7 as likewise separately authorized. B8 (human opens Android Studio) through B16 (push) explicitly reaffirmed as **not begun and not retroactively marked complete** — these remain Phase-10-dependent or separate-authorization-gated steps |
+| 5 | §11.2 Checkpoint 7-B: status line updated to record that the build/sync/config completion criteria are now met, while the Android-runtime-dependent criteria (APK launch, sign-in completion, `/chat` SSE, widget-in-WebView behavior, manual test protocol) remain explicitly outstanding and DEFERRED — PENDING PHASE 10, and no checkpoint tag has been created |
+| 6 | §16 Required Governance Conclusions updated to reflect B6/B7 completion and the Decision 3 resolution-for-mechanics distinction |
+| 7 | No changes made to: Phase 7 architecture, the Next.js + Capacitor strategy, widget architecture/accessibility/state/testing requirements, Android requirements, security requirements, hard stops, checkpoint governance, commit/tag/push separation, out-of-scope items, future-phase scope, protected-file rules, or CORS governance (Decision 7 remains unauthorized) |
+| 8 | No implementation scope added. Specifically not introduced by this reconciliation: Docker, Caddy configuration, deployment scripts, GitHub Actions, production server configuration, DNS instructions, any other infrastructure implementation, Stripe, Sentry, PostHog, iOS, push notifications, deep links, React Native/Expo, dependency cleanup, or unrelated refactoring |
+| 9 | No file other than `phase7_plan_5.md` was modified as part of this reconciliation. No Git operation (add/commit/tag/push/amend/reset/rebase/clean) was performed |
 
 ---
 
@@ -183,7 +216,10 @@ These are confirmed by completed, committed, validated work. They are not hypoth
 | **(v2.1.3)** `apps/web/capacitor.config.ts` exists with `appId: 'com.flavourfind.app'`, `appName: 'Flavour Find'`, `webDir: 'out'`, `server.androidScheme: 'https'`, and no API URL field (Track B step B3 complete) | Read-only audit |
 | **(v2.1.3)** `apps/web/android/` was generated via `npx cap add android`; `AndroidManifest.xml` contains `android.permission.INTERNET` (Track B steps B4–B5 complete) | Read-only audit |
 | **(v2.1.3)** The pre-existing stale `apps/web/out/` directory (predating the Capacitor workflow, containing a build with `http://localhost:3000` baked in) was separately authorized and deleted; it has not been restored | Read-only audit |
-| **(v2.1.3)** Track B steps B6 (`npm run build` for the Android package) and B7 (`npx cap sync`) have not been performed; no `phase-7-capacitor-checkpoint-1` tag exists | Read-only audit |
+| **(v2.1.4)** Track B step B6 is complete: `npm run build` was run in `apps/web` with `NEXT_PUBLIC_API_URL=https://api.flavourfind.com`, producing `apps/web/out/`. Independently verified (twice, by two separate read-only review agents) that the compiled bundle bakes in exactly `https://api.flavourfind.com` with no `/api` suffix, no `localhost`, and no DigitalOcean IP address | Read-only audit; independent `repository-reviewer` and `pr-reviewer` verification |
+| **(v2.1.4)** Track B step B7 is complete: `npx cap sync` was run from `apps/web`, copying the fresh `apps/web/out/` into `apps/web/android/app/src/main/assets/public/`. Independently verified fresh/non-stale via matching mtimes and identical baked-URL content | Read-only audit; independent `repository-reviewer` and `pr-reviewer` verification |
+| **(v2.1.4)** No `phase-7-capacitor-checkpoint-1` tag exists; the Capacitor checkpoint commit, tag, and push each remain separate, ungranted authorization gates per §11.3 | Read-only audit |
+| **(v2.1.4)** The actual `https://api.flavourfind.com` endpoint is human-designated as the intended production API origin but is NOT YET LIVE — no DNS, Caddy, HTTPS/TLS, or API deployment exists for it. This is Phase 10 scope | Human-reported infrastructure state; not independently verifiable from within the repository |
 
 ### Layer 2 — Phase 7 Human Decisions
 
@@ -936,7 +972,9 @@ Phase 7 has two checkpoints, one per deliverable. They are independent.
 
 ### §11.2 — Checkpoint 7-B: Capacitor Android
 
-**(v2.1.3) Status: NOT COMPLETE.** No `phase-7-capacitor-checkpoint-1` tag exists. Only the subset corresponding to steps B2–B5 (package install, config creation, native project generation, INTERNET permission verification) is done. Build, sync, Android testing, and all remaining completion criteria below are outstanding, pending Decision 3 (production API URL).
+**(v2.1.4) Status: IMPLEMENTATION COMPLETE THROUGH B7; CHECKPOINT NOT YET TAGGED.** No `phase-7-capacitor-checkpoint-1` tag exists. Steps B2–B7 (package install, config creation, native project generation, INTERNET permission verification, production build, and Capacitor sync) are all complete and independently verified. The completion criteria below that depend on Android runtime testing against a live backend (APK build/launch, sign-in flow completion, `/chat` SSE streaming, floating widget functioning in the WebView, and the full §10.3 manual test protocol) remain outstanding and are classified DEFERRED — PENDING PHASE 10 PRODUCTION DEPLOYMENT — they are not marked complete merely because B6/B7 succeeded. Checkpoint commit, tag, and push each remain separate, ungranted authorization gates per §11.3.
+
+**(v2.1.3 historical note):** As of v2.1.3 this line read "NOT COMPLETE... Build, sync... outstanding, pending Decision 3." Superseded above because B6/B7 were subsequently authorized and completed.
 
 **Proposed tag:** `phase-7-capacitor-checkpoint-1`
 
@@ -988,7 +1026,7 @@ Completing implementation does NOT authorize commit. Commit authorization does N
 |---|---|---|---|
 | 1 | Capacitor config location (`apps/web/` vs. repo root) | `apps/web/` (Option A) | Yes — before Capacitor init — **(v2.1.3) RESOLVED: `apps/web/capacitor.config.ts`** |
 | 2 | Android project git tracking (commit vs. `.gitignore`) | Commit `apps/web/android/` | Before Capacitor checkpoint commit — **(v2.1.3) RESOLVED: track `apps/web/android/`; do not add to `.gitignore`** |
-| 3 | Production API URL for Android build | Human must supply — no default | Yes — before Android build — **(v2.1.3) STILL OPEN — BLOCKING. No URL supplied. Do not invent.** |
+| 3 | Production API URL for Android build | Human must supply — no default | Yes — before Android build — **(v2.1.4) RESOLVED for Phase 7 mechanical build/sync (B6/B7) purposes: `https://api.flavourfind.com`. NOT YET a live/verified endpoint — see subsection below.** |
 | 4 | Widget FAB visibility on `/chat` (hide vs. show) | Hide via `usePathname()` (recommendation — not authorization) | Yes — must be explicitly confirmed before widget implementation — **(v2.1.3) RESOLVED: Option A (Hide); implemented** |
 | 5 | Widget authentication UX for unauthenticated users | Navigate to `/sign-in` (see §6.12) | Yes — must be explicit before implementation — **(v2.1.3) RESOLVED: base behavior (`/sign-in/`, no `redirect_url`); implemented** |
 | 6 | Clerk OAuth/social-login strategy in WebView | Verify standard flow; OAuth requires separate auth | Yes if OAuth is enabled — **(v2.1.3) RESOLVED: no OAuth/social providers enabled; email/password only** |
@@ -1016,7 +1054,16 @@ Completing implementation does NOT authorize commit. Commit authorization does N
 
 **The human must supply the actual production Express API URL.** No URL is authorized by this planning document. The illustrative value `https://api.flavourfind.com` used in `phase7_plan_1.md` was a placeholder only and must not be used in any build without explicit human confirmation that it is the correct production URL.  
 **Blocking:** Yes — Android build cannot proceed without a confirmed `NEXT_PUBLIC_API_URL` value.  
-**(v2.1.3) Resolution status: STILL OPEN — BLOCKING.** The real production API URL has not yet been supplied (the DigitalOcean VPS/domain deployment has not occurred). No URL has been invented, assumed, or substituted — in particular neither `https://api.flavourfind.com`, nor the Neon `DATABASE_URL`, nor any inferred DigitalOcean hostname, nor `localhost`. This remains the sole blocking prerequisite for the Capacitor production build/sync sequence (B6/B7). For the avoidance of doubt, `NEXT_PUBLIC_API_URL` must be the API **origin/base only** (e.g. `https://api.<domain>`), with no trailing `/api` path segment — the existing frontend consumers already append `/api/...` themselves (see §4.5, §8.2). No new environment variable is introduced by this reconciliation.
+**(v2.1.3) Historical status (superseded — see v2.1.4 note below):** As of v2.1.3, the real production API URL had not yet been supplied. No URL had been invented, assumed, or substituted — in particular neither `https://api.flavourfind.com`, nor the Neon `DATABASE_URL`, nor any inferred DigitalOcean hostname, nor `localhost`. This was, at that time, the sole blocking prerequisite for the Capacitor production build/sync sequence (B6/B7).
+
+**(v2.1.4) Resolution status: RESOLVED for Phase 7 mechanical implementation purposes.** The domain `flavourfind.com` was subsequently purchased and a DigitalOcean production droplet was provisioned. The human has explicitly designated `https://api.flavourfind.com` as the intended production API origin, and it was used — not invented or inferred by any implementation session — as the `NEXT_PUBLIC_API_URL` value for the B6 production build and carried through the B7 sync. Both steps were independently verified successful by two separate read-only review agents.
+
+**This resolution is deliberately narrow.** It resolves Decision 3 only to the extent needed to unblock the Phase 7 *mechanical* build/sync steps (B6/B7), which require a human-confirmed URL string, not a reachable endpoint. It does **not** mean:
+- `https://api.flavourfind.com` is a live or verified production endpoint — it is **NOT YET LIVE**. No DNS record, no Caddy/reverse-proxy configuration, no TLS/HTTPS certificate, and no deployed Express API instance exist for that origin.
+- Any production-dependent runtime acceptance criterion (Android runtime API connectivity, authenticated production sign-in/session, live `/chat` SSE streaming, floating widget behavior against a live backend, or any part of the manual Android test protocol in §10.3 that depends on a reachable backend) has passed. All such criteria remain explicitly classified as **DEFERRED — PENDING PHASE 10 PRODUCTION DEPLOYMENT** — not PASS, not FAIL.
+- Phase 10 responsibility has narrowed in any way. Phase 10 remains solely responsible for actual API deployment to the DigitalOcean droplet, production deployment-user configuration, firewall configuration, DNS configuration, Caddy configuration, HTTPS/TLS establishment, production secrets configuration, and live public API verification.
+
+For the avoidance of doubt, `NEXT_PUBLIC_API_URL` must be the API **origin/base only** (e.g. `https://api.flavourfind.com`), with no trailing `/api` path segment — the existing frontend consumers already append `/api/...` themselves (see §4.5, §8.2), and the B6 build was independently verified to follow this exactly. No new environment variable is introduced by this reconciliation.
 
 ### Decision 4 — Widget FAB visibility on `/chat`
 
@@ -1068,9 +1115,9 @@ Phase 7 is not authorized for implementation. This sequence is for planning purp
 | # | Prerequisite | Owner |
 |---|---|---|
 | P1 | Android Studio installed | Human — **(v2.1.3) SATISFIED** (Android SDK/build-tools/JAVA_HOME environment verification passed) |
-| P2 | Production API URL confirmed | Human — must supply explicitly — **(v2.1.3) STILL OPEN — BLOCKING** |
+| P2 | Production API URL confirmed | Human — must supply explicitly — **(v2.1.4) RESOLVED for mechanical build/sync purposes: `https://api.flavourfind.com` (NOT YET live — see §12 Decision 3)** |
 | P3 | Clerk social/OAuth strategy confirmed | Human — **(v2.1.3) SATISFIED**: no OAuth/social providers enabled; email/password only |
-| P4 | Open Decisions 1–10 resolved (§12) | Human — **(v2.1.3) PARTIALLY SATISFIED**: Decisions 1, 2, 4, 5, 6, 7, 8, 9, 10 resolved; Decision 3 remains open |
+| P4 | Open Decisions 1–10 resolved (§12) | Human — **(v2.1.4) SATISFIED for Phase 7 mechanical implementation purposes**: Decisions 1, 2, 3 (mechanical scope only), 4, 5, 6, 7, 8, 9, 10 all resolved. Decision 3's live/verified-endpoint dimension remains DEFERRED — PENDING PHASE 10, not "open" in the blocking sense of earlier versions |
 
 ### Track A: Floating Chat Widget
 
@@ -1093,7 +1140,9 @@ Phase 7 is not authorized for implementation. This sequence is for planning purp
 
 ### Track B: Capacitor Android
 
-**(v2.1.3) Status: IN PROGRESS.** B1 was not issued as a single bundled authorization (it was originally envisioned to include a confirmed production URL, which is still not available). Instead, steps B2, B3, B4, and B5 were separately and explicitly authorized and completed on their own narrower scope: Capacitor 8.5.1 packages installed, `apps/web/capacitor.config.ts` created, `apps/web/android/` generated via `npx cap add android`, and the `AndroidManifest.xml` INTERNET permission verified. Steps B6 (`npm run build` for the Android package) and B7 (`npx cap sync`) remain **NOT authorized and NOT performed**, pending Decision 3 (production API URL). Steps B8–B16 have not begun. No `phase-7-capacitor-checkpoint-1` tag exists.
+**(v2.1.4) Status: IMPLEMENTATION COMPLETE THROUGH B7.** B1 was never issued as a single bundled authorization. Instead, steps B2 through B7 were each separately and explicitly authorized and completed on their own narrow scope: Capacitor 8.5.1 packages installed (B2); `apps/web/capacitor.config.ts` created (B3); `apps/web/android/` generated via `npx cap add android` (B4); `AndroidManifest.xml` INTERNET permission verified (B5); production build run with `NEXT_PUBLIC_API_URL=https://api.flavourfind.com` (B6, complete, independently verified); `npx cap sync` run and verified fresh/non-stale (B7, complete, independently verified). Steps **B8 through B16 have not begun** and are not retroactively marked complete by this reconciliation — B8–B10 in particular depend on Phase 10 production deployment for meaningful execution (Android Studio build/emulator launch, sign-in flow completion, `/chat` SSE against the live API), and remain DEFERRED — PENDING PHASE 10. No `phase-7-capacitor-checkpoint-1` tag exists; commit/tag/push remain separate, ungranted authorization gates.
+
+**(v2.1.4) Historical note:** As of v2.1.3, this status note read "B6/B7 remain NOT authorized and NOT performed, pending Decision 3." That was accurate at the time it was written; it is superseded here because B6/B7 were subsequently authorized and completed.
 
 | Step | Task | Authorization Required |
 |---|---|---|
@@ -1248,6 +1297,18 @@ Verified before delivery of this document:
 | No production API URL invented, assumed, or substituted (not `https://api.flavourfind.com`, not the Neon `DATABASE_URL`, not an inferred DigitalOcean hostname, not `localhost`) | ✓ VERIFIED |
 | No React Native / Expo content introduced from `SAAS_ROADMAP.md` or elsewhere | ✓ VERIFIED |
 
+| v2.1.4 reconciliation applied | Status |
+|---|---|
+| STATUS BLOCK: B6 and B7 recorded COMPLETE (production build with `https://api.flavourfind.com`; Capacitor sync); Decision 3 recorded RESOLVED for mechanical purposes only; production-dependent runtime acceptance recorded DEFERRED — PENDING PHASE 10; no Capacitor checkpoint tag claimed | ✓ VERIFIED |
+| §2A Layer 1: two v2.1.3 facts stating B6/B7 not performed superseded with facts recording B6/B7 complete, verified baked-in origin, and sync freshness; historical v2.1.3 statements preserved as superseded context, not erased | ✓ VERIFIED |
+| §12 Decision 3: status changed from STILL OPEN — BLOCKING to RESOLVED for Phase 7 mechanical build/sync purposes only; explicit, repeated distinction preserved that the endpoint is NOT YET LIVE and Phase 10 responsibility is unchanged; `https://api.flavourfind.com` recorded as human-designated (post domain purchase), not invented; origin/base (no `/api` suffix) semantic reaffirmed | ✓ VERIFIED |
+| §13 Track B and Prerequisites (P2, P4): annotated to record B6/B7 complete; B8–B16 explicitly NOT retroactively marked complete | ✓ VERIFIED |
+| §11.2: status updated to record implementation-complete-through-B7 while keeping Android-runtime-dependent completion criteria explicitly outstanding/deferred; no checkpoint tag claimed | ✓ VERIFIED |
+| §16 Required Governance Conclusions updated to match | ✓ VERIFIED |
+| No architecture, scope, sequencing, protections, prerequisites, hard stops, checkpoint governance, or CORS governance changed | ✓ VERIFIED |
+| No implementation scope added (no Docker, Caddy config, deployment scripts, GitHub Actions, production server config, DNS instructions, infrastructure implementation, Stripe, Sentry, PostHog, iOS, push notifications, deep links, React Native/Expo, dependency cleanup, or unrelated refactoring) | ✓ VERIFIED |
+| No file other than `phase7_plan_5.md` modified; no Git operation performed | ✓ VERIFIED |
+
 ---
 
 ## §16 — Required Governance Conclusions
@@ -1261,11 +1322,19 @@ PHASE 7 DELIVERABLE B (WIDGET):    CHECKPOINT COMPLETE
                                     phase-7-widget-checkpoint-1 @ fcca2f1e8ee3d59b6fb0aa87fb7fe918f987e81b
                                     PUSHED TO origin/main
 
-PHASE 7 DELIVERABLE A (CAPACITOR): B2–B5 COMPLETE
-                                    B6 (PRODUCTION BUILD): NOT AUTHORIZED
-                                    B7 (`npx cap sync`): NOT AUTHORIZED
+PHASE 7 DELIVERABLE A (CAPACITOR): B2–B7 COMPLETE (IMPLEMENTATION)
+                                    B6 (PRODUCTION BUILD): COMPLETE — NEXT_PUBLIC_API_URL=https://api.flavourfind.com
+                                    B7 (`npx cap sync`): COMPLETE — INDEPENDENTLY VERIFIED
                                     NO phase-7-capacitor-checkpoint-1 TAG EXISTS
+                                    COMMIT/TAG/PUSH: NOT AUTHORIZED — SEPARATE GATES (§11.3)
 
-PHASE 7A REMAINING BLOCKER:        DECISION 3 — PRODUCTION API URL NOT YET SUPPLIED
-                                    NOT INVENTED, NOT ASSUMED, NOT SUBSTITUTED
+DECISION 3 STATUS:                 RESOLVED FOR PHASE 7 MECHANICAL BUILD/SYNC PURPOSES
+                                    ORIGIN: https://api.flavourfind.com — NOT YET LIVE
+                                    NOT INVENTED — HUMAN-DESIGNATED AFTER DOMAIN PURCHASE
+
+PRODUCTION-DEPENDENT RUNTIME
+ACCEPTANCE:                        DEFERRED — PENDING PHASE 10 PRODUCTION DEPLOYMENT
+                                    (API deployment, deployment-user config, firewall, DNS,
+                                    Caddy, HTTPS/TLS, production secrets, live verification —
+                                    ALL REMAIN PHASE 10 SCOPE, NOT PERFORMED)
 ```
