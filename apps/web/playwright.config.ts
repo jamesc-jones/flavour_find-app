@@ -28,6 +28,17 @@ export default defineConfig({
       stderr: 'pipe',
       stdout: 'pipe',
       cwd: path.resolve(__dirname, '../..'),
+      // These three redirect URLs are not in .env (see phase8_plan_1_4.md Task 8-B
+      // verification notes); supplied here only for this test-server invocation,
+      // matching the values .env.example documents as intended, so
+      // POST /api/billing/portal's real Stripe API call has a valid return_url.
+      // STRIPE_WEBHOOK_SECRET is intentionally NOT set here — the webhook
+      // signature-failure tests (400) hold regardless of whether it's configured.
+      env: {
+        STRIPE_SUCCESS_URL: 'http://localhost:3001/billing?result=success',
+        STRIPE_CANCEL_URL: 'http://localhost:3001/billing?result=cancel',
+        STRIPE_PORTAL_RETURN_URL: 'http://localhost:3001/billing',
+      },
     },
     {
       command: 'npm --workspace=apps/web run dev',
@@ -37,6 +48,9 @@ export default defineConfig({
       stderr: 'pipe',
       stdout: 'pipe',
       cwd: path.resolve(__dirname, '../..'),
+      env: {
+        NEXT_PUBLIC_API_URL: 'http://localhost:3000',
+      },
     },
   ],
 });
