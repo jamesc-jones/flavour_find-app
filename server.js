@@ -514,6 +514,25 @@ app.post('/api/billing/portal', async (req, res) => {
     }
 });
 
+// GET /api/billing/status — Task 8-C tier-visibility endpoint. Reuses the
+// existing getUserTier() (already 'free'-defaulted for a missing local row);
+// no user-row creation, no new database function.
+app.get('/api/billing/status', async (req, res) => {
+    const { isAuthenticated, userId } = getAuth(req);
+    if (!isAuthenticated) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+    }
+
+    try {
+        const tier = await getUserTier(userId);
+        res.status(200).json({ tier });
+    } catch (err) {
+        logger.error({ message: err.message }, 'Failed to fetch billing status');
+        res.status(500).json({ error: 'Failed to fetch billing status' });
+    }
+});
+
 // POST /api/v1/chat — Phase 5 real implementation
 app.post('/api/v1/chat', async (req, res) => {
     const { isAuthenticated, userId } = getAuth(req);

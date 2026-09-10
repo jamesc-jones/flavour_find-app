@@ -17,6 +17,7 @@ export function ChatClient() {
     const [remaining, setRemaining] = useState<number | null>(null);
     const [resetAt, setResetAt] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [isRateLimited, setIsRateLimited] = useState(false);
     const abortRef = useRef<AbortController | null>(null);
 
     useEffect(() => {
@@ -34,6 +35,7 @@ export function ChatClient() {
 
         setErrorMessage(null);
         setResetAt(null);
+        setIsRateLimited(false);
 
         const userMessage: ChatMessage = { role: 'user', content: trimmed };
         const nextMessages = [...messages, userMessage];
@@ -58,7 +60,8 @@ export function ChatClient() {
 
             if (response.status === 429) {
                 const body = await response.json().catch(() => null) as { resetAt?: string } | null;
-                setErrorMessage('Rate limit exceeded.');
+                setErrorMessage("You've reached your chat limit for today.");
+                setIsRateLimited(true);
                 setResetAt(body?.resetAt ?? null);
                 setRemaining(0);
                 setMessages(nextMessages);
@@ -176,10 +179,24 @@ export function ChatClient() {
                     ))}
                 </div>
 
-                {errorMessage && (
+                {errorMessage && isRateLimited && (
+                    <div className="rounded-md bg-error-surface px-4 py-3 text-error">
+                        <p>
+                            {errorMessage} Upgrade to Premium for a higher daily chat limit.
+                            {resetAt && <> Or try again after {new Date(resetAt).toLocaleString()}.</>}
+                        </p>
+                        <a
+                            href="/billing/"
+                            className="mt-2 inline-block rounded-lg bg-brand-primary px-4 py-2 text-white hover:opacity-90"
+                        >
+                            Upgrade to Premium
+                        </a>
+                    </div>
+                )}
+
+                {errorMessage && !isRateLimited && (
                     <p className="rounded-md bg-error-surface px-4 py-3 text-error">
                         {errorMessage}
-                        {resetAt && <> Try again after {new Date(resetAt).toLocaleString()}.</>}
                     </p>
                 )}
 

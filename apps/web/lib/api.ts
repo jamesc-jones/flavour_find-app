@@ -13,3 +13,21 @@ export async function fetchRandomRecipe(mood: string): Promise<Recipe> {
   if (!res.ok) throw new Error(`Failed to fetch recipe for ${mood}: ${res.status}`);
   return res.json() as Promise<Recipe>;
 }
+
+export async function createCheckoutSession(token: string): Promise<{ url: string }> {
+  const res = await fetch(`${API_BASE}/billing/checkout`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(`Failed to create checkout session: ${res.status}`);
+  return res.json() as Promise<{ url: string }>;
+}
+
+export async function createPortalSession(token: string): Promise<{ url: string }> {
+  const res = await fetch(`${API_BASE}/billing/portal`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(`Failed to create portal session: ${res.status}`);
+  return res.json() as Promise<{ url: string }>;
+}
