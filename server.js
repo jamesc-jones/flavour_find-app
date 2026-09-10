@@ -7,8 +7,9 @@ const helmet = require('helmet');
 const compression = require('compression');
 const pino = require('pino');
 const pinoHttp = require('pino-http');
-const { clerkMiddleware, getAuth } = require('@clerk/express');
+const { clerkMiddleware, getAuth, clerkClient } = require('@clerk/express');
 const Anthropic = require('@anthropic-ai/sdk');
+const Stripe = require('stripe');
 const { chatSchema } = require('@flavour-find/shared');
 const db = require('./database');
 const {
@@ -24,7 +25,13 @@ const {
     getMealPlan,
     getGroceryList,
     insertChatUsage,
-    checkChatLimit
+    checkChatLimit,
+    getUserById,
+    getUserByStripeCustomerId,
+    createUserIfNotExists,
+    setStripeCustomerIdIfNull,
+    upsertUserSubscription,
+    getUserTier
 } = require('./database');
 
 const app = express();
@@ -38,6 +45,14 @@ const logger = pino({
     ],
 });
 const anthropic = new Anthropic();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+// Phase 8 Decision 7 (resolved, human-approved) — authoritative entitlement policy.
+// Unknown/future statuses default to 'free' via the Set membership check below.
+const PREMIUM_ENTITLED_STATUSES = new Set(['trialing', 'active', 'past_due']);
+function statusToTier(status) {
+    return PREMIUM_ENTITLED_STATUSES.has(status) ? 'premium' : 'free';
+}
 
 // Anthropic Haiku 4.5 pricing — verified 2026-09-04 (docs.anthropic.com)
 // No cache-token pricing fields: prompt caching is not implemented in Phase 5 (OD-P5-CACHE).
@@ -72,6 +87,80 @@ app.use(helmet({
 app.use(compression());
 app.use(pinoHttp({ logger }));
 app.use(cors());
+
+// ─── Stripe webhook — MUST be registered before express.json() ────────────
+// (§3.1 item 6 / §6 Middleware Ordering): express.json() would consume the
+// raw request body that stripe.webhooks.constructEvent() requires. No Clerk
+// auth on this route (§6).
+app.post('/api/billing/webhook',
+    express.raw({ type: 'application/json' }),
+    async (req, res) => {
+        const sig = req.headers['stripe-signature'];
+        let event;
+        try {
+            event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+        } catch (err) {
+            res.status(400).json({ error: 'Webhook signature verification failed' });
+            return;
+        }
+
+        try {
+            if (
+                event.type === 'customer.subscription.created' ||
+                event.type === 'customer.subscription.updated' ||
+                event.type === 'customer.subscription.deleted'
+            ) {
+                // §3.4: all three event types resolve to the same upsert shape,
+                // driven entirely by the event's own subscription object.
+                const subscription = event.data.object;
+
+                // Decision 5: metadata.userId is the primary mapping key;
+                // stripe_customer_id (event.data.object.customer) is the
+                // secondary reconciliation key.
+                let userId = subscription.metadata && subscription.metadata.userId;
+                if (userId && !(await getUserById(userId))) {
+                    // metadata.userId present but does not correspond to an existing
+                    // local users row — do not attempt the subscription upsert with it
+                    // (would violate the users_subscriptions FK); fall through to the
+                    // secondary mapping key instead.
+                    userId = null;
+                }
+                if (!userId && subscription.customer) {
+                    const user = await getUserByStripeCustomerId(subscription.customer);
+                    userId = user ? user.id : null;
+                }
+
+                if (userId) {
+                    const plan = subscription.items?.data?.[0]?.price?.id ?? null;
+                    const currentPeriodEnd = subscription.current_period_end
+                        ? new Date(subscription.current_period_end * 1000)
+                        : null;
+                    // customer.subscription.deleted still carries a subscription
+                    // object with its own status (Stripe sets this to 'canceled'
+                    // on deletion) — §3.6 entitlement policy applies uniformly.
+                    const tier = statusToTier(subscription.status);
+
+                    await upsertUserSubscription({
+                        userId,
+                        stripeSubscriptionId: subscription.id,
+                        plan,
+                        status: subscription.status,
+                        currentPeriodEnd,
+                        tier
+                    });
+                } else {
+                    logger.warn({ eventId: event.id }, 'Stripe webhook: could not resolve Flavour Find user for subscription event');
+                }
+            }
+            res.status(200).json({ received: true });
+        } catch (err) {
+            logger.error({ message: err.message }, 'Stripe webhook handler error');
+            res.status(200).json({ received: true });
+        }
+    }
+);
+
+// ─── EXISTING middleware — position and content UNCHANGED ─────────────────
 app.use(express.json());
 app.use(express.static('public'));
 app.use(clerkMiddleware());
@@ -337,6 +426,94 @@ app.get('/api/user/grocery-list', async (req, res) => {
     }
 });
 
+// POST /api/billing/checkout
+app.post('/api/billing/checkout', async (req, res) => {
+    const { isAuthenticated, userId } = getAuth(req);
+    if (!isAuthenticated) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+    }
+
+    try {
+        // §3.8.2 lazy local user-row creation
+        let user = await getUserById(userId);
+        if (!user) {
+            const clerkUser = await clerkClient.users.getUser(userId);
+            const verified = (clerkUser.emailAddresses || []).find(
+                (e) => e.id === clerkUser.primaryEmailAddressId && e.verification?.status === 'verified'
+            ) || (clerkUser.emailAddresses || []).find((e) => e.verification?.status === 'verified');
+
+            if (!verified) {
+                // §3.8.3 verified-email requirement
+                res.status(400).json({ error: 'A verified email address is required to start checkout' });
+                return;
+            }
+            user = await createUserIfNotExists(userId, verified.emailAddress);
+        }
+
+        // §3.5: one user → one Stripe Customer, reused if already set.
+        let stripeCustomerId = user.stripe_customer_id;
+        if (!stripeCustomerId) {
+            const customer = await stripe.customers.create(
+                { metadata: { userId } },
+                { idempotencyKey: `flavourfind-customer-${userId}` }
+            );
+            stripeCustomerId = await setStripeCustomerIdIfNull(userId, customer.id);
+        }
+
+        const session = await stripe.checkout.sessions.create({
+            mode: 'subscription',
+            customer: stripeCustomerId,
+            line_items: [{ price: process.env.STRIPE_PREMIUM_PRICE_ID, quantity: 1 }],
+            success_url: process.env.STRIPE_SUCCESS_URL,
+            cancel_url: process.env.STRIPE_CANCEL_URL,
+            metadata: { userId },
+            subscription_data: { metadata: { userId } }
+        });
+
+        res.status(200).json({ url: session.url });
+    } catch (err) {
+        logger.error({ message: err.message }, 'Failed to create checkout session');
+        res.status(500).json({ error: 'Failed to create checkout session' });
+    }
+});
+
+// POST /api/billing/portal
+app.post('/api/billing/portal', async (req, res) => {
+    const { isAuthenticated, userId } = getAuth(req);
+    if (!isAuthenticated) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+    }
+
+    try {
+        const user = await getUserById(userId);
+
+        // §3.7 State A — no Stripe Customer
+        if (!user || !user.stripe_customer_id) {
+            res.status(400).json({ error: 'No billing account found' });
+            return;
+        }
+
+        // §3.7 State B — Stripe Customer exists, no active Premium entitlement
+        if (user.tier !== 'premium') {
+            res.status(400).json({ error: 'No active subscription' });
+            return;
+        }
+
+        // §3.7 State C — active Premium entitlement
+        const session = await stripe.billingPortal.sessions.create({
+            customer: user.stripe_customer_id,
+            return_url: process.env.STRIPE_PORTAL_RETURN_URL
+        });
+
+        res.status(200).json({ url: session.url });
+    } catch (err) {
+        logger.error({ message: err.message }, 'Failed to create portal session');
+        res.status(500).json({ error: 'Failed to create portal session' });
+    }
+});
+
 // POST /api/v1/chat — Phase 5 real implementation
 app.post('/api/v1/chat', async (req, res) => {
     const { isAuthenticated, userId } = getAuth(req);
@@ -351,8 +528,18 @@ app.post('/api/v1/chat', async (req, res) => {
         return;
     }
 
-    // Single universal authenticated-user limit (OD-P5-TIER, resolved). No tier/premium logic.
-    const limit = parseInt(process.env.AI_CHAT_LIMIT_FREE ?? '20', 10);
+    // §3.3 narrow exception: tier-aware limit lookup replaces the flat AI_CHAT_LIMIT_FREE
+    // constant. No other aspect of this handler is changed (per §3.3's exhaustive prohibition list).
+    let userTier;
+    try {
+        userTier = await getUserTier(userId);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to check chat limit' });
+        return;
+    }
+    const limit = userTier === 'premium'
+        ? parseInt(process.env.AI_CHAT_LIMIT_PREMIUM ?? '500', 10)
+        : parseInt(process.env.AI_CHAT_LIMIT_FREE ?? '20', 10);
     let allowed, remaining, resetAt;
     try {
         ({ allowed, remaining, resetAt } = await checkChatLimit(userId, limit));

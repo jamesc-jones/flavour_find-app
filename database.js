@@ -1224,6 +1224,110 @@ async function insertChatUsage(userId, model = 'pending', tokensIn = 0, tokensOu
     return { changes: result.rowCount, lastInsertRowid: result.rows[0]?.id ?? null };
 }
 
+// ─── Phase 8 Task 8-B — narrowly authorized additions (v1.1.8 §6/§10) ──────
+// Local users row lookup/creation, stripe_customer_id persistence, and
+// user_subscriptions upsert. No new tables/columns/indexes; uses only the
+// Task 8-A Appendix B schema. Existing functions above are unmodified.
+
+async function getUserById(userId) {
+    await dbReady;
+    const { rows } = await pool.query(
+        `SELECT id, email, tier, stripe_customer_id, created_at FROM users WHERE id = $1`,
+        [userId]
+    );
+    return rows[0] ?? null;
+}
+
+// Decision 5 secondary/reconciliation mapping key (webhook events carry
+// event.data.object.customer alongside metadata.userId).
+async function getUserByStripeCustomerId(stripeCustomerId) {
+    await dbReady;
+    const { rows } = await pool.query(
+        `SELECT id, email, tier, stripe_customer_id, created_at FROM users WHERE stripe_customer_id = $1`,
+        [stripeCustomerId]
+    );
+    return rows[0] ?? null;
+}
+
+// Race-safe local user-row creation (§3.8.5): concurrent first-time billing
+// requests for the same Clerk user must not create two rows or clobber one
+// another's state.
+async function createUserIfNotExists(userId, email) {
+    await dbReady;
+    const inserted = await pool.query(
+        `INSERT INTO users (id, email) VALUES ($1, $2)
+         ON CONFLICT (id) DO NOTHING
+         RETURNING id, email, tier, stripe_customer_id, created_at`,
+        [userId, email]
+    );
+    if (inserted.rows[0]) {
+        return inserted.rows[0];
+    }
+    // Lost the race — another request already created the row; reuse it as-is.
+    return getUserById(userId);
+}
+
+// Concurrency Protection Concern A (§3.5): conditional update only succeeds
+// once per user; a losing concurrent caller reads back the winner's value
+// instead of overwriting it.
+async function setStripeCustomerIdIfNull(userId, stripeCustomerId) {
+    await dbReady;
+    const { rows } = await pool.query(
+        `UPDATE users SET stripe_customer_id = $1
+         WHERE id = $2 AND stripe_customer_id IS NULL
+         RETURNING stripe_customer_id`,
+        [stripeCustomerId, userId]
+    );
+    if (rows[0]) {
+        return rows[0].stripe_customer_id;
+    }
+    const existing = await pool.query(
+        `SELECT stripe_customer_id FROM users WHERE id = $1`,
+        [userId]
+    );
+    return existing.rows[0]?.stripe_customer_id ?? null;
+}
+
+// Webhook Idempotency — Schema-Compatible Approach (§3.4): the single upsert
+// shape shared by created/updated/deleted, keyed on the existing UNIQUE
+// stripe_subscription_id constraint (business-state convergence, not an
+// event.id log — see §3.4 "Known limitation" paragraphs for the accepted
+// updated_at and out-of-order-delivery scope limitations).
+async function upsertUserSubscription({ userId, stripeSubscriptionId, plan, status, currentPeriodEnd, tier }) {
+    await dbReady;
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        await client.query(
+            `INSERT INTO user_subscriptions (user_id, stripe_subscription_id, plan, status, current_period_end)
+             VALUES ($1, $2, $3, $4, $5)
+             ON CONFLICT (stripe_subscription_id) DO UPDATE
+                SET plan = EXCLUDED.plan,
+                    status = EXCLUDED.status,
+                    current_period_end = EXCLUDED.current_period_end,
+                    updated_at = NOW()`,
+            [userId, stripeSubscriptionId, plan, status, currentPeriodEnd]
+        );
+        await client.query(
+            `UPDATE users SET tier = $1 WHERE id = $2`,
+            [tier, userId]
+        );
+        await client.query('COMMIT');
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+    }
+}
+
+// §3.3 narrow /api/v1/chat tier-aware rate-limit lookup.
+async function getUserTier(userId) {
+    await dbReady;
+    const { rows } = await pool.query(`SELECT tier FROM users WHERE id = $1`, [userId]);
+    return rows[0]?.tier ?? 'free';
+}
+
 // Initialize database on module load; every exported function above awaits
 // this same promise first so no query can run before tables exist, without
 // requiring callers of this module to invoke or await initDatabase() themselves.
@@ -1248,5 +1352,11 @@ module.exports = {
     getMealPlan,
     getGroceryList,
     insertChatUsage,
-    checkChatLimit
+    checkChatLimit,
+    getUserById,
+    getUserByStripeCustomerId,
+    createUserIfNotExists,
+    setStripeCustomerIdIfNull,
+    upsertUserSubscription,
+    getUserTier
 };
