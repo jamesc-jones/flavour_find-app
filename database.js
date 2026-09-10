@@ -80,6 +80,29 @@ async function initDatabase() {
 
         CREATE INDEX IF NOT EXISTS idx_chat_usage_user_time
         ON chat_usage(user_id, created_at);
+
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            email TEXT UNIQUE NOT NULL,
+            tier TEXT NOT NULL DEFAULT 'free',
+            stripe_customer_id TEXT UNIQUE,
+            created_at TIMESTAMPTZ DEFAULT NOW()
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_users_tier ON users(tier);
+
+        CREATE TABLE IF NOT EXISTS user_subscriptions (
+            id SERIAL PRIMARY KEY,
+            user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            stripe_subscription_id TEXT UNIQUE,
+            plan TEXT NOT NULL,
+            status TEXT NOT NULL,
+            current_period_end TIMESTAMPTZ,
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_subs_user_id ON user_subscriptions(user_id);
+        CREATE INDEX IF NOT EXISTS idx_subs_status ON user_subscriptions(status);
     `);
 
     // Check if database is already populated
