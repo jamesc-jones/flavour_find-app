@@ -1,10 +1,10 @@
 # Phase 8 Planning Specification
 ## Flavour Find — Monorepo SaaS Project
 
-**Document version:** 1.1.6
-**Supersedes:** `phase8_plan_1_4.md` v1.1.5 (2026-09-10 state/documentation correction pass)
-**Change summary:** v1.1.6 is a documentation-only correction pass. No implementation was performed and no implementation is authorized by this revision. Corrections: (1) §11.1 updated — stale "required conceptual fields" wording replaced with the exact authoritative Task 8-A Appendix B `user_subscriptions` schema (`id`, `user_id`, `stripe_subscription_id`, `plan`, `status`, `current_period_end`, `updated_at`); schema-authority governance sentence added; (2) §14 AC 2 updated — "required conceptual fields (exact schema verified at implementation time)" replaced with the exact Appendix B schema and explicit prohibition on adding `user_subscriptions` columns during Task 8-B without separate authorization; (3) Task 8-B schema-escalation governance added — explicit stop/report/no-workaround requirement if Task 8-B implementation encounters a column absent from Appendix B; (4) §16 historical filename references verified and updated to reflect v1.1.6 as current. All §3.8 Clerk/local-user architecture, Decision 5, Decision 7, §3.5 Concern A/B, Task 8-A Appendix B schema, Stripe test-mode state, and governance gates preserved exactly.
-**Planning session date:** 2026-09-08 (v1.0.0); corrected 2026-09-09 (v1.1.0, v1.1.1, v1.1.2, v1.1.3); governance correction 2026-09-10 (v1.1.4); state correction 2026-09-10 (v1.1.5); schema/AC correction 2026-09-10 (v1.1.6)
+**Document version:** 1.1.7
+**Supersedes:** `phase8_plan_1_4.md` v1.1.6 (2026-09-10 schema/AC correction pass)
+**Change summary:** v1.1.7 is a documentation-only correction pass resolving a file-boundary governance discrepancy identified during a Task 8-B planning/readiness assessment. No implementation was performed and no implementation is authorized by this revision. Corrections: (1) Task 8-B's authorized modification boundary (§6 Task 8-B, §10) is extended from "`server.js` only" to "`server.js` and `database.js`," with the `database.js` portion strictly narrowed to the minimum new exported query functions required for local user lookup/creation, Stripe Customer ID persistence, user-subscription upsert/retrieval, and tier retrieval; existing `database.js` functions must not be rewritten or behaviorally changed; a second independent `pg.Pool` in `server.js` remains explicitly prohibited — the existing single-pool `database.js` pattern remains the sole DB-access path; (2) the Task 8-A Appendix B schema boundary is explicitly reaffirmed as unchanged by this correction — no new tables or columns are authorized; (3) §3.4 Webhook Idempotency Requirement is updated with a schema-compatible implementation approach (subscription-identity-keyed upsert against the existing `user_subscriptions.stripe_subscription_id` UNIQUE constraint) that satisfies the idempotency acceptance criteria without a new `processed_webhook_events` table or any other new schema object; (4) §16 historical filename references updated to reflect v1.1.7 as current. Decision 5, Decision 6, Decision 7, the entitlement table, Task 8-A Appendix B schema, Stripe test-mode state, and all other governance gates preserved exactly and unchanged.
+**Planning session date:** 2026-09-08 (v1.0.0); corrected 2026-09-09 (v1.1.0, v1.1.1, v1.1.2, v1.1.3); governance correction 2026-09-10 (v1.1.4); state correction 2026-09-10 (v1.1.5); schema/AC correction 2026-09-10 (v1.1.6); Task 8-B file-boundary governance correction 2026-09-10 (v1.1.7)
 **Prepared by:** Claude (read-only audit + planning specification) — planning only
 **Status:** PROPOSED — AWAITING HUMAN REVIEW AND EXPLICIT IMPLEMENTATION AUTHORIZATION
 
@@ -198,8 +198,16 @@ This exception is scoped to Task 8-B. No other `/api/v1/chat` logic may change a
 Stripe may deliver the same webhook event more than once. The `handleBillingWebhook` function must be idempotent:
 
 - Processing the same event twice must produce the same DB state as processing it once.
-- Use the Stripe event ID (`event.id`) as the basis for idempotent logic: the handler must be structured so that a repeated delivery of the exact same `event.id` does not re-apply side effects.
+- The handler must be structured so that a repeated delivery of the exact same `event.id` does not re-apply side effects that would compound or duplicate state. (The implementation basis for this is resolved below as subscription-identity-keyed upserts, not an `event.id`-keyed log — see "Webhook Idempotency — Schema-Compatible Approach.")
 - The handler must not create duplicate subscription records or apply tier changes twice on repeated delivery.
+
+**Webhook Idempotency — Schema-Compatible Approach (resolved v1.1.7, governance-approved):**
+
+The idempotency requirement above must be satisfied using **only** the already-authorized Task 8-A Appendix B schema. No new table, column, or index (including a `processed_webhook_events` event-log table) is authorized for this purpose.
+
+The authorized approach: idempotency is achieved through **subscription-identity-keyed upserts**, not event-ID-keyed deduplication. `user_subscriptions.stripe_subscription_id` already carries a `UNIQUE` constraint. All three webhook handlers (`created`, `updated`, `deleted`) resolve to the same upsert shape — `INSERT ... ON CONFLICT (stripe_subscription_id) DO UPDATE SET plan = ..., status = ..., current_period_end = ..., updated_at = NOW()` — driven entirely by the event's own subscription data. Because this upsert is a pure function of the current event's `status`/`plan`/`current_period_end`, delivering the exact same event payload twice writes the same `status`, `plan`, `current_period_end`, and therefore derives the same `users.tier` both times: no duplicate `user_subscriptions` row is created (the `UNIQUE` constraint guarantees this), and no tier change is ever "applied twice" in the sense of compounding or toggling — the second write is simply a no-op re-assertion of the same values.
+
+**Known limitation, documented rather than concealed:** `updated_at` will advance to a new timestamp on the second delivery, since it is not itself part of the business state the idempotency requirement protects (subscription record identity, `status`/`plan`/`current_period_end`, and `users.tier`). AC 12's "same DB state" is satisfied with respect to all business-meaningful fields; it is not satisfied bit-for-bit including `updated_at`. This distinction must be reflected in the Task 8-B verification step for AC 12 (§11.2 idempotency test step 7): the assertion must compare `status`, `plan`, `current_period_end`, and `users.tier` before/after the duplicate delivery, not `updated_at`. This is a schema-compatible resolution, not a schema escalation — no human decision is required to proceed on this basis, but a reviewer should confirm the `updated_at` nuance is acceptable during Task 8-B verification.
 
 **Critical distinction — event-type testing vs. duplicate-delivery testing:**
 
@@ -629,6 +637,8 @@ Phase 8 is organized into four sequentially deliverable tasks. Each task require
 >
 > **Schema governance note:** The actual Task 8-A schema implemented in `database.js` (Appendix B above) is authoritative for Task 8-B. Conceptual or historical field descriptions in earlier planning text must not be interpreted as authorization to add columns or alter the schema. Any future schema change requires its own explicit architectural/governance authorization.
 >
+> **File-boundary governance note (v1.1.7):** Task 8-B is separately authorized (see §6 Task 8-B "Authorized modification boundaries," corrected v1.1.7, and §10) to add a narrow set of new exported query functions to `database.js` — this is a file-boundary authorization only and does not expand, and must not be read as expanding, the schema boundary stated immediately above. The Appendix B table remains the exhaustive and authoritative schema; new `database.js` functions may only read/write the columns already listed there.
+>
 > In particular, Task 8-B must NOT infer that the following conceptual fields require addition:
 > - `stripe_customer_id` on `user_subscriptions` (absent from implemented schema — not required)
 > - `current_period_start` (absent from implemented schema — not required)
@@ -757,11 +767,17 @@ The following steps are executed manually by the human developer:
 
 Note: Steps 6–8 are the idempotency test. The event fixture in step 6 may be obtained via `stripe trigger` or `stripe listen` capture, but the critical requirement in steps 7–8 is replaying the **same payload** — not triggering a new Stripe event.
 
-**Authorized modification boundaries — Task 8-B:**
-- `server.js` only:
+**Authorized modification boundaries — Task 8-B (corrected v1.1.7):**
+- `server.js`:
   - Webhook route registration inserted before `app.use(express.json())`
   - Inline billing handler functions (`handleBillingWebhook`, checkout handler, portal handler)
   - Narrow rate-limit modification to the `/api/v1/chat` section per §3.3
+  - New imports only (`stripe` client init, `clerkClient` from the already-installed `@clerk/express`)
+- `database.js` — **narrowly authorized (v1.1.7 governance correction):**
+  - New exported functions only, limited to the minimum required for: local `users` row lookup/creation (§3.8.2, §3.8.5), `stripe_customer_id` persistence with the concurrency-safe strategy required by §3.5, `user_subscriptions` upsert/retrieval (including the idempotency approach in §3.4), and `users.tier` retrieval (for both the billing routes and the §3.3 chat rate-limit lookup)
+  - Existing `database.js` functions and the existing `pool` initialization must not be rewritten or behaviorally changed
+  - **A second, independent `pg.Pool` MUST NOT be instantiated in `server.js`.** The existing single-pool `database.js` pattern remains the sole database-access path for all of Task 8-B.
+  - **No new tables, columns, or indexes are authorized by this correction.** The `users` and `user_subscriptions` schemas remain exactly as defined in Task 8-A Appendix B; see the schema-escalation requirement (p. Task 8-A Execution Status) for what to do if a column not in Appendix B appears necessary.
 - No other files may be modified by this task
 
 **Checkpoint:** Task 8-B qualifies for the **Phase 8 backend checkpoint** (`phase-8-backend-checkpoint-1`) upon successful verification. The checkpoint requires: all Task 8-B verification passing, `repository-reviewer` agent reporting CHECKPOINT READY, and **separate explicit human authorization** for commit, tag, and push. See §12.
@@ -1032,7 +1048,7 @@ The following files MUST NOT be modified during Phase 8 unless a **separate expl
 | Task | Files That May Be Modified / Created |
 |---|---|
 | 8-A | Root `package.json`, `package-lock.json`, `.env.example`, PostgreSQL initialization code (scope confirmed after inspection of `database.js`) |
-| 8-B | `server.js` only: webhook route insertion before `express.json()`, inline billing handler functions, narrow chat rate-limit modification per §3.3 |
+| 8-B | `server.js`: webhook route insertion before `express.json()`, inline billing handler functions, narrow chat rate-limit modification per §3.3, new imports only. `database.js` (narrowly authorized, v1.1.7): new exported query functions only, limited to local `users` lookup/creation, `stripe_customer_id` persistence, `user_subscriptions` upsert/retrieval, and `users.tier` retrieval — no rewrite of existing functions, no second `pg.Pool`, no new tables/columns/indexes. |
 | 8-C | New `apps/web/app/billing/page.tsx` (and subdirectory), new `apps/web/components/` billing component(s), `apps/web/app/layout.tsx` (tier badge only), `apps/web/lib/api.ts` (new billing functions only) |
 | 8-D | New `apps/web/e2e/billing.spec.ts`, `apps/web/playwright.config.ts` (only if strictly necessary) |
 
@@ -1294,7 +1310,8 @@ All push operations use explicit refspecs per §12. `git push --tags` is prohibi
 | `phase8_plan_1_4.md` v1.1.3 | Superseded by v1.1.4 — retained as historical record |
 | `phase8_plan_1_4.md` v1.1.4 | Superseded by v1.1.5 — retained as historical record |
 | `phase8_plan_1_4.md` v1.1.5 | Superseded by v1.1.6 — retained as historical record |
-| `phase8_plan_1_4.md` v1.1.6 (this document) | PROPOSED — awaiting human review and explicit implementation authorization |
+| `phase8_plan_1_4.md` v1.1.6 | Superseded by v1.1.7 — retained as historical record |
+| `phase8_plan_1_4.md` v1.1.7 (this document) | PROPOSED — awaiting human review and explicit implementation authorization |
 
 Phase 8 does not require any modification to `SAAS_ROADMAP.md`.
 
@@ -1306,9 +1323,9 @@ Phase 8 does not require any modification to `SAAS_ROADMAP.md`.
 
 2. **Production-dependent runtime acceptance is FORMALLY DEFERRED — PENDING PHASE 10.**
 
-3. **Phase 8 planning v1.1.6 is the current proposed documentation correction baseline**, superseding v1.1.5, v1.1.4, v1.1.3, v1.1.2, v1.1.1, v1.1.0, and v1.0.0. This document is subject to human review and revision before any implementation authorization.
+3. **Phase 8 planning v1.1.7 is the current proposed documentation correction baseline**, superseding v1.1.6, v1.1.5, v1.1.4, v1.1.3, v1.1.2, v1.1.1, v1.1.0, and v1.0.0. This document is subject to human review and revision before any implementation authorization.
 
-4. **Task 8-A has been implemented and human-reviewed (approved with follow-up requirements).** Task 8-A modified: root `package.json`, `package-lock.json`, `.env.example`, and `database.js` (schema additions for `users` and `user_subscriptions`; root `stripe@^22.6.1` dependency). Task 8-A has no checkpoint; no commit, tag, or push has been performed for any Phase 8 task. No Phase 8 backend checkpoint has been reached. **No Task 8-B implementation has been performed.** **No Task 8-C implementation has been performed.** **No Task 8-D implementation has been performed.**
+4. **Task 8-A has been implemented and human-reviewed (approved with follow-up requirements).** Task 8-A modified: root `package.json`, `package-lock.json`, `.env.example`, and `database.js` (schema additions for `users` and `user_subscriptions`; root `stripe@^22.6.1` dependency). Task 8-A has no checkpoint; no commit, tag, or push has been performed for any Phase 8 task. No Phase 8 backend checkpoint has been reached. **No Task 8-B implementation has been performed.** **No Task 8-C implementation has been performed.** **No Task 8-D implementation has been performed.** Task 8-B's authorized modification boundary now includes narrowly-scoped `database.js` additions in addition to `server.js` (v1.1.7 governance correction); this is a documentation change only and does not itself authorize Task 8-B implementation.
 
 5. **No Phase 10 work has been performed.**
 
@@ -1316,7 +1333,7 @@ Phase 8 does not require any modification to `SAAS_ROADMAP.md`.
 
 ---
 
-*Document: `phase8_plan_1_4.md` v1.1.6*
+*Document: `phase8_plan_1_4.md` v1.1.7*
 *Initial planning session: 2026-09-08 (v1.0.0)*
 *First correction session: 2026-09-09 (v1.1.0)*
 *Second correction session: 2026-09-09 (v1.1.1)*
@@ -1325,5 +1342,6 @@ Phase 8 does not require any modification to `SAAS_ROADMAP.md`.
 *Fifth correction session (governance/documentation): 2026-09-10 (v1.1.4)*
 *Sixth correction session (state/documentation): 2026-09-10 (v1.1.5)*
 *Seventh correction session (schema/AC documentation): 2026-09-10 (v1.1.6)*
+*Eighth correction session (Task 8-B file-boundary governance): 2026-09-10 (v1.1.7)*
 *Baseline: `phase-7-capacitor-checkpoint-1` / `e116e8f300aec9774a15f2f9e9a6cb9aaa60180e`*
 *Status: PROPOSED — AWAITING HUMAN REVIEW AND EXPLICIT IMPLEMENTATION AUTHORIZATION*
