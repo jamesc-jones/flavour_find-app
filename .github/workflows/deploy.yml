@@ -1,0 +1,150 @@
+name: Deploy to Production
+
+# Trigger per Task 10-F spec step 1: push to main.
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# NOTE: <registry>/<image-name> is never resolved to a concrete value anywhere in
+# phase10_plan_3.md — only that D-9 selects DigitalOcean Container Registry (DOCR).
+# IMAGE_NAME below is a placeholder that must be confirmed/replaced with the actual
+# DOCR registry name before this workflow is ever triggered.
+env:
+  REGISTRY: registry.digitalocean.com
+  IMAGE_NAME: registry.digitalocean.com/flavourfind/flavourfind-app
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 2 — Check out the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 3 — Log in to the container registry selected by D-9 (DOCR)
+      - name: Log in to DigitalOcean Container Registry
+        if: github.event_name == 'push'
+        run: |
+          echo "${{ secrets.DOCR_ACCESS_TOKEN }}" | docker login "${{ env.REGISTRY }}" \
+            -u "${{ secrets.DOCR_ACCESS_TOKEN }}" --password-stdin
+
+      # Step 4 — Build the Docker image; pass the Clerk publishable key as a build argument
+      # Step 5 — Tag with both the immutable Git-SHA tag and the mutable "latest" tag
+      - name: Build Docker image
+        env:
+          CLERK_BUILD_ARG: ${{ github.event_name == 'push' && secrets.CLERK_PUBLISHABLE_KEY || 'pk_test_dryrun_dummy_value' }}
+        run: |
+          docker build \
+            --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="$CLERK_BUILD_ARG" \
+            -t "${{ env.IMAGE_NAME }}:${{ github.sha }}" \
+            -t "${{ env.IMAGE_NAME }}:latest" \
+            .
+
+      # Step 6 — Push the tagged image to the registry.
+      # The previous immutable-tagged image is never deleted or overwritten (AC-F8):
+      # only the mutable "latest" tag is ever replaced.
+      - name: Push image to registry
+        if: github.event_name == 'push'
+        run: |
+          docker push "${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          docker push "${{ env.IMAGE_NAME }}:latest"
+
+      # Steps 7-11 — SSH to the Droplet, pull the immutable-SHA image, record the
+      # previously-running image tag (Task 10-N rollback target), cut over, and smoke-test.
+      #
+      # The remote script is passed as a single quoted command string (rather than a
+      # heredoc) to avoid the conflict between bash heredoc-terminator rules (must be
+      # at column 0 unless using tab-only "<<-" indentation) and YAML literal-block-
+      # scalar rules (every line must stay at or above the block's indentation level).
+      - name: Deploy to production Droplet
+        if: github.event_name == 'push'
+        env:
+          DROPLET_HOST: ${{ secrets.DROPLET_HOST }}
+          DROPLET_SSH_KEY: ${{ secrets.DROPLET_SSH_KEY }}
+          IMAGE_REF: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$DROPLET_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$DROPLET_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+          REMOTE_CMD='set -euo pipefail; '
+          REMOTE_CMD+='echo "$DOCR_ACCESS_TOKEN" | docker login "$REGISTRY" -u "$DOCR_ACCESS_TOKEN" --password-stdin; '
+          REMOTE_CMD+='docker pull "$IMAGE_REF"; '
+          REMOTE_CMD+='docker inspect flavourfind-app --format "{{.Config.Image}}" > /tmp/flavourfind-previous-image.txt 2>/dev/null || true; '
+          REMOTE_CMD+='docker rm -f flavourfind-app-candidate >/dev/null 2>&1 || true; '
+          REMOTE_CMD+='docker run -d --name flavourfind-app-candidate -p 127.0.0.1:3010:3000 '
+          REMOTE_CMD+='-e DATABASE_URL="$DATABASE_URL" -e ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY" '
+          REMOTE_CMD+='-e STRIPE_SECRET_KEY="$STRIPE_SECRET_KEY" -e STRIPE_WEBHOOK_SECRET="$STRIPE_WEBHOOK_SECRET" '
+          REMOTE_CMD+='-e STRIPE_PREMIUM_PRICE_ID="$STRIPE_PREMIUM_PRICE_ID" -e STRIPE_SUCCESS_URL="$STRIPE_SUCCESS_URL" '
+          REMOTE_CMD+='-e STRIPE_CANCEL_URL="$STRIPE_CANCEL_URL" -e STRIPE_PORTAL_RETURN_URL="$STRIPE_PORTAL_RETURN_URL" '
+          REMOTE_CMD+='-e CLERK_SECRET_KEY="$CLERK_SECRET_KEY" -e CLERK_PUBLISHABLE_KEY="$CLERK_PUBLISHABLE_KEY" -e AI_CHAT_LIMIT_FREE="$AI_CHAT_LIMIT_FREE" '
+          REMOTE_CMD+='-e AI_CHAT_LIMIT_PREMIUM="$AI_CHAT_LIMIT_PREMIUM" -e NODE_ENV="production" "$IMAGE_REF" '
+          REMOTE_CMD+='|| { echo "Candidate container failed to start; production untouched"; docker rm -f flavourfind-app-candidate >/dev/null 2>&1 || true; exit 1; }; '
+          REMOTE_CMD+='sleep 5; '
+          REMOTE_CMD+='CANDIDATE_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3010/api/moods || echo "000"); '
+          REMOTE_CMD+='if [ "$CANDIDATE_STATUS" != "200" ]; then echo "Candidate smoke check failed: GET /api/moods returned $CANDIDATE_STATUS; production untouched"; docker rm -f flavourfind-app-candidate >/dev/null 2>&1 || true; exit 1; fi; '
+          REMOTE_CMD+='echo "Candidate smoke check passed: GET /api/moods returned 200"; '
+          REMOTE_CMD+='OLD_EXISTS=$(docker ps -a --filter "name=^/flavourfind-app$" --format "{{.Names}}" 2>/dev/null || true); '
+          REMOTE_CMD+='OLD_RETAINED=0; '
+          REMOTE_CMD+='if [ -n "$OLD_EXISTS" ]; then '
+          REMOTE_CMD+='docker stop flavourfind-app || { echo "Failed to stop previous production container; leaving it running and aborting"; docker rm -f flavourfind-app-candidate >/dev/null 2>&1 || true; exit 1; }; '
+          REMOTE_CMD+='docker rename flavourfind-app flavourfind-app-previous || { '
+          REMOTE_CMD+='if docker start flavourfind-app >/dev/null 2>&1; then echo "Failed to free flavourfind-app name; previous container restart confirmed, still running as flavourfind-app"; else echo "Failed to free flavourfind-app name; ROLLBACK RESTORATION FAILED - previous container could not be restarted; manual intervention required"; fi; '
+          REMOTE_CMD+='docker rm -f flavourfind-app-candidate >/dev/null 2>&1 || true; '
+          REMOTE_CMD+='exit 1; '
+          REMOTE_CMD+='}; '
+          REMOTE_CMD+='OLD_RETAINED=1; '
+          REMOTE_CMD+='fi; '
+          REMOTE_CMD+='docker run -d --name flavourfind-app --restart unless-stopped -p 127.0.0.1:3000:3000 '
+          REMOTE_CMD+='-e DATABASE_URL="$DATABASE_URL" -e ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY" '
+          REMOTE_CMD+='-e STRIPE_SECRET_KEY="$STRIPE_SECRET_KEY" -e STRIPE_WEBHOOK_SECRET="$STRIPE_WEBHOOK_SECRET" '
+          REMOTE_CMD+='-e STRIPE_PREMIUM_PRICE_ID="$STRIPE_PREMIUM_PRICE_ID" -e STRIPE_SUCCESS_URL="$STRIPE_SUCCESS_URL" '
+          REMOTE_CMD+='-e STRIPE_CANCEL_URL="$STRIPE_CANCEL_URL" -e STRIPE_PORTAL_RETURN_URL="$STRIPE_PORTAL_RETURN_URL" '
+          REMOTE_CMD+='-e CLERK_SECRET_KEY="$CLERK_SECRET_KEY" -e CLERK_PUBLISHABLE_KEY="$CLERK_PUBLISHABLE_KEY" -e AI_CHAT_LIMIT_FREE="$AI_CHAT_LIMIT_FREE" '
+          REMOTE_CMD+='-e AI_CHAT_LIMIT_PREMIUM="$AI_CHAT_LIMIT_PREMIUM" -e NODE_ENV="production" "$IMAGE_REF" '
+          REMOTE_CMD+='|| { echo "Final production container failed to start"; docker rm -f flavourfind-app >/dev/null 2>&1 || true; '
+          REMOTE_CMD+='if [ "$OLD_RETAINED" = "1" ]; then '
+          REMOTE_CMD+='if docker rename flavourfind-app-previous flavourfind-app && docker start flavourfind-app >/dev/null 2>&1; then echo "Rollback restoration confirmed: previous production container restored"; else echo "ROLLBACK RESTORATION FAILED: previous container could not be restored; manual intervention required"; fi; '
+          REMOTE_CMD+='else echo "No previous production container was retained; nothing to restore"; fi; '
+          REMOTE_CMD+='docker rm -f flavourfind-app-candidate >/dev/null 2>&1 || true; exit 1; }; '
+          REMOTE_CMD+='sleep 5; '
+          REMOTE_CMD+='FINAL_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/api/moods || echo "000"); '
+          REMOTE_CMD+='if [ "$FINAL_STATUS" != "200" ]; then '
+          REMOTE_CMD+='echo "Final smoke check failed: GET /api/moods returned $FINAL_STATUS"; '
+          REMOTE_CMD+='docker stop flavourfind-app >/dev/null 2>&1 || true; '
+          REMOTE_CMD+='docker rm -f flavourfind-app >/dev/null 2>&1 || true; '
+          REMOTE_CMD+='if [ "$OLD_RETAINED" = "1" ]; then '
+          REMOTE_CMD+='if docker rename flavourfind-app-previous flavourfind-app && docker start flavourfind-app >/dev/null 2>&1; then echo "Rollback restoration confirmed: previous production container restored"; else echo "ROLLBACK RESTORATION FAILED: previous container could not be restored; manual intervention required"; fi; '
+          REMOTE_CMD+='else echo "No previous production container was retained; nothing to restore"; fi; '
+          REMOTE_CMD+='docker rm -f flavourfind-app-candidate >/dev/null 2>&1 || true; '
+          REMOTE_CMD+='exit 1; '
+          REMOTE_CMD+='fi; '
+          REMOTE_CMD+='echo "Final smoke check passed: GET /api/moods returned 200"; '
+          REMOTE_CMD+='if [ "$OLD_RETAINED" = "1" ]; then docker rm -f flavourfind-app-previous >/dev/null 2>&1 || true; fi; '
+          REMOTE_CMD+='docker rm -f flavourfind-app-candidate >/dev/null 2>&1 || true; '
+          REMOTE_CMD+='docker image prune -f >/dev/null 2>&1 || true; '
+          REMOTE_CMD+='echo "Deployment complete. Previous image tag recorded at /tmp/flavourfind-previous-image.txt for Task 10-N rollback."'
+
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes root@"$DROPLET_HOST" \
+            IMAGE_REF="$IMAGE_REF" \
+            DOCR_ACCESS_TOKEN="${{ secrets.DOCR_ACCESS_TOKEN }}" \
+            REGISTRY="${{ env.REGISTRY }}" \
+            DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+            ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+            STRIPE_SECRET_KEY="${{ secrets.STRIPE_SECRET_KEY }}" \
+            STRIPE_WEBHOOK_SECRET="${{ secrets.STRIPE_WEBHOOK_SECRET }}" \
+            STRIPE_PREMIUM_PRICE_ID="${{ secrets.STRIPE_PREMIUM_PRICE_ID }}" \
+            STRIPE_SUCCESS_URL="${{ secrets.STRIPE_SUCCESS_URL }}" \
+            STRIPE_CANCEL_URL="${{ secrets.STRIPE_CANCEL_URL }}" \
+            STRIPE_PORTAL_RETURN_URL="${{ secrets.STRIPE_PORTAL_RETURN_URL }}" \
+            CLERK_SECRET_KEY="${{ secrets.CLERK_SECRET_KEY }}" \
+            CLERK_PUBLISHABLE_KEY="${{ secrets.CLERK_PUBLISHABLE_KEY }}" \
+            AI_CHAT_LIMIT_FREE="${{ secrets.AI_CHAT_LIMIT_FREE }}" \
+            AI_CHAT_LIMIT_PREMIUM="${{ secrets.AI_CHAT_LIMIT_PREMIUM }}" \
+            bash -c "$REMOTE_CMD"
+
+          rm -f ~/.ssh/deploy_key
