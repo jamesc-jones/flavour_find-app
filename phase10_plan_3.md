@@ -1240,6 +1240,16 @@ credentials on the Droplet as part of Task 10-A/10-F setup.
 - [x] **AC-F7** — **EVIDENCED (2026-09-19 — see "AC-F7 evidence recording" below)**: No application source code was modified to accommodate the workflow
 - [ ] **AC-F8**: Previous image is retained in registry and can be pulled for rollback
 
+**AC-F4 / AC-F8 technical dependency clarification (proposed)**: AC-F8 ("Previous image is retained
+in registry and can be pulled for rollback") presupposes that at least one real registry push
+(AC-F4) has already occurred — there is no "previous image" to evidence retention of otherwise.
+AC-F4 must therefore occur before AC-F8 can be evidenced; AC-F8 does not precede or gate AC-F4.
+This is a technical ordering fact only. It does not authorize AC-F4's execution or AC-F8's
+verification; AC-F4 having occurred does not itself authorize AC-F8 or any other action. This
+clarification does not alter Task 10-F's acceptance status, Gate C's status, or any AC-F checklist
+state, and all execution remains governed exclusively by Gate C and this document's existing
+authorization requirements.
+
 **CI-only dry-run evidence recording (2026-09-17, human-authorized GitHub Actions run)**: AC-F1, AC-F2,
 AC-F3, and AC-F6 are recorded as evidenced based on a real GitHub Actions run of the registered
 `.github/workflows/deploy.yml` workflow, executed via a manually authorized `workflow_dispatch`
