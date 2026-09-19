@@ -1237,7 +1237,7 @@ credentials on the Droplet as part of Task 10-A/10-F setup.
 - [ ] **AC-F4**: Image is tagged with immutable Git SHA tag and pushed to registry
 - [ ] **AC-F5**: Deployment to Droplet succeeds; application container restarts with new image
 - [x] **AC-F6** — **EVIDENCED (2026-09-17 — see "CI-only dry-run evidence recording" below)**: No secret values appear in workflow logs
-- [ ] **AC-F7**: No application source code was modified to accommodate the workflow
+- [x] **AC-F7** — **EVIDENCED (2026-09-19 — see "AC-F7 evidence recording" below)**: No application source code was modified to accommodate the workflow
 - [ ] **AC-F8**: Previous image is retained in registry and can be pulled for rollback
 
 **CI-only dry-run evidence recording (2026-09-17, human-authorized GitHub Actions run)**: AC-F1, AC-F2,
@@ -1279,6 +1279,20 @@ authorization for production deployment) is entirely separate from and unaffecte
 evidence; authorize Task 10-F execution against the `push`-to-`main` production path; or authorize
 production deployment. **Task 10-F remains NOT ACCEPTED, Gate C remains NOT SATISFIED, and
 production deployment remains UNAUTHORIZED.**
+
+**AC-F7 evidence recording (2026-09-19, human-authorized review)**: AC-F7 is recorded as evidenced
+based on a read-only review of repository source-control state, not the CI dry-run. `server.js` and
+`database.js` remain tracked-and-clean throughout the Task 10-F implementation — neither was
+modified to accommodate the workflow. The Task 10-F implementation was confined to the authorized
+deployment/CI files (`.github/workflows/deploy.yml`, `Dockerfile`, `.dockerignore`) and required no
+application source-code change. The pre-existing modifications to `package.json` and
+`package-lock.json` (adding the Stripe dependency) predate the Task 10-F work and are **not** a
+Task 10-F workflow accommodation — this recording does not claim those two files are clean, only
+that their modification is unrelated to the workflow. **This recording evidences AC-F7 only.** It
+does not evidence AC-F4, AC-F5, or AC-F8; does not constitute or imply Task 10-F acceptance; does
+not satisfy Gate C; and does not authorize, initiate, or imply authorization for production
+deployment. **Task 10-F remains NOT ACCEPTED, Gate C remains NOT SATISFIED, and production
+deployment remains UNAUTHORIZED.**
 
 ---
 
