@@ -1,0 +1,26 @@
+# Local environment files — must not enter the Docker build context.
+# apps/web/.env.local contains test Clerk keys (pk_test_..., sk_test_...).
+# If this file reaches the build context and NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+# is not explicitly provided as a build argument, next build may silently consume
+# the test key and bake it into the production static export.
+.env
+.env.*
+apps/web/.env.local
+
+# Local build caches — not needed for production build
+apps/web/.next/
+apps/web/out/
+
+# Capacitor Android project — not part of the Node.js/Docker application
+apps/web/android/
+
+# Playwright E2E test files — must not enter the production image
+apps/web/e2e/
+
+# Local node_modules — npm ci will install fresh inside the container
+node_modules/
+apps/web/node_modules/
+
+# Git metadata
+.git/
+.gitignore
