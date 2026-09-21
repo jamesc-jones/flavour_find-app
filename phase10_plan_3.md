@@ -1,10 +1,10 @@
 # Flavour Find — Phase 10: Production Deployment
 
 **Document**: `phase10_plan_3.md`
-**Version**: v1.0.20
-**Status**: v1.0.20 is **APPROVED / AUTHORITATIVE** (carrying forward v1.0.19's baseline approval, Authorization Act #2, 2026-09-15), superseding v1.0.11 through v1.0.19, all of which remain preserved as historical predecessor states (see §12 "v1.0.12 Baseline Acceptance", "AC-B1 Human Interpretation and Documentation Record — Authorization Act #7", "AC-B7 Verification Result — Authorization Act #8", "AC-B2 Verification Result — Authorization Act #9", "AC-B3 / AC-B4 Verification Result — Authorization Act #10", "AC-B5 Verification Result — Authorization Act #13", "Task 10-B Acceptance State — Authorization Act #16", "Decision D-1 Resolution — Authorization Act #19", and "Task 10-C Acceptance Record — Authorization Act #22"). Task 10-A specification is documented as ACCEPTED below; Task 10-B is documented as ACCEPTED below (Authorization Act #16); Task 10-C is documented as ACCEPTED below (Authorization Act #22). Baseline approval authorizes adoption of this document as the current governance reference ONLY — it does NOT authorize Task 10-D or any later Phase 10 task, Caddy/TLS work, further application or infrastructure implementation, or any Git commit, tag, or push. **AC-B1–AC-B7: all PASS (see individual Act attributions in §5). Task 10-B: ACCEPTED (Authorization Act #16). Decision D-1: RESOLVED — production domain `flavourfind.com` (Authorization Act #19, 2026-09-17). AC-C1–AC-C3: all PASS (Authorization Act #21 implementation and verification). Task 10-C: ACCEPTED (Authorization Act #22, 2026-09-17)** — see §12 "Task 10-C Acceptance Record — Authorization Act #22." **This accepts Task 10-C's completed DNS implementation only; it does not authorize Task 10-D or any later Phase 10 task, Caddy installation, TLS/certificate configuration, or reverse-proxy work. Task 10-D and all later Phase 10 tasks remain NOT AUTHORIZED** and each requires its own separate, explicit future human authorization.
+**Version**: v1.0.21
+**Status**: v1.0.21 is **APPROVED / AUTHORITATIVE** (carrying forward v1.0.20's baseline approval, Authorization Act #2, 2026-09-15), superseding v1.0.11 through v1.0.20, all of which remain preserved as historical predecessor states (see §12 "v1.0.12 Baseline Acceptance", "AC-B1 Human Interpretation and Documentation Record — Authorization Act #7", "AC-B7 Verification Result — Authorization Act #8", "AC-B2 Verification Result — Authorization Act #9", "AC-B3 / AC-B4 Verification Result — Authorization Act #10", "AC-B5 Verification Result — Authorization Act #13", "Task 10-B Acceptance State — Authorization Act #16", "Decision D-1 Resolution — Authorization Act #19", and "Task 10-C Acceptance Record — Authorization Act #22"). Task 10-A specification is documented as ACCEPTED below; Task 10-B is documented as ACCEPTED below (Authorization Act #16); Task 10-C is documented as ACCEPTED below (Authorization Act #22). Baseline approval authorizes adoption of this document as the current governance reference ONLY — it does NOT authorize Task 10-D or any later Phase 10 task, Caddy/TLS work, further application or infrastructure implementation, or any Git commit, tag, or push. **AC-B1–AC-B7: all PASS (see individual Act attributions in §5). Task 10-B: ACCEPTED (Authorization Act #16). Decision D-1: RESOLVED — production domain `flavourfind.com` (Authorization Act #19, 2026-09-17). AC-C1–AC-C3: all PASS (Authorization Act #21 implementation and verification). Task 10-C: ACCEPTED (Authorization Act #22, 2026-09-17)** — see §12 "Task 10-C Acceptance Record — Authorization Act #22." **This accepts Task 10-C's completed DNS implementation only; it does not authorize Task 10-D or any later Phase 10 task, Caddy installation, TLS/certificate configuration, or reverse-proxy work. Task 10-D and all later Phase 10 tasks remain NOT AUTHORIZED** and each requires its own separate, explicit future human authorization. **v1.0.21 (RC-31, Authorization Act #23 — human-selected, 2026-09-21) is a documentation-only correction that records the Task 10-F Option B (`prod-v*` version-tag-triggered production deployment) architecture; it does not implement the workflow change, and Gate C remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production deployment remains UNAUTHORIZED** — see §12 "v1.0.21 Documentation Correction Record — Authorization Act #23."
 **Supersedes**: `phase10_plan_2.md` v1.0.1 (2026-09-10)
-**This version**: 2026-09-17 — Governance recording (RC-30, Authorization Act #22): documents the completed Task 10-C DNS implementation (performed manually by the human operator via the Namecheap Advanced DNS dashboard — `@` and `www` A records set to `146.190.189.242`, replacing the prior Namecheap parking CNAME and URL redirect), the subsequent read-only technical verification (AC-C1, AC-C2, and AC-C3 all PASS, confirmed independently via local resolution and two independent public DNS-over-HTTPS resolvers — Google and Cloudflare), and the resulting formal acceptance of Task 10-C. This recording follows Authorization Act #20 (Task 10-C implementation-readiness review) and Authorization Act #21 (explicit human authorization of the DNS implementation, plus its read-only technical verification), neither of which modified this document. Task 10-C's own specification (§5), §4's decision table, and §3's Phase 10 objective summary are updated to reflect the accepted state, with historical "not yet authorized"/"not yet implemented" wording preserved as accurate historical record via added current-status notes rather than being rewritten. This is a documentation-only recording: no DNS record was created, modified, or verified by Claude as part of this recording (the DNS implementation was performed manually by the human and independently verified read-only in the prior, separate Authorization Act #21 session); no application source, `Dockerfile`, `.dockerignore`, or other file besides this planning document was modified; no Git write occurred; and this recording does not authorize, implement, or advance Task 10-D or any later Phase 10 task. See §11 v1.0.20 correction narrative and §12 "Task 10-C Acceptance Record — Authorization Act #22."
+**This version**: 2026-09-21 — Documentation correction (RC-31, Authorization Act #23 — human-selected number, not derived from the document's prior chronology): records the human-selected Task 10-F Option B architecture — production deployment is triggered only by a push of a `prod-v*` Git version tag, `workflow_dispatch` remains the non-production dry run, checkpoint tags never trigger production, event-separated concurrency groups with `cancel-in-progress: false`, and no GitHub Environment — together with the human decisions on AC-F8 (the first production deployment alone does not satisfy AC-F8; a second, separately authorized deployment is required), the bounded retry rule, and the AC-F1/AC-F2 state (reverted to unchecked, with the 2026-09-17 `workflow_dispatch` evidence preserved as historical). Also applies three named consistency corrections (stale D-7 gate text, stale live version references in §8.1 Gate A and §8.2, and "immutable image tag" terminology in Task 10-F) and advances the live version references to v1.0.21. This is a documentation-only correction: `.github/workflows/deploy.yml`, `CLAUDE.md`, and all application/infrastructure files are unchanged; no Git write, workflow run, or production action occurred; and it does not authorize workflow implementation, any `prod-v*` tag creation or push, any production deployment, or Task 10-F acceptance. See §11 v1.0.21 correction narrative and §12 "v1.0.21 Documentation Correction Record — Authorization Act #23."
 **Phase 8 baseline**: `phase8_plan_1_4.md` v1.1.8
 **Phase 8 checkpoint tag**: `phase-8-checkpoint-1` → `ad5776f5f2653785706727c9381249d587f1faf8`
 **Current HEAD at time of writing**: `c366af0bc9d32c7ee4ae047ee2f0280b9944af0f`
@@ -1127,24 +1127,29 @@ require full Task 10-E acceptance (AC-E1's "all listed secrets") or Task 10-E's 
 does not alter Task 10-E's two-pass model, AC-E1–AC-E5, or any AC-F criterion.
 **Serialized after**: 10-B, 10-E
 
-⚠ **AUTHORIZATION GATE (D-7)**: No `.github/` directory exists. Creating
-`.github/workflows/deploy.yml` requires explicit human authorization. This task is
-blocked until D-7 is resolved.
+⚠ **AUTHORIZATION GATE (D-7) — RESOLVED (v1.0.21 correction)**: Decision D-7 was resolved on
+2026-09-17 (see the "D-7 current status" note in the decision section), and
+`.github/workflows/deploy.yml` now exists (registered dispatch-only; see the "CI-only dry-run
+evidence recording" below). This task is no longer blocked on D-7. Each further Task 10-F
+implementation, publication, and production action still requires its own separate, explicit human
+authorization, and Gate C remains NOT SATISFIED.
 
 **Specification**:
 
 The CI/CD pipeline must:
 
-1. Trigger on push to `main` (or on a version tag — human's choice of trigger)
+1. Trigger on a push of a `prod-v*` Git version tag (the production release trigger, Option B —
+   v1.0.21); `workflow_dispatch` remains the non-production dry-run trigger; checkpoint tags
+   (e.g., `phase-10-checkpoint-1`) must never trigger production
 2. Check out the repository
 3. Log in to the container registry selected by D-9
 4. Build the Docker image using the Dockerfile from Task 10-B; pass the Clerk publishable
    key as a build argument (see below)
-5. Tag the image with both an immutable version tag (Git commit SHA) and a mutable
+5. Tag the image with both an immutable image tag (Git commit SHA) and a mutable
    convenience tag
 6. Push the tagged image to the registry
 7. SSH into the Droplet using `DROPLET_SSH_KEY` and `DROPLET_HOST` secrets
-8. Pull the new image by its immutable commit-SHA tag
+8. Pull the new image by its immutable image tag (Git commit SHA)
 9. Start the new container with all runtime secrets injected via environment variables
 10. Run a smoke check on an existing unauthenticated route (e.g., `GET /api/moods`) or
     `GET /health` if Decision D-2 is authorized and Task 10-I is implemented
@@ -1173,12 +1178,39 @@ must match the `NEXT_PUBLIC_` convention that Next.js requires for client-side e
 
 | Tag | Format | Purpose |
 |-----|--------|---------|
-| Immutable version tag | `<registry>/<image-name>:<git-commit-sha>` | Uniquely identifies the deployed image; used for rollback (see Task 10-N) |
+| Immutable image tag (Git commit SHA) | `<registry>/<image-name>:<git-commit-sha>` | Uniquely identifies the deployed image; used for rollback (see Task 10-N) |
 | Convenience tag | `<registry>/<image-name>:latest` | For reference; must never be the sole tag used for rollback |
 
 The Git commit SHA (`${{ github.sha }}`) provides a traceable link between the deployed
 image and the exact source code that produced it. The previously deployed image must
 be retained in the registry (not overwritten or deleted) to allow rollback.
+
+**Production release trigger and tag namespace (Option B — recorded in v1.0.21)**:
+
+- **Production trigger**: a push of a Git version tag matching `prod-v*`. This Git release tag is
+  distinct from the immutable Docker image tag (Git commit SHA) above; the two must not be
+  conflated. The image-tagging behavior above is unchanged.
+- **Dry run**: `workflow_dispatch` remains the non-production dry-run mechanism.
+- **Checkpoint tags** (e.g., `phase-10-checkpoint-1`) must never trigger production.
+- **Concurrency**: production tag-triggered runs and `workflow_dispatch` dry runs use
+  event-separated concurrency groups, with `cancel-in-progress: false`.
+- **No GitHub Environment** is added.
+- **Human-only tag actions**: only a human creates or pushes a production release tag, under the
+  appropriate explicit authorization. Production tag creation and production tag push are separate
+  authorization boundaries. The workflow itself must not create commits or tags (see "Additional
+  notes" below).
+- **Publishing the workflow does not execute production.** The registered
+  `.github/workflows/deploy.yml` remains dispatch-only until a separately authorized workflow
+  implementation; documentation correction and workflow implementation (edit, commit, publication)
+  are separate authorization boundaries, in that order.
+- **Retry boundary**: a retry of the same authorized production release is permitted under the
+  original authorization only when the original production attempt failed or remained incomplete,
+  and only through an explicitly named retry mechanism, such as a GitHub Actions re-run of the
+  failed production workflow for the same `prod-v*` tag and same commit SHA. This does **not**
+  authorize: redeploying an already-successful release; changing the production tag or commit SHA;
+  deploying a different release or to a different target; a second successful production
+  deployment for AC-F8; rollback testing; or any other new production action. A second production
+  deployment needed for AC-F8 requires separate explicit human authorization.
 
 **Runtime secret injection**:
 
@@ -1231,8 +1263,8 @@ credentials on the Droplet as part of Task 10-A/10-F setup.
 - Any step that modifies production infrastructure other than deploying the new container
 
 **Acceptance Criteria**:
-- [x] **AC-F1** — **EVIDENCED (2026-09-17 — see "CI-only dry-run evidence recording" below)**: Workflow YAML is syntactically valid
-- [x] **AC-F2** — **EVIDENCED (2026-09-17 — see "CI-only dry-run evidence recording" below)**: Workflow triggers on the specified event
+- [ ] **AC-F1** — **HISTORICAL WORKFLOW_DISPATCH EVIDENCE (2026-09-17 — prod-v* production path unexercised)**: Workflow YAML is syntactically valid
+- [ ] **AC-F2** — **HISTORICAL WORKFLOW_DISPATCH EVIDENCE (2026-09-17 — prod-v* production path unexercised)**: Workflow triggers on the specified event
 - [x] **AC-F3** — **EVIDENCED (2026-09-17 — see "CI-only dry-run evidence recording" below)**: Docker build step completes without error in CI; `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` build argument is confirmed passed
 - [ ] **AC-F4**: Image is tagged with immutable Git SHA tag and pushed to registry
 - [ ] **AC-F5**: Deployment to Droplet succeeds; application container restarts with new image
@@ -1240,7 +1272,7 @@ credentials on the Droplet as part of Task 10-A/10-F setup.
 - [x] **AC-F7** — **EVIDENCED (2026-09-19 — see "AC-F7 evidence recording" below)**: No application source code was modified to accommodate the workflow
 - [ ] **AC-F8**: Previous image is retained in registry and can be pulled for rollback
 
-**AC-F4 / AC-F8 technical dependency clarification (proposed)**: AC-F8 ("Previous image is retained
+**AC-F4 / AC-F8 technical dependency clarification**: AC-F8 ("Previous image is retained
 in registry and can be pulled for rollback") presupposes that at least one real registry push
 (AC-F4) has already occurred — there is no "previous image" to evidence retention of otherwise.
 AC-F4 must therefore occur before AC-F8 can be evidenced; AC-F8 does not precede or gate AC-F4.
@@ -1249,6 +1281,20 @@ verification; AC-F4 having occurred does not itself authorize AC-F8 or any other
 clarification does not alter Task 10-F's acceptance status, Gate C's status, or any AC-F checklist
 state, and all execution remains governed exclusively by Gate C and this document's existing
 authorization requirements.
+
+**AC-F8 first-deployment / second-deployment consequence (recorded in v1.0.21, human decision)**:
+AC-F8 requires an already-existing previous production image that is retained in the registry and
+pullable for rollback. The first production deployment alone therefore does not satisfy AC-F8; it
+establishes the first image only. A subsequent, separately authorized production deployment is
+required to establish the before/after image evidence AC-F8 needs, and that deployment — as well
+as any registry evidence/read access for AC-F8 — requires separate explicit human authorization
+(it is not covered by the retry boundary above). The treatment of registry evidence/read access for
+AC-F8 as a distinct authorization boundary requiring separate explicit human authorization is
+explicitly human-ratified (v1.0.21, Authorization Act #23). That ratification is a documentation
+and governance clarification only: it does not itself authorize registry access, AC-F8
+verification, AC-F4 execution, any production deployment, or any other operational action. AC-F8
+remains a Task 10-F criterion; it is not
+converted into AC-N3, which remains a Task 10-N criterion. This adds no wording to AC-F8 itself.
 
 **CI-only dry-run evidence recording (2026-09-17, human-authorized GitHub Actions run)**: AC-F1, AC-F2,
 AC-F3, and AC-F6 are recorded as evidenced based on a real GitHub Actions run of the registered
@@ -1289,6 +1335,14 @@ authorization for production deployment) is entirely separate from and unaffecte
 evidence; authorize Task 10-F execution against the `push`-to-`main` production path; or authorize
 production deployment. **Task 10-F remains NOT ACCEPTED, Gate C remains NOT SATISFIED, and
 production deployment remains UNAUTHORIZED.**
+
+**v1.0.21 scoping note on the CI-only dry-run evidence above**: that recording is preserved as
+historical evidence of the `workflow_dispatch` path only. Under the Option B architecture recorded
+in v1.0.21, production deploys via a `prod-v*` tag push, and that path has not been exercised.
+AC-F1 and AC-F2 are therefore unchecked pending evidence from the actual `prod-v*` production path,
+as applicable to their exact wording. The references above to the `push`-to-`main` production
+trigger describe the trigger as it was specified at the time of that recording and are superseded
+by Option B; no AC-F3 or AC-F6 state is changed by this note.
 
 **AC-F7 evidence recording (2026-09-19, human-authorized review)**: AC-F7 is recorded as evidenced
 based on a read-only review of repository source-control state, not the CI dry-run. `server.js` and
@@ -1994,7 +2048,7 @@ Before any implementation task begins:
 
 - Verify actual Git HEAD matches the expected value recorded in this document
 - Verify working tree has no uncommitted changes that could enter the Docker image unexpectedly
-- Verify this planning document version (v1.0.10) is the active authoritative specification
+- Verify this planning document version (v1.0.21) is the active authoritative specification
 - Obtain explicit human authorization for the specific task about to begin
 
 This gate is required before each task, not only the first.
@@ -2084,7 +2138,7 @@ a push authorization is not a push; pushing without a tag authorization does not
 
 ```
 PHASE 10 CHECKPOINT ATTESTATION
-Document: phase10_plan_3.md v1.0.10
+Document: phase10_plan_3.md v1.0.21
 Date: [YYYY-MM-DD]
 Attested by: [Name]
 
@@ -2230,6 +2284,59 @@ This is a security posture note; it does not block deployment.
 | v1.0.18 | `phase10_plan_3.md` | 2026-09-17 | Governance decision (RC-28, Authorization Act #16): formally accepts Task 10-B, following a read-only acceptance-readiness review (Authorization Act #15) that confirmed Task 10-B's acceptance requirement is exactly AC-B1–AC-B7 (all PASS, existing Act attributions unchanged), that D-9 does not block Task 10-B's own acceptance, and that the whole-Phase-10 §7–§8 governance-gate apparatus is a separate, later checkpoint. Adds a "Task 10-B Acceptance State" record (§5) following the Task 10-A precedent. Documentation-only; no criterion re-evaluated or broadened; no application/Dockerfile/`.dockerignore`/runtime/infrastructure change; no Git write. Task 10-C and all later Phase 10 tasks remain NOT AUTHORIZED. |
 | v1.0.19 | `phase10_plan_3.md` | 2026-09-17 | Governance recording (RC-29, Authorization Act #19): documents the human's explicit resolution of Decision D-1 (production domain = `flavourfind.com`), following a read-only Task 10-C readiness review (Authorization Act #18) that identified D-1 as the material blocker. Updates §3, §4, Task 10-C's specification, and §10 Security Attestation to reflect the resolved decision, preserving prior "D-1 is pending" wording as historical record via an added current-status note. Documentation-only; no DNS record created or verified; no application/Dockerfile/`.dockerignore`/infrastructure change; no Git write. Task 10-C and all later Phase 10 tasks remain NOT AUTHORIZED. |
 | v1.0.20 | `phase10_plan_3.md` | 2026-09-17 | Governance recording (RC-30, Authorization Act #22): documents the completed Task 10-C DNS implementation (performed manually by the human operator via Namecheap — `@`/`www` A records set to `146.190.189.242`, replacing the prior parking CNAME/URL redirect), read-only technical verification (AC-C1, AC-C2, AC-C3 all PASS, confirmed via local resolution and two independent public DNS-over-HTTPS resolvers), and formal acceptance of Task 10-C (Authorization Act #22), following Authorization Act #20 (implementation-readiness review) and Authorization Act #21 (implementation authorization and verification), neither of which modified this document. Documentation-only; no DNS record created, modified, or verified by Claude as part of this recording; no application/Dockerfile/`.dockerignore`/infrastructure change; no Git write. Task 10-D and all later Phase 10 tasks remain NOT AUTHORIZED. |
+| v1.0.21 | `phase10_plan_3.md` | 2026-09-21 | Documentation correction (RC-31, Authorization Act #23 — human-selected number): records the Task 10-F Option B architecture (`prod-v*` version-tag-triggered production deployment; `workflow_dispatch` retained as non-production dry run; checkpoint tags never trigger production; event-separated concurrency with `cancel-in-progress: false`; no GitHub Environment), the AC-F8 first/second-deployment consequence, the bounded retry rule, and the AC-F1/AC-F2 revert to unchecked (2026-09-17 `workflow_dispatch` evidence preserved as historical); applies the named corrections (stale D-7 gate text; live version references in §8.1 Gate A and §8.2 advanced to v1.0.21; "immutable image tag (Git commit SHA)" terminology in Task 10-F); removes the "(proposed)" label from the AC-F4/AC-F8 clarification. Documentation-only; `deploy.yml`, `CLAUDE.md`, and all application/infrastructure files unchanged; no Git write, workflow run, or production action. Workflow implementation, production tag creation/push, production deployment, and Task 10-F acceptance remain NOT AUTHORIZED. |
+
+### Corrections Applied in v1.0.21
+
+The following documentation correction was applied in the 2026-09-21 v1.0.21 pass (RC-31), under
+explicit human authorization (Authorization Act #23 — a human-selected number; the document's
+existing chronology did not by itself establish a unique next Act number, and historical Act
+numbering, including the absent #4, #5, and #17, is preserved unchanged). Note: "D1–D8" and "R1–R6"
+below label the human decisions recorded in the authorizing instructions; they are distinct from
+this document's Decisions D-1 through D-9.
+
+1. **RC-31 — Option B architecture recorded (Task 10-F)**: production deploys only on a push of a
+   `prod-v*` Git version tag; `workflow_dispatch` remains the non-production dry run; checkpoint
+   tags never trigger production; event-separated concurrency groups with
+   `cancel-in-progress: false`; no GitHub Environment; production tag creation and tag push are
+   separate authorization boundaries; publishing the workflow does not execute production. Recorded
+   in Task 10-F's step 1 and the new "Production release trigger and tag namespace" subsection.
+2. **RC-31 — AC-F8 consequence and retry boundary recorded (D1, D2)**: the first production
+   deployment alone does not satisfy AC-F8; a second, separately authorized deployment is required;
+   AC-F8 stays in Task 10-F and AC-N3 stays in Task 10-N. A retry is permitted only for a failed or
+   incomplete production attempt, via a named mechanism (e.g., GitHub Actions re-run), for the same
+   `prod-v*` tag and commit SHA, with the exclusions listed in Task 10-F. The treatment of registry
+   evidence/read access for AC-F8 as a distinct authorization boundary requiring separate explicit
+   human authorization was explicitly human-ratified after the read-only verification of this
+   pass; it is a documentation clarification only and authorizes no registry access, AC-F8
+   verification, or other operational action.
+3. **RC-31 — AC-F1 / AC-F2 state (D4)**: both reverted from `[x]` to `[ ]`; the "EVIDENCED"
+   annotation replaced by a "HISTORICAL WORKFLOW_DISPATCH EVIDENCE" annotation; acceptance wording
+   unchanged; a v1.0.21 scoping note added after the dry-run evidence recording; the recording
+   itself preserved unchanged. AC-F3, AC-F6, and AC-F7 unchanged.
+4. **RC-31 — named consistency corrections (D6)**: (a) the stale "No `.github/` directory exists …
+   blocked until D-7 is resolved" gate text in Task 10-F replaced with a D-7-resolved status note;
+   (b) the live `v1.0.10` references in §8.1 Gate A and the §8.2 Checkpoint Attestation Template
+   advanced to v1.0.21 (historical v1.0.10 records unchanged); (c) "immutable version tag" /
+   "immutable commit-SHA tag" wording in Task 10-F steps 5 and 8 and the image-tagging table
+   relabelled "immutable image tag (Git commit SHA)" to distinguish it from the `prod-v*` Git
+   release tag (the Task 10-N immutable-tag text and AC-F4's wording unchanged). The planned
+   `CLAUDE.md` correction was dropped: no stale `CLAUDE.md` sentence was identified, and `CLAUDE.md`
+   is not modified.
+5. **RC-31 — "(proposed)" label removed (R5)**: the AC-F4/AC-F8 technical dependency clarification
+   is adopted text; its substantive wording is unchanged apart from the D1 addition.
+6. **RC-31 — version references advanced (D5)**: header, status, footer, §11, and §12 updated to
+   v1.0.21; historical version records preserved.
+7. **RC-31 — separation of documentation and workflow (D7, D8)**: this pass edits documentation
+   only. Workflow implementation (including the stale workflow header comment) is a later, separate
+   authorization, followed by its own diff verification, commit authorization, and publication
+   authorization.
+8. **What this pass did NOT do**: modify `.github/workflows/deploy.yml`, `CLAUDE.md`, any
+   application source, `Dockerfile`, or `.dockerignore`; commit, tag, or push; run or dispatch any
+   GitHub Actions workflow; access DOCR, the Droplet, or production; create a `prod-v*` tag; alter
+   AC-F8's or AC-N3's wording, Gate C's five bullets, or any other Task 10-F criterion. **Gate C
+   remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production deployment remains
+   UNAUTHORIZED.**
 
 ### Corrections Applied in v1.0.20
 
@@ -4027,12 +4134,65 @@ Authorization Act #21, Task 10-C is formally accepted. This record documents tha
     This record only adds the Task 10-C implementation summary, verification results, and
     whole-task acceptance decision.
 
+### v1.0.21 Documentation Correction Record — Authorization Act #23 (2026-09-21)
+
+Under a separate, explicit human authorization (Authorization Act #23 — a human-selected number;
+RC-31; 2026-09-21), this documentation-only pass records the Task 10-F Option B architecture and
+the related human decisions. The document's own numbering did not establish a unique next
+Authorization Act number (its highest recorded Act was #22, with #4, #5, and #17 absent, and later
+Task 10-F evidence recordings carrying no Act number); the human explicitly selected #23. No
+historical Act number was renumbered, repaired, or reinterpreted.
+
+1. **Result: v1.0.21 recorded.** Live version references advanced (header, status, footer, §11,
+   §12, §8.1 Gate A, §8.2); historical version and Act records preserved unchanged.
+2. **Option B recorded**: `prod-v*` version-tag push is the production trigger; `workflow_dispatch`
+   is the non-production dry run; checkpoint tags never trigger production; event-separated
+   concurrency with `cancel-in-progress: false`; no GitHub Environment; only a human creates or
+   pushes the production tag, with tag creation and tag push as separate authorization boundaries;
+   publishing the workflow does not execute production.
+3. **AC-F8 (human decision)**: requires an already-existing previous production image that is
+   retained and pullable; the first production deployment alone does not satisfy it; a second,
+   separately authorized deployment is required; AC-F8 remains Task 10-F and is not AC-N3.
+   Registry evidence/read access for AC-F8 is a distinct authorization boundary requiring separate
+   explicit human authorization; this was explicitly human-ratified after the read-only
+   verification of this pass. The ratification is a documentation clarification only and grants no
+   operational authorization.
+4. **Retry boundary (human decision)**: permitted only for a failed or incomplete production attempt,
+   via a named mechanism (e.g., GitHub Actions re-run), same `prod-v*` tag and same commit SHA;
+   does not authorize redeploying a successful release, changing tag/SHA/release/target, a second
+   successful deployment for AC-F8, rollback testing, or any other new production action.
+5. **AC-F1 / AC-F2 (human decision)**: reverted to `[ ]`; the 2026-09-17 `workflow_dispatch`
+   evidence is preserved as historical; the `prod-v*` production path is unexercised; acceptance
+   wording unchanged.
+6. **Named corrections (human decision)**: stale D-7 gate text in Task 10-F; live `v1.0.10`
+   references in §8.1 Gate A and §8.2 advanced to v1.0.21; "immutable image tag (Git commit SHA)"
+   terminology at three Task 10-F locations. `CLAUDE.md` is not modified.
+7. **Authorization sequence (human decision)**: (1) documentation correction — this pass;
+   (2) read-only verification of the documentation diff; (3) separate authorization for the
+   documentation commit; (4) separate authorization for documentation publication; (5) stop;
+   (6) separate authorization for workflow implementation; (7) workflow implementation, including
+   the stale workflow header comment; (8) read-only verification of the workflow diff;
+   (9) separate authorization for the workflow commit; (10) separate authorization for workflow
+   publication; (11) stop. Documentation and workflow changes are not combined into one commit or
+   one authorization act.
+8. **Scope of this result**: this record does **not** authorize workflow implementation, any
+   `prod-v*` tag creation or push, any production deployment, any retry, a second production
+   deployment for AC-F8, registry evidence/read access, Task 10-F acceptance, or the final Phase 10
+   checkpoint. **Gate C remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production
+   deployment remains UNAUTHORIZED.**
+9. Did **not** modify `.github/workflows/deploy.yml`, `CLAUDE.md`, application source,
+   `Dockerfile`, or `.dockerignore`; did **not** commit, tag, or push; did **not** run or dispatch
+   any GitHub Actions workflow; did **not** access DOCR, the Droplet, or production; did **not**
+   modify any secret.
+10. Did **not** alter any prior RC, Act, or custody record, AC-F8's or AC-N3's wording, or Gate C's
+    five bullets; all are preserved unchanged above.
+
 ---
 
 *This document is a planning specification only. It does not, by itself, authorize any
 implementation beyond what has been separately and explicitly authorized above. Separate explicit
 human authorization is required before any further task in this document may be implemented.
-Current document status: v1.0.20 is APPROVED / AUTHORITATIVE as the governance reference (baseline
+Current document status: v1.0.21 is APPROVED / AUTHORITATIVE as the governance reference (baseline
 approval carried forward from Authorization Act #2); **Task 10-B is ACCEPTED** (Authorization Act
 #16); **Decision D-1 is RESOLVED — production domain `flavourfind.com`** (Authorization Act #19);
 **Task 10-C is ACCEPTED** (Authorization Act #22, see §12 "Task 10-C Acceptance Record —
@@ -4044,6 +4204,6 @@ and §12 for the full, current criterion-by-criterion, decision-by-decision, and
 AUTHORIZATION," a generic closing statement last accurate before the v1.0.10 baseline-approval
 sequence; it was first reconciled to the then-current status in v1.0.16, updated to v1.0.17,
 updated to v1.0.18 to reflect Task 10-B's acceptance, updated to v1.0.19 to reflect Decision D-1's
-resolution, and is updated here to v1.0.20 to reflect Task 10-C's acceptance. Earlier dated
+resolution, updated to v1.0.20 to reflect Task 10-C's acceptance, and is updated here to v1.0.21 to reflect the Task 10-F Option B documentation correction (Authorization Act #23; see §11 and §12; Gate C remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production deployment remains UNAUTHORIZED). Earlier dated
 "Document status remains: PROPOSED..." statements elsewhere in §11/§12 are historical attestations
 of status at those specific past points in time and are preserved unchanged.)*
