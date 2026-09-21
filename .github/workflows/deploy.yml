@@ -1,13 +1,25 @@
 name: Deploy to Production
 
-# Registration-safe revision: push trigger intentionally omitted here.
+# Task 10-F production workflow (Option B: version-tag-triggered production deployment).
+# - workflow_dispatch: non-production dry run. It builds the image with a dummy Clerk
+#   build value and never logs in to DOCR, pushes an image, or deploys to the Droplet.
+# - push of a `prod-v*` Git tag: the only production trigger. Creating and pushing a
+#   production tag is a human-only governance boundary; this workflow never creates
+#   tags or commits. Checkpoint tags (e.g. phase-10-checkpoint-1) do not match `prod-v*`.
 on:
+  push:
+    tags:
+      - 'prod-v*'
   workflow_dispatch:
 
-# NOTE: <registry>/<image-name> is never resolved to a concrete value anywhere in
-# phase10_plan_3.md — only that D-9 selects DigitalOcean Container Registry (DOCR).
-# IMAGE_NAME below is a placeholder that must be confirmed/replaced with the actual
-# DOCR registry name before this workflow is ever triggered.
+concurrency:
+  group: deploy-${{ github.event_name }}
+  cancel-in-progress: false
+
+# NOTE: D-9 selects DigitalOcean Container Registry (DOCR), and decision D-F4 in
+# phase10_plan_3.md resolves the concrete image name to
+# registry.digitalocean.com/flavourfind/flavourfind-app. The IMAGE_NAME value below is
+# intentional and resolved, not a placeholder.
 env:
   REGISTRY: registry.digitalocean.com
   IMAGE_NAME: registry.digitalocean.com/flavourfind/flavourfind-app
