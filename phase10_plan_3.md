@@ -1358,6 +1358,53 @@ not satisfy Gate C; and does not authorize, initiate, or imply authorization for
 deployment. **Task 10-F remains NOT ACCEPTED, Gate C remains NOT SATISFIED, and production
 deployment remains UNAUTHORIZED.**
 
+**Task 10-F release-prerequisite human decisions D-F1–D-F4 (recorded after the v1.0.21 publication)**:
+The human has explicitly made the following four decisions, resolving the three implementation
+blockers and the image-name confirmation identified in the Task 10-F pre-implementation review.
+"D-F1–D-F4" label these decisions only; they are distinct from this document's Decisions D-1
+through D-9. This record is an unnumbered human-decision recording: it neither creates nor uses a
+new Authorization Act or RC number, and it does not alter v1.0.21, RC-31, 2026-09-21,
+Authorization Act #23, or any historical Act number. **These are recorded decisions, not executed
+actions. During the recording of D-F1–D-F4: no file was transferred; nothing was staged; no commit
+occurred; no push occurred; no tag was created or pushed; no workflow ran; no production access or
+deployment occurred; no DOCR access or image push occurred; no registry access occurred; no
+Droplet access occurred; no secret was changed or accessed; and no other operational action was
+taken.**
+
+- **D-F1 — Docker artifacts.** The intended Docker release artifacts are the exact `Dockerfile`
+  (blob `c9461fc0b74dda4812c8b900e6fb0c683749c336`) and `.dockerignore` (blob
+  `e2b09c521b4060f7e2ad2060209fc4c7d7f61330`) from commit
+  `eeb40930c60e0f4ee325d3a42c2666b84a5a05d9`. Their later transfer to the `main` working tree using
+  `git checkout eeb4093 -- Dockerfile .dockerignore` is authorized as a future operation only; this
+  decision does **not** authorize the transfer now. The `phase10-f-ci-dry-run` branch must **not** be
+  merged wholesale, because its `deploy.yml` contains the obsolete `push: branches: [main]`
+  trigger. The two files must be transferred alone, with no workflow file or other branch content.
+  The eventual Docker-artifact commit requires a separate explicit authorization.
+- **D-F2 — Stripe dependency.** The required Stripe dependency change is `stripe: ^22.6.1` in
+  `package.json`, with the corresponding already-identified `package-lock.json` changes from the
+  current working tree (the root dependency entry, the `node_modules/stripe` 22.6.1 entry, and the
+  `dev` → `devOptional` marker changes for `@types/node` and `undici-types`). The later staging
+  operation `git add -- package.json package-lock.json` is authorized as a future operation only,
+  and only if a pre-staging read-only check confirms those two files contain **only** those
+  identified changes. This decision does **not** authorize staging or committing now. The Stripe
+  dependency changes require a separate explicit commit authorization.
+- **D-F3 — Workflow concurrency.** The Task 10-F workflow concurrency configuration is:
+  `concurrency:` with `group: deploy-${{ github.event_name }}` and `cancel-in-progress: false`.
+  This implements the event-separated concurrency requirement recorded in v1.0.21 between
+  production tag-triggered runs and `workflow_dispatch` dry runs. No additional concurrency policy
+  (such as tag-specific or SHA-specific grouping) is authorized.
+- **D-F4 — DOCR image name.** The resolved Task 10-F image name is
+  `registry.digitalocean.com/flavourfind/flavourfind-app`, to be used as the concrete value in the
+  later workflow implementation. This decision does **not** authorize DOCR access, image push,
+  registry verification, production deployment, or any other operational action.
+
+**Scope of these decisions**: they do **not** authorize transferring the Docker artifacts, staging
+or committing the Stripe dependency changes, workflow implementation, any workflow commit or
+publication, any `prod-v*` tag creation or push, any retry, any production deployment, AC-F4,
+AC-F8 verification, registry evidence/read access, Task 10-F acceptance, or the final Phase 10
+checkpoint — each of which remains separately unauthorized. **Task 10-F remains NOT ACCEPTED, Gate C
+remains NOT SATISFIED, and production deployment remains UNAUTHORIZED.**
+
 ---
 
 ### Task 10-G: Stripe Live Mode Activation
