@@ -1,4 +1,11 @@
-FROM node:22-alpine
+# Multi-stage build:
+#   1. builder   — full workspace install + Next.js static export
+#   2. prod-deps — scoped production install (root + packages/shared only)
+#   3. runtime   — final image; excludes apps/web's frontend-only dependency tree
+#                  (next, react, react-dom, @capacitor/*, @clerk/react)
+
+# ---- Stage 1: builder — builds the static export ----
+FROM node:22-alpine AS builder
 
 # Install build tools required by better-sqlite3 (native addon).
 # better-sqlite3 remains in package.json; npm ci will attempt to build it.
@@ -25,7 +32,6 @@ COPY apps/web/ ./apps/web/
 COPY server.js database.js ./
 
 # Copy the public/ directory (contains static assets served by express.static('public')).
-# Verify that public/ exists in the repository before authorizing this Dockerfile.
 COPY public/ ./public/
 
 # Install all dependencies (devDependencies required for next build).
@@ -53,8 +59,41 @@ RUN npm run build --workspace=apps/web
 # Copy the static export into public/ so express.static('public') serves it.
 RUN cp -r apps/web/out/. public/
 
-# Remove devDependencies — the image now only needs production dependencies.
-RUN npm prune --production
+# ---- Stage 2: prod-deps — a separate, scoped install (root + packages/shared only) ----
+FROM node:22-alpine AS prod-deps
+
+# better-sqlite3 (root dependency) is a native addon built during npm ci.
+RUN apk add --no-cache python3 make g++
+
+WORKDIR /app
+
+# Every workspace's package.json must be present for npm to validate the lockfile's
+# workspace structure, even though only packages/shared's dependencies will actually
+# be installed below.
+COPY package.json package-lock.json ./
+COPY packages/shared/package.json ./packages/shared/package.json
+COPY packages/types/package.json ./packages/types/package.json
+COPY apps/web/package.json ./apps/web/package.json
+
+# Scoped install: root project's own dependencies + packages/shared's dependencies only.
+# apps/web (next, react, react-dom, @capacitor/*, @clerk/react, ...) and packages/types
+# are never installed in this stage.
+RUN npm ci --omit=dev --workspace=packages/shared --include-workspace-root
+
+# packages/shared's actual source (required at runtime via the
+# node_modules/@flavour-find/shared workspace symlink).
+COPY packages/shared/src ./packages/shared/src
+
+# ---- Stage 3: runtime (final image) ----
+FROM node:22-alpine
+
+WORKDIR /app
+
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=prod-deps /app/packages ./packages
+COPY --from=builder /app/server.js /app/database.js ./
+COPY --from=builder /app/public ./public
+COPY --from=prod-deps /app/package.json ./package.json
 
 EXPOSE 3000
 CMD ["node", "server.js"]
