@@ -7,7 +7,7 @@
 **This version**: 2026-09-22 — Documentation correction (RC-32, Authorization Act #24): records Decision D-F5, inserted into the existing Task 10-F D-F1–D-F4 decision block. D-F5 is a human decision approving, in principle, a future, separately authorized `server.js` change that defers Stripe client construction (Shape 1 only: initialization in `server.js` only, preserving the existing `stripe` identifier and all four existing Stripe call sites, excluding any webhook/checkout/billing-portal/frontend/database/package-file/SDK-version/logging/error-handling change), together with the accepted webhook nuance (a deferred, still-unconfigured Stripe client may still throw on first access, caught by the existing webhook try/catch and producing its existing 400 response) and an explicit list of what D-F5 does not authorize (any Stripe secret action, placeholder production credentials, any change to D-8, any Docker/DOCR/Droplet/Caddy/production/tag/commit/push/reboot action). This pass also reconciles §0, §3, Task 10-F, AC-B5, AC-F7, AC-GOV-1, Gate C, and the Task 10-E first-pass/second-pass clarification with D-F5 via narrow clarifications and cross-references, without rewriting any existing rule, criterion wording, or historical evidence record (Authorization Act #13 / AC-B5, the 2026-09-19 AC-F7 recording, and all other prior acceptance/execution records are preserved unchanged). AC-F7's checkbox is not changed by this pass; a note records that it is to be treated as NOT SATISFIED under its literal wording once the Shape 1 implementation actually occurs. This is a documentation-only correction: `server.js`, `.github/workflows/deploy.yml`, `package.json`, `package-lock.json`, and all other application/infrastructure files are unchanged; no Git write, workflow run, or production action occurred; and it does not authorize `server.js` implementation, any secret action, any `prod-v*` tag creation or push, any production deployment, or Task 10-F/Task 10-E acceptance. See §11 v1.0.22 correction narrative and §12 "D-F5 Documentation Correction Record — Authorization Act #24."
 **Phase 8 baseline**: `phase8_plan_1_4.md` v1.1.8
 **Phase 8 checkpoint tag**: `phase-8-checkpoint-1` → `ad5776f5f2653785706727c9381249d587f1faf8`
-**Current HEAD at time of writing**: `c366af0bc9d32c7ee4ae047ee2f0280b9944af0f`
+**Current HEAD at time of writing**: `a047cf07a1379fe908e5e7e5b90278f2cea1d57e`
 
 ---
 
@@ -2219,7 +2219,7 @@ Before any implementation task begins:
 
 - Verify actual Git HEAD matches the expected value recorded in this document
 - Verify working tree has no uncommitted changes that could enter the Docker image unexpectedly
-- Verify this planning document version (v1.0.21) is the active authoritative specification
+- Verify this planning document version (v1.0.22) is the active authoritative specification
 - Obtain explicit human authorization for the specific task about to begin
 
 This gate is required before each task, not only the first.
@@ -2308,6 +2308,44 @@ evidence; alter Task 10-E's or Task 10-G's acceptance or authorization state; or
 production deployment. **Gate C as a whole remains NOT SATISFIED**, pending its one remaining
 outstanding prerequisite.
 
+**Gate C secrets prerequisite — evidenced (2026-09-22, human-authorized read-only review)**: The
+"GitHub secrets must be set (Task 10-E at minimum for runtime variables)" bullet above is evidenced
+by a read-only GitHub Actions secret-metadata review (names and update timestamps only — no secret
+value accessed): all 10 first-pass secret names defined by Task 10-F's "Task 10-E first pass"
+clarification are confirmed present — `DROPLET_HOST`, `DROPLET_SSH_KEY`, `DATABASE_URL`,
+`ANTHROPIC_API_KEY`, `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `AI_CHAT_LIMIT_FREE`,
+`AI_CHAT_LIMIT_PREMIUM`, `NODE_ENV`, and `DOCR_ACCESS_TOKEN`. This metadata was confirmed unchanged
+across repeated read-only checks. The already-recorded AC-E2 (no secret values in tracked files)
+and AC-E4 (`CLERK_PUBLISHABLE_KEY` structurally confirmed `pk_live_`) evidence supports this bullet
+but does not by itself establish it — AC-E2 and AC-E4 evidence only their own specific criteria.
+**The six second-pass Stripe secrets** (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
+`STRIPE_PREMIUM_PRICE_ID`, `STRIPE_SUCCESS_URL`, `STRIPE_CANCEL_URL`, `STRIPE_PORTAL_RETURN_URL`)
+**remain intentionally deferred** per Task 10-E's two-pass model and are **not** present and **not**
+required for this bullet; this record does not imply they exist. This record does **not**: satisfy
+Gate C as a whole — its remaining prerequisite, "Explicit human authorization to proceed with
+production deployment," remains separately outstanding; constitute or imply Task 10-E acceptance
+(AC-E1, AC-E3, and AC-E5 remain unchecked); or authorize production deployment. **Gate C as a
+whole remains NOT SATISFIED**, pending its one remaining outstanding prerequisite.
+
+**Gate C final prerequisite — explicit human authorization recorded (2026-09-22)**: The human has
+explicitly authorized proceeding with production deployment, satisfying the "Explicit human
+authorization to proceed with production deployment" bullet above. Combined with the four other
+bullets already separately evidenced (rollback documented/understood; Neon production database
+initialized, Task 10-H ACCEPTED; GitHub secrets set, first-pass names confirmed; Docker image
+built and smoke-tested, fresh post-D-F5 evidence), **all five Gate C bullets are now satisfied and
+Gate C as a whole is SATISFIED as of this recording.** This authorization is explicitly bounded and
+does **not** authorize, and must not be read as authorizing: creating, moving, or pushing any
+`prod-v*` tag or other tag; running the production deployment workflow or any GitHub Actions
+workflow; deploying to, or otherwise changing, the Droplet; changing Caddy; changing Docker/DOCR
+state; modifying any GitHub secret or accessing any secret value; modifying application source,
+infrastructure files, or this document beyond this recording; any commit or push; any reboot;
+Stripe live-mode activation; Task 10-G; Task 10-E's second pass; the second production deployment;
+AC-F8; or AC-N2/AC-N3. It does **not** constitute or imply Task 10-E, Task 10-F, or Task 10-G
+acceptance/authorization, does **not** constitute Gate D passing, and does **not** mean production
+deployment has occurred — no deployment, tag, or workflow action has taken place. Each of the
+excluded actions above remains a separate, later, explicitly-required authorization boundary,
+starting with the first `prod-v*` tag creation.
+
 **Gate D — Pre-live-Stripe authorization**
 
 Before Stripe live mode is activated (Task 10-G):
@@ -2340,7 +2378,7 @@ a push authorization is not a push; pushing without a tag authorization does not
 
 ```
 PHASE 10 CHECKPOINT ATTESTATION
-Document: phase10_plan_3.md v1.0.21
+Document: phase10_plan_3.md v1.0.22
 Date: [YYYY-MM-DD]
 Attested by: [Name]
 
