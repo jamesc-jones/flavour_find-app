@@ -1283,7 +1283,7 @@ credentials on the Droplet as part of Task 10-A/10-F setup.
 - [ ] **AC-F4**: Image is tagged with immutable Git SHA tag and pushed to registry
 - [ ] **AC-F5**: Deployment to Droplet succeeds; application container restarts with new image
 - [x] **AC-F6** — **EVIDENCED (2026-09-17 — see "CI-only dry-run evidence recording" below)**: No secret values appear in workflow logs
-- [x] **AC-F7** — **EVIDENCED (2026-09-19 — see "AC-F7 evidence recording" below)**: No application source code was modified to accommodate the workflow *(see Task 10-F, "D-F5 — Stripe client initialization deferral": this checkbox is unchanged by D-F5's recording; once the separately authorized `server.js` implementation actually occurs, AC-F7 is to be treated as NOT SATISFIED under its literal wording, as a governance consequence of that later change — not evidence of unauthorized activity now)*
+- [ ] **AC-F7** — **NOT SATISFIED (as of 2026-09-22 — see "AC-F7 — D-F5 implementation consequence" below and Task 10-F, "D-F5 — Stripe client initialization deferral")**: No application source code was modified to accommodate the workflow
 - [ ] **AC-F8**: Previous image is retained in registry and can be pulled for rollback
 
 **AC-F4 / AC-F8 technical dependency clarification**: AC-F8 ("Previous image is retained
@@ -1371,6 +1371,22 @@ does not evidence AC-F4, AC-F5, or AC-F8; does not constitute or imply Task 10-F
 not satisfy Gate C; and does not authorize, initiate, or imply authorization for production
 deployment. **Task 10-F remains NOT ACCEPTED, Gate C remains NOT SATISFIED, and production
 deployment remains UNAUTHORIZED.**
+
+**AC-F7 — D-F5 implementation consequence (recorded 2026-09-22)**: The D-F5 Shape 1 implementation
+(Task 10-F, "D-F5 — Stripe client initialization deferral") was completed and published in commit
+`aeabcff661eedfc9369940dc44c4edb34e836dbb` (current HEAD and `origin/main`; `server.js` contains
+the change, with no working-tree diff). Per the rule already recorded under D-F5's "AC-F7 —
+literal treatment," now that this separately authorized `server.js` change has actually occurred,
+AC-F7 is recorded as **NOT SATISFIED** under its literal wording ("No application source code was
+modified to accommodate the workflow"), because application source code was changed in connection
+with making the documented Task 10-F deployment path workable. **This is a governance consequence
+of the explicitly authorized D-F5 change, not evidence of unauthorized activity or of any defect in
+the D-F5 implementation.** The 2026-09-19 evidence recording above remains accurate as historical
+evidence of what was found at that time and is **not** rewritten, deleted, or reinterpreted. This
+record does **not**: evidence AC-F4, AC-F5, or AC-F8; constitute or imply Task 10-F acceptance;
+satisfy Gate C; or authorize, initiate, or imply authorization for production deployment. **Task
+10-F remains NOT ACCEPTED, Gate C remains NOT SATISFIED, and production deployment remains
+UNAUTHORIZED.**
 
 **Task 10-F release-prerequisite human decisions D-F1–D-F4 (recorded after the v1.0.21 publication)**:
 The human has explicitly made the following four decisions, resolving the three implementation
@@ -2226,6 +2242,30 @@ under it. If and once the separately authorized Shape 1 implementation actually 
 Docker build/smoke-test evidence will be required before this Gate C bullet may rely on it; the
 existing 2026-09-17 evidence remains valid as historical evidence of what was tested at that time
 and is not itself invalidated by this note.
+
+**D-F5 fresh Docker/application smoke-test evidence — recorded (2026-09-22)**: The Docker
+build/smoke-test evidence anticipated by the note above now exists. A disposable, non-production
+local test was performed against the D-F5 implementation as published in commit
+`aeabcff661eedfc9369940dc44c4edb34e836dbb` (the current HEAD and `origin/main`, containing the
+D-F5 Stripe lazy-initialization change in `server.js`, with no working-tree diff): the application
+image was built from that commit; the application container started successfully with
+`STRIPE_SECRET_KEY` absent; a disposable, non-production local PostgreSQL instance was used;
+`GET /` returned HTTP 200; the billing webhook route's first-access path (with `STRIPE_SECRET_KEY`
+still absent) returned its existing HTTP 400 "Webhook signature verification failed" response,
+consistent with the accepted webhook nuance recorded under D-F5; no Stripe API or network call
+occurred; and all disposable resources (containers, network, certificate/key files) were removed
+afterward. No repository file was modified by this test. **This is local, disposable evidence
+only** — it is **not** production-image evidence, **not** DOCR/registry evidence, **not** CI
+workflow evidence, and **not** production-deployment evidence. On this basis, the Gate C Docker
+prerequisite bullet ("Docker image must be built and smoke-tested locally or in CI") may now rely
+on this fresh, post-D-F5 evidence in place of the superseded 2026-09-17 evidence referenced above.
+This record does **not**: satisfy Gate C as a whole — its remaining prerequisite, "Explicit human
+authorization to proceed with production deployment," remains separately outstanding; provide
+registry, CI-workflow, or production-deployment evidence for any AC-F criterion (AC-F1, AC-F2,
+AC-F4, AC-F5, AC-F8) or for AC-GOV-7, each of which still requires its own separate, later
+evidence; alter Task 10-E's or Task 10-G's acceptance or authorization state; or authorize
+production deployment. **Gate C as a whole remains NOT SATISFIED**, pending its one remaining
+outstanding prerequisite.
 
 **Gate D — Pre-live-Stripe authorization**
 
