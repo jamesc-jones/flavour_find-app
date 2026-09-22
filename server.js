@@ -45,7 +45,15 @@ const logger = pino({
     ],
 });
 const anthropic = new Anthropic();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+let _stripeClient = null;
+const stripe = new Proxy({}, {
+    get(_target, prop) {
+        if (!_stripeClient) {
+            _stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY);
+        }
+        return _stripeClient[prop];
+    }
+});
 
 // Phase 8 Decision 7 (resolved, human-approved) — authoritative entitlement policy.
 // Unknown/future statuses default to 'free' via the Set membership check below.
