@@ -754,6 +754,22 @@ CMD ["node", "server.js"]
   **Evidence handling**: Verification evidence may record only file paths, prefix, classification, matched-run length, the PASS/FAIL/INCONCLUSIVE determination, verification date, and Git HEAD. Verification evidence must never record: the complete `pk_live_` or `pk_test_` value; the matched Base64 payload characters; any decoded FAPI hostname; or any other credential material beyond the bare prefix and a length count.
 
   A local `npm run build --workspace=apps/web` output (produced outside the Docker build context) does not satisfy this criterion, since it does not exercise the `.dockerignore`/build-argument pipeline this criterion exists to validate.
+
+  **AC-B6 fresh post-D-F5 verification (2026-09-22, human-authorized)**: the 2026-09-15 (Authorization
+  Act #3) PASS above was recorded before the D-F5 Shape 1 `server.js` implementation existed and is
+  preserved unchanged as historical evidence. A fresh run of the same documented procedure was
+  separately authorized and performed against current HEAD (`43acfdd6bf440b8da6f0ce69c48a1fefe46edc39`,
+  containing the published D-F5 implementation): `docker build --no-cache` from current HEAD with the
+  real production `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` build argument; static assets extracted via
+  `docker create`/`docker cp` without running the application container; one `pk_live_` occurrence
+  classified as a credential-structured value (matched-run length 30); zero `pk_test_` occurrences
+  classified as credential-structured (three `pk_test_` and three `pk_live_` occurrences in one SDK
+  chunk had run-length 0 and were classified as SDK/reference literals, per the documented test). No
+  secret value, matched Base64 characters, or decoded content was exposed at any point. All disposable
+  resources (temporary key file, container, image, extracted assets, build log) were removed
+  afterward. **Result: PASS**, confirming AC-B6 remains satisfied against the current, post-D-F5
+  production artifact. This recording does not evidence any other AC-B, AC-F, or AC-N criterion, does
+  not constitute or imply Task 10-B, Task 10-F, or Task 10-E acceptance, and does not satisfy Gate C.
 - [x] **AC-B7** — **PASS (Authorization Act #8, 2026-09-16 — see §12 "AC-B7 Verification Result — Authorization Act #8")**: `apps/web/.env.local` is confirmed excluded from the Docker build context (test by running `docker build` without `--build-arg` and verifying the build fails or produces an undefined key — the test key must not silently appear)
 
 **Current authorization status (v1.0.10, as of 2026-09-13)**: AC-B1's file-existence half is
@@ -1118,7 +1134,7 @@ item for the human performing Task 10-G/Task 10-E.
 - [ ] **AC-E1**: All listed secrets are set in GitHub repository Settings → Secrets → Actions
 - [x] **AC-E2** — **EVIDENCED (2026-09-22 — see "AC-E2 evidence recording" below)**: No secret values appear in any file tracked by git
 - [ ] **AC-E3**: Secret name `STRIPE_PREMIUM_PRICE_ID` (not `STRIPE_PRICE_ID`) confirmed
-- [ ] **AC-E4**: `CLERK_PUBLISHABLE_KEY` confirmed as `pk_live_...` (not `pk_test_...`)
+- [x] **AC-E4** — **EVIDENCED (2026-09-22 — see Task 10-B, "AC-B6 fresh post-D-F5 verification")**: `CLERK_PUBLISHABLE_KEY` confirmed as `pk_live_...` (not `pk_test_...`) *(cross-reference recorded 2026-09-22, human-authorized: the fresh AC-B6 structural verification used this exact secret — `CLERK_PUBLISHABLE_KEY` — as the documented Docker build argument and established that it is structurally `pk_live_`, with zero structurally valid `pk_test_` occurrences; this is the same secret and the same underlying fact AC-E4 asks about, so no additional technical test was performed or is required. This does not evidence AC-E1, AC-E2, AC-E3, or AC-E5, and does not constitute or imply Task 10-E acceptance.)*
 - [ ] **AC-E5**: `AI_CHAT_LIMIT_FREE` and `AI_CHAT_LIMIT_PREMIUM` values decided by human and set
 
 **AC-E2 evidence recording (2026-09-22, human-authorized read-only review)**: AC-E2 is recorded as
@@ -2185,7 +2201,7 @@ decision is authorized.
 - [ ] **AC-GOV-4**: All pending decisions D-1 through D-9 are resolved and outcomes recorded
 - [ ] **AC-GOV-5**: Phase 8 carried-forward issues CF-1 and CF-2 are documented in checkpoint attestation as unresolved
 - [ ] **AC-GOV-6**: Production Neon database contains no `user_preferences` or `grocery_list` tables
-- [ ] **AC-GOV-7** *(substantive credential-definition corrected in v1.0.12/RC-22 — see §11/§12)*: The production Docker image contains a structurally valid `pk_live_` Clerk publishable-key value (per the AC-B6 structural test: prefix immediately followed by an uninterrupted Base64-alphabet run) for `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, and does not contain a structurally valid `pk_test_` credential value. A bare `pk_test_` or `pk_live_` prefix occurrence without an accompanying Base64 credential structure (e.g., a Clerk SDK reference literal) does not by itself violate this criterion. This criterion is evaluated using the same evidence produced for AC-B6, not a separate test. *(See Task 10-F, "D-F5 — Stripe client initialization deferral": once the D-F5 Shape 1 implementation is actually made, fresh verification will be required against the production image that actually contains the new code.)*
+- [x] **AC-GOV-7** — **SATISFIED (2026-09-22 — see Task 10-B, "AC-B6 fresh post-D-F5 verification")** *(substantive credential-definition corrected in v1.0.12/RC-22 — see §11/§12)*: The production Docker image contains a structurally valid `pk_live_` Clerk publishable-key value (per the AC-B6 structural test: prefix immediately followed by an uninterrupted Base64-alphabet run) for `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, and does not contain a structurally valid `pk_test_` credential value. A bare `pk_test_` or `pk_live_` prefix occurrence without an accompanying Base64 credential structure (e.g., a Clerk SDK reference literal) does not by itself violate this criterion. This criterion is evaluated using the same evidence produced for AC-B6, not a separate test — the fresh post-D-F5 AC-B6 verification (Task 10-B) satisfies it. This does not constitute or imply Task 10-B, Task 10-E, or Task 10-F acceptance, and does not satisfy Gate C.
 - [ ] **AC-GOV-8**: Rollback procedure was reviewed by a human before first deployment
 
 ---
