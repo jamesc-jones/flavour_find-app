@@ -1,10 +1,10 @@
 # Flavour Find — Phase 10: Production Deployment
 
 **Document**: `phase10_plan_3.md`
-**Version**: v1.0.21
-**Status**: v1.0.21 is **APPROVED / AUTHORITATIVE** (carrying forward v1.0.20's baseline approval, Authorization Act #2, 2026-09-15), superseding v1.0.11 through v1.0.20, all of which remain preserved as historical predecessor states (see §12 "v1.0.12 Baseline Acceptance", "AC-B1 Human Interpretation and Documentation Record — Authorization Act #7", "AC-B7 Verification Result — Authorization Act #8", "AC-B2 Verification Result — Authorization Act #9", "AC-B3 / AC-B4 Verification Result — Authorization Act #10", "AC-B5 Verification Result — Authorization Act #13", "Task 10-B Acceptance State — Authorization Act #16", "Decision D-1 Resolution — Authorization Act #19", and "Task 10-C Acceptance Record — Authorization Act #22"). Task 10-A specification is documented as ACCEPTED below; Task 10-B is documented as ACCEPTED below (Authorization Act #16); Task 10-C is documented as ACCEPTED below (Authorization Act #22). Baseline approval authorizes adoption of this document as the current governance reference ONLY — it does NOT authorize Task 10-D or any later Phase 10 task, Caddy/TLS work, further application or infrastructure implementation, or any Git commit, tag, or push. **AC-B1–AC-B7: all PASS (see individual Act attributions in §5). Task 10-B: ACCEPTED (Authorization Act #16). Decision D-1: RESOLVED — production domain `flavourfind.com` (Authorization Act #19, 2026-09-17). AC-C1–AC-C3: all PASS (Authorization Act #21 implementation and verification). Task 10-C: ACCEPTED (Authorization Act #22, 2026-09-17)** — see §12 "Task 10-C Acceptance Record — Authorization Act #22." **This accepts Task 10-C's completed DNS implementation only; it does not authorize Task 10-D or any later Phase 10 task, Caddy installation, TLS/certificate configuration, or reverse-proxy work. Task 10-D and all later Phase 10 tasks remain NOT AUTHORIZED** and each requires its own separate, explicit future human authorization. **v1.0.21 (RC-31, Authorization Act #23 — human-selected, 2026-09-21) is a documentation-only correction that records the Task 10-F Option B (`prod-v*` version-tag-triggered production deployment) architecture; it does not implement the workflow change, and Gate C remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production deployment remains UNAUTHORIZED** — see §12 "v1.0.21 Documentation Correction Record — Authorization Act #23."
+**Version**: v1.0.22
+**Status**: v1.0.22 is **APPROVED / AUTHORITATIVE** (carrying forward v1.0.21's baseline approval, Authorization Act #2, 2026-09-15), superseding v1.0.11 through v1.0.21, all of which remain preserved as historical predecessor states (see §12 "v1.0.12 Baseline Acceptance", "AC-B1 Human Interpretation and Documentation Record — Authorization Act #7", "AC-B7 Verification Result — Authorization Act #8", "AC-B2 Verification Result — Authorization Act #9", "AC-B3 / AC-B4 Verification Result — Authorization Act #10", "AC-B5 Verification Result — Authorization Act #13", "Task 10-B Acceptance State — Authorization Act #16", "Decision D-1 Resolution — Authorization Act #19", and "Task 10-C Acceptance Record — Authorization Act #22"). Task 10-A specification is documented as ACCEPTED below; Task 10-B is documented as ACCEPTED below (Authorization Act #16); Task 10-C is documented as ACCEPTED below (Authorization Act #22). Baseline approval authorizes adoption of this document as the current governance reference ONLY — it does NOT authorize Task 10-D or any later Phase 10 task, Caddy/TLS work, further application or infrastructure implementation, or any Git commit, tag, or push. **AC-B1–AC-B7: all PASS (see individual Act attributions in §5). Task 10-B: ACCEPTED (Authorization Act #16). Decision D-1: RESOLVED — production domain `flavourfind.com` (Authorization Act #19, 2026-09-17). AC-C1–AC-C3: all PASS (Authorization Act #21 implementation and verification). Task 10-C: ACCEPTED (Authorization Act #22, 2026-09-17)** — see §12 "Task 10-C Acceptance Record — Authorization Act #22." **This accepts Task 10-C's completed DNS implementation only; it does not authorize Task 10-D or any later Phase 10 task, Caddy installation, TLS/certificate configuration, or reverse-proxy work. Task 10-D and all later Phase 10 tasks remain NOT AUTHORIZED** and each requires its own separate, explicit future human authorization. **v1.0.21 (RC-31, Authorization Act #23 — human-selected, 2026-09-21) is a documentation-only correction that records the Task 10-F Option B (`prod-v*` version-tag-triggered production deployment) architecture; it does not implement the workflow change, and Gate C remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production deployment remains UNAUTHORIZED** — see §12 "v1.0.21 Documentation Correction Record — Authorization Act #23." **v1.0.22 (RC-32, Authorization Act #24, 2026-09-22) records Decision D-F5 — a human decision approving, in principle, a future, separately authorized Shape-1-only `server.js` Stripe-client-initialization deferral — and reconciles this document's wording accordingly; D-F5 is not implementation authorization, does not retroactively expand Task 10-F's authorization, and does not authorize any secret, Docker, registry, Droplet, Caddy, production, tag, commit, push, or reboot action. Gate C remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production deployment remains UNAUTHORIZED** — see §12 "D-F5 Documentation Correction Record — Authorization Act #24."
 **Supersedes**: `phase10_plan_2.md` v1.0.1 (2026-09-10)
-**This version**: 2026-09-21 — Documentation correction (RC-31, Authorization Act #23 — human-selected number, not derived from the document's prior chronology): records the human-selected Task 10-F Option B architecture — production deployment is triggered only by a push of a `prod-v*` Git version tag, `workflow_dispatch` remains the non-production dry run, checkpoint tags never trigger production, event-separated concurrency groups with `cancel-in-progress: false`, and no GitHub Environment — together with the human decisions on AC-F8 (the first production deployment alone does not satisfy AC-F8; a second, separately authorized deployment is required), the bounded retry rule, and the AC-F1/AC-F2 state (reverted to unchecked, with the 2026-09-17 `workflow_dispatch` evidence preserved as historical). Also applies three named consistency corrections (stale D-7 gate text, stale live version references in §8.1 Gate A and §8.2, and "immutable image tag" terminology in Task 10-F) and advances the live version references to v1.0.21. This is a documentation-only correction: `.github/workflows/deploy.yml`, `CLAUDE.md`, and all application/infrastructure files are unchanged; no Git write, workflow run, or production action occurred; and it does not authorize workflow implementation, any `prod-v*` tag creation or push, any production deployment, or Task 10-F acceptance. See §11 v1.0.21 correction narrative and §12 "v1.0.21 Documentation Correction Record — Authorization Act #23."
+**This version**: 2026-09-22 — Documentation correction (RC-32, Authorization Act #24): records Decision D-F5, inserted into the existing Task 10-F D-F1–D-F4 decision block. D-F5 is a human decision approving, in principle, a future, separately authorized `server.js` change that defers Stripe client construction (Shape 1 only: initialization in `server.js` only, preserving the existing `stripe` identifier and all four existing Stripe call sites, excluding any webhook/checkout/billing-portal/frontend/database/package-file/SDK-version/logging/error-handling change), together with the accepted webhook nuance (a deferred, still-unconfigured Stripe client may still throw on first access, caught by the existing webhook try/catch and producing its existing 400 response) and an explicit list of what D-F5 does not authorize (any Stripe secret action, placeholder production credentials, any change to D-8, any Docker/DOCR/Droplet/Caddy/production/tag/commit/push/reboot action). This pass also reconciles §0, §3, Task 10-F, AC-B5, AC-F7, AC-GOV-1, Gate C, and the Task 10-E first-pass/second-pass clarification with D-F5 via narrow clarifications and cross-references, without rewriting any existing rule, criterion wording, or historical evidence record (Authorization Act #13 / AC-B5, the 2026-09-19 AC-F7 recording, and all other prior acceptance/execution records are preserved unchanged). AC-F7's checkbox is not changed by this pass; a note records that it is to be treated as NOT SATISFIED under its literal wording once the Shape 1 implementation actually occurs. This is a documentation-only correction: `server.js`, `.github/workflows/deploy.yml`, `package.json`, `package-lock.json`, and all other application/infrastructure files are unchanged; no Git write, workflow run, or production action occurred; and it does not authorize `server.js` implementation, any secret action, any `prod-v*` tag creation or push, any production deployment, or Task 10-F/Task 10-E acceptance. See §11 v1.0.22 correction narrative and §12 "D-F5 Documentation Correction Record — Authorization Act #24."
 **Phase 8 baseline**: `phase8_plan_1_4.md` v1.1.8
 **Phase 8 checkpoint tag**: `phase-8-checkpoint-1` → `ad5776f5f2653785706727c9381249d587f1faf8`
 **Current HEAD at time of writing**: `c366af0bc9d32c7ee4ae047ee2f0280b9944af0f`
@@ -19,7 +19,12 @@ No task in this document may be treated as pre-authorized by virtue of appearing
 
 ### Absolute Rules (in effect for this document and all work derived from it)
 
-- Do not modify application source code.
+- Do not modify application source code. *(D-F5, recorded 2026-09-22, is the specific, narrow,
+  explicitly recorded exception to this rule: it is a human decision record approving, in
+  principle, a future, separately authorized `server.js` Stripe-client-initialization change —
+  see Task 10-F, "D-F5 — Stripe client initialization deferral." D-F5 does not itself authorize
+  any edit; a further separate, explicit implementation authorization is required before any
+  `server.js` change is made. This rule remains in force everywhere else in this document.)*
 - Do not modify `package.json` or `package-lock.json`.
 - Do not modify infrastructure files.
 - Do not create or modify GitHub Actions workflows.
@@ -368,7 +373,12 @@ with Caddy TLS, a GitHub Actions CI/CD pipeline, Neon production database, and l
 - Authorization to install `@sentry/node` (requires separate authorization; `package.json` change — Decision D-3)
 - Authorization to install `posthog-js` (requires separate authorization; `apps/web/package.json` change — Decision D-4)
 - Authorization to restrict CORS (requires separate authorization; `server.js` code change — Decision D-5)
-- Authorization to modify any existing route, middleware, or application logic
+- Authorization to modify any existing route, middleware, or application logic — **except** the
+  single, specific, narrow future exception described by Decision D-F5 (Task 10-F,
+  "D-F5 — Stripe client initialization deferral"): a future, separately authorized, Shape-1-only
+  `server.js` Stripe-client-initialization change. D-F5 does not generally authorize application-
+  code modification anywhere else in Phase 10, and does not itself authorize that change either —
+  it is a decision record only, pending its own separate implementation authorization.
 - Authorization to modify Phase 8 implementation in any way
 - Authorization to create `user_preferences` or `grocery_list` database tables
 - Authorization to change the `ssl: { rejectUnauthorized: false }` PostgreSQL configuration
@@ -722,7 +732,7 @@ CMD ["node", "server.js"]
 - [x] **AC-B2** — **PASS (Authorization Act #9, 2026-09-16 — see §12 "AC-B2 Verification Result — Authorization Act #9")**: `docker build --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=<pk_live_...> .` completes without error
 - [x] **AC-B3** — **PASS (Authorization Act #10, 2026-09-16 — see §12 "AC-B3 / AC-B4 Verification Result — Authorization Act #10")**: Container starts and the Express server listens on port 3000; `GET /` returns HTTP 200 from within the container
 - [x] **AC-B4** — **PASS (Authorization Act #10, 2026-09-16 — see §12 "AC-B3 / AC-B4 Verification Result — Authorization Act #10")**: `POST /api/billing/webhook` path is reachable from within the container
-- [x] **AC-B5** — **PASS (Authorization Act #13, 2026-09-17 — see §12 "AC-B5 Verification Result — Authorization Act #13")**: No application source code was modified to make the Dockerfile work
+- [x] **AC-B5** — **PASS (Authorization Act #13, 2026-09-17 — see §12 "AC-B5 Verification Result — Authorization Act #13")**: No application source code was modified to make the Dockerfile work *(D-F5, recorded 2026-09-22, is a separate, later, differently-scoped human decision concerning Stripe client initialization, unrelated to the Dockerfile; it does not affect this criterion, and no fresh AC-B5 evidence is required because of D-F5)*
 - [x] **AC-B6** — **PASS (Authorization Act #3, 2026-09-15 — see §12 "AC-B6 Verification Result — Authorization Act #3")** *(verification method corrected in v1.0.11/RC-21; substantive credential-definition corrected in v1.0.12/RC-22 — see §11/§12 for both)*: A structurally valid production Clerk publishable-key value (`pk_live_` followed immediately by an uninterrupted Base64-alphabet run, consistent with Clerk's documented `pk_<test|live>_<base64(FAPI-hostname + "$")>` format — see Clerk, "Refactoring our frontend API key," https://clerk.com/blog/refactoring-our-api-keys) is confirmed present in the static assets produced by a `docker build` of the project's `Dockerfile` with `--build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=<pk_live_...>`, **and** no structurally valid `pk_test_` value of the same form is present anywhere in those assets. A bare `pk_test_` or `pk_live_` prefix occurrence that is **not** immediately followed by such a Base64 run (e.g., the Clerk SDK's own prefix/classification constants, or a truncated fragment inside SDK error-message text) is an SDK/reference literal, not a credential value, and does not by itself cause PASS or FAIL.
 
   **Verification procedure** (Docker/static-asset method retained unchanged from v1.0.11/RC-21):
@@ -1124,7 +1134,11 @@ non-Stripe-dependent secrets required for deployment (`DROPLET_HOST`, `DROPLET_S
 `AI_CHAT_LIMIT_FREE`/`PREMIUM`, `NODE_ENV`, and the D-9-selected registry secret). It does **not**
 require full Task 10-E acceptance (AC-E1's "all listed secrets") or Task 10-E's second pass
 (the Stripe live-mode secrets from Task 10-G) before Task 10-F may proceed. This clarification
-does not alter Task 10-E's two-pass model, AC-E1–AC-E5, or any AC-F criterion.
+does not alter Task 10-E's two-pass model, AC-E1–AC-E5, or any AC-F criterion. *(Decision D-F5,
+Task 10-F, is intended — once its Shape 1 implementation is separately authorized and made — to
+reconcile this first-pass deployment path with the application's Stripe-client startup
+dependency, so that application startup can proceed through the first-pass secrets alone. D-F5
+does not itself complete Task 10-E or Task 10-F, and does not alter this two-pass model.)*
 **Serialized after**: 10-B, 10-E
 
 ⚠ **AUTHORIZATION GATE (D-7) — RESOLVED (v1.0.21 correction)**: Decision D-7 was resolved on
@@ -1269,7 +1283,7 @@ credentials on the Droplet as part of Task 10-A/10-F setup.
 - [ ] **AC-F4**: Image is tagged with immutable Git SHA tag and pushed to registry
 - [ ] **AC-F5**: Deployment to Droplet succeeds; application container restarts with new image
 - [x] **AC-F6** — **EVIDENCED (2026-09-17 — see "CI-only dry-run evidence recording" below)**: No secret values appear in workflow logs
-- [x] **AC-F7** — **EVIDENCED (2026-09-19 — see "AC-F7 evidence recording" below)**: No application source code was modified to accommodate the workflow
+- [x] **AC-F7** — **EVIDENCED (2026-09-19 — see "AC-F7 evidence recording" below)**: No application source code was modified to accommodate the workflow *(see Task 10-F, "D-F5 — Stripe client initialization deferral": this checkbox is unchanged by D-F5's recording; once the separately authorized `server.js` implementation actually occurs, AC-F7 is to be treated as NOT SATISFIED under its literal wording, as a governance consequence of that later change — not evidence of unauthorized activity now)*
 - [ ] **AC-F8**: Previous image is retained in registry and can be pulled for rollback
 
 **AC-F4 / AC-F8 technical dependency clarification**: AC-F8 ("Previous image is retained
@@ -1404,6 +1418,59 @@ publication, any `prod-v*` tag creation or push, any retry, any production deplo
 AC-F8 verification, registry evidence/read access, Task 10-F acceptance, or the final Phase 10
 checkpoint — each of which remains separately unauthorized. **Task 10-F remains NOT ACCEPTED, Gate C
 remains NOT SATISFIED, and production deployment remains UNAUTHORIZED.**
+
+**D-F5 — Stripe client initialization deferral (human decision; recorded 2026-09-22)**: This is a
+human decision record only. **It is not implementation authorization**, and a further separate,
+explicit implementation authorization is required before any `server.js` edit is made. **It does
+not retroactively authorize `server.js` modification under Task 10-F**; D-F5 is a separate human
+decision outside Task 10-F's original authorization boundary, and Task 10-F's own "does NOT
+authorize: Modifying `server.js`" scope statement (below) is unchanged. D-F5 is the narrow,
+explicit exception referenced by §0 and §3 for this one future, separately authorized change only.
+
+The human approves, in principle, a future, separately authorized modification to `server.js`
+that defers Stripe client construction so that an absent or empty `STRIPE_SECRET_KEY` does not
+terminate application startup at module load.
+
+- **Shape 1 only.** The future implementation is limited to Stripe client initialization in
+  `server.js`. It must: preserve the existing `stripe` identifier; preserve all four existing
+  Stripe call sites (`stripe.webhooks.constructEvent`, `stripe.customers.create`,
+  `stripe.checkout.sessions.create`, `stripe.billingPortal.sessions.create`) unchanged; not modify
+  the webhook handler, checkout logic, or billing-portal logic; not modify frontend or database
+  code; not modify `package.json` or `package-lock.json`; not change the Stripe SDK version; not
+  add environment variables or logging; not redesign error handling; not change any unrelated
+  application behavior. **Shape 2 (call-site or route-handler changes) is explicitly excluded.**
+- **Accepted webhook nuance**: if `STRIPE_SECRET_KEY` is absent or empty, startup must no longer
+  fail merely because Stripe is initialized at module load. If the webhook route is subsequently
+  invoked while Stripe remains unconfigured, first access to the deferred Stripe client may still
+  throw, because the Stripe SDK constructor requires a key; the existing webhook try/catch may
+  therefore return its existing 400 "Webhook signature verification failed" response. **This does
+  not mean webhook signature verification works without a Stripe secret key, and does not
+  authorize any webhook-handler redesign.**
+- **Security / production boundary**: D-F5 does **not** authorize: setting or modifying any
+  Stripe secret; placeholder Stripe credentials in production; any change to D-8; any live Stripe
+  credential action; a Docker build or run; DOCR access; Droplet access; Caddy changes; production
+  deployment; `prod-v*` tag creation or push; a Git commit or push; or an OS reboot.
+- **AC-F7 — literal treatment**: the 2026-09-19 AC-F7 evidence recording remains accurate as
+  historical evidence of what was found at that time and is not rewritten; its checkbox is **not**
+  changed by this pass. Once the separately authorized `server.js` change is actually implemented,
+  AC-F7 is to be treated as **NOT SATISFIED** under its literal wording ("No application source
+  code was modified to accommodate the workflow"), because application source code will have been
+  changed in connection with making the documented deployment path workable. This is recorded as a
+  governance consequence of this decision, not as evidence of any unauthorized activity.
+- **AC-B5 — unaffected**: AC-B5's existing evidence (Authorization Act #13) remains historically
+  valid and is not invalidated by D-F5; AC-B5 concerns modification of application source code to
+  make the Dockerfile work, a separate and unrelated matter. No fresh AC-B5 technical test is
+  required solely because of D-F5.
+- **Fresh-evidence requirements**, once the Shape 1 implementation is actually authorized and
+  made: AC-B3 and AC-B4 require fresh evidence; the Gate C Docker smoke-test bullet requires fresh
+  evidence, because the historical 2026-09-17 evidence predates this change; AC-GOV-7 requires
+  fresh verification against the production image that actually contains the new code. Existing
+  AC-F3 dry-run evidence remains valid as historical evidence and is not itself invalidated; the
+  first real `prod-v*` run will generate new, separate deployment/build evidence.
+- **Task 10-G / D-8 / Task 10-E unaffected**: D-F5 does not modify Task 10-G's existing
+  prohibition on changing webhook, checkout, or portal logic; does not authorize Task 10-G; does
+  not change D-8; and does not complete Task 10-E or Task 10-F. See Task 10-E, "Task 10-E
+  dependency clarification," for the related cross-reference.
 
 ---
 
@@ -2071,13 +2138,13 @@ decision is authorized.
 - [ ] AC-N1 – AC-N6 (Rollback and recovery, including runtime secret-injection governance)
 
 ### Governance
-- [ ] **AC-GOV-1**: No application source code was modified without explicit authorization on record
+- [ ] **AC-GOV-1**: No application source code was modified without explicit authorization on record *(D-F5, Task 10-F, is a human decision record only — not the implementation authorization this criterion would require; a further separate, explicit implementation authorization is needed before any `server.js` edit)*
 - [ ] **AC-GOV-2**: No `package.json` file was modified without explicit authorization on record
 - [ ] **AC-GOV-3**: No real secret, credential, API key, token, password, connection string containing credentials, or private key appears in any committed file. Infrastructure metadata (e.g., a provisioned server's IP address, recorded for custody/provenance as in §11's v1.0.6 correction attestation) is not itself a secret or credential and is not prohibited by this criterion.
 - [ ] **AC-GOV-4**: All pending decisions D-1 through D-9 are resolved and outcomes recorded
 - [ ] **AC-GOV-5**: Phase 8 carried-forward issues CF-1 and CF-2 are documented in checkpoint attestation as unresolved
 - [ ] **AC-GOV-6**: Production Neon database contains no `user_preferences` or `grocery_list` tables
-- [ ] **AC-GOV-7** *(substantive credential-definition corrected in v1.0.12/RC-22 — see §11/§12)*: The production Docker image contains a structurally valid `pk_live_` Clerk publishable-key value (per the AC-B6 structural test: prefix immediately followed by an uninterrupted Base64-alphabet run) for `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, and does not contain a structurally valid `pk_test_` credential value. A bare `pk_test_` or `pk_live_` prefix occurrence without an accompanying Base64 credential structure (e.g., a Clerk SDK reference literal) does not by itself violate this criterion. This criterion is evaluated using the same evidence produced for AC-B6, not a separate test.
+- [ ] **AC-GOV-7** *(substantive credential-definition corrected in v1.0.12/RC-22 — see §11/§12)*: The production Docker image contains a structurally valid `pk_live_` Clerk publishable-key value (per the AC-B6 structural test: prefix immediately followed by an uninterrupted Base64-alphabet run) for `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, and does not contain a structurally valid `pk_test_` credential value. A bare `pk_test_` or `pk_live_` prefix occurrence without an accompanying Base64 credential structure (e.g., a Clerk SDK reference literal) does not by itself violate this criterion. This criterion is evaluated using the same evidence produced for AC-B6, not a separate test. *(See Task 10-F, "D-F5 — Stripe client initialization deferral": once the D-F5 Shape 1 implementation is actually made, fresh verification will be required against the production image that actually contains the new code.)*
 - [ ] **AC-GOV-8**: Rollback procedure was reviewed by a human before first deployment
 
 ---
@@ -2152,6 +2219,13 @@ separately outstanding and unaffected by this record; authorize Task 10-F execut
 separately recorded elsewhere in this document); authorize production deployment; or authorize
 Stripe live-mode configuration. **Gate C as a whole remains NOT SATISFIED**, pending its one
 remaining outstanding prerequisite.
+
+**D-F5 note (recorded 2026-09-22)**: this 2026-09-17 Docker smoke-test evidence predates Decision
+D-F5 (Task 10-F, "D-F5 — Stripe client initialization deferral") and any `server.js` change made
+under it. If and once the separately authorized Shape 1 implementation actually occurs, fresh
+Docker build/smoke-test evidence will be required before this Gate C bullet may rely on it; the
+existing 2026-09-17 evidence remains valid as historical evidence of what was tested at that time
+and is not itself invalidated by this note.
 
 **Gate D — Pre-live-Stripe authorization**
 
@@ -2332,6 +2406,61 @@ This is a security posture note; it does not block deployment.
 | v1.0.19 | `phase10_plan_3.md` | 2026-09-17 | Governance recording (RC-29, Authorization Act #19): documents the human's explicit resolution of Decision D-1 (production domain = `flavourfind.com`), following a read-only Task 10-C readiness review (Authorization Act #18) that identified D-1 as the material blocker. Updates §3, §4, Task 10-C's specification, and §10 Security Attestation to reflect the resolved decision, preserving prior "D-1 is pending" wording as historical record via an added current-status note. Documentation-only; no DNS record created or verified; no application/Dockerfile/`.dockerignore`/infrastructure change; no Git write. Task 10-C and all later Phase 10 tasks remain NOT AUTHORIZED. |
 | v1.0.20 | `phase10_plan_3.md` | 2026-09-17 | Governance recording (RC-30, Authorization Act #22): documents the completed Task 10-C DNS implementation (performed manually by the human operator via Namecheap — `@`/`www` A records set to `146.190.189.242`, replacing the prior parking CNAME/URL redirect), read-only technical verification (AC-C1, AC-C2, AC-C3 all PASS, confirmed via local resolution and two independent public DNS-over-HTTPS resolvers), and formal acceptance of Task 10-C (Authorization Act #22), following Authorization Act #20 (implementation-readiness review) and Authorization Act #21 (implementation authorization and verification), neither of which modified this document. Documentation-only; no DNS record created, modified, or verified by Claude as part of this recording; no application/Dockerfile/`.dockerignore`/infrastructure change; no Git write. Task 10-D and all later Phase 10 tasks remain NOT AUTHORIZED. |
 | v1.0.21 | `phase10_plan_3.md` | 2026-09-21 | Documentation correction (RC-31, Authorization Act #23 — human-selected number): records the Task 10-F Option B architecture (`prod-v*` version-tag-triggered production deployment; `workflow_dispatch` retained as non-production dry run; checkpoint tags never trigger production; event-separated concurrency with `cancel-in-progress: false`; no GitHub Environment), the AC-F8 first/second-deployment consequence, the bounded retry rule, and the AC-F1/AC-F2 revert to unchecked (2026-09-17 `workflow_dispatch` evidence preserved as historical); applies the named corrections (stale D-7 gate text; live version references in §8.1 Gate A and §8.2 advanced to v1.0.21; "immutable image tag (Git commit SHA)" terminology in Task 10-F); removes the "(proposed)" label from the AC-F4/AC-F8 clarification. Documentation-only; `deploy.yml`, `CLAUDE.md`, and all application/infrastructure files unchanged; no Git write, workflow run, or production action. Workflow implementation, production tag creation/push, production deployment, and Task 10-F acceptance remain NOT AUTHORIZED. |
+| v1.0.22 | `phase10_plan_3.md` | 2026-09-22 | Documentation correction (RC-32, Authorization Act #24): records Decision D-F5 (Task 10-F), a human decision approving, in principle, a future, separately authorized Shape-1-only `server.js` Stripe-client-initialization deferral (preserving the existing `stripe` identifier and all four existing call sites; excluding webhook/checkout/billing-portal/frontend/database/package-file/SDK-version/logging/error-handling changes), the accepted webhook nuance, and an explicit non-authorization list (no secret, Docker, DOCR, Droplet, Caddy, production, tag, commit, push, or reboot action). Reconciles §0, §3, AC-B5, AC-F7, AC-GOV-1, AC-GOV-7, Gate C, and the Task 10-E first-pass/second-pass clarification with narrow clarifications/cross-references only; does not rewrite any existing rule, criterion wording, or historical evidence record; does not alter Task 10-F's "does NOT authorize: Modifying `server.js`" scope statement. AC-F7's checkbox is unchanged; a note records its future NOT SATISFIED treatment once the Shape 1 implementation actually occurs. Documentation-only; `server.js`, `deploy.yml`, `package.json`, `package-lock.json`, `CLAUDE.md`, and all other application/infrastructure files unchanged; no Git write, workflow run, or production action. `server.js` implementation, any secret action, production tag creation/push, production deployment, and Task 10-E/Task 10-F acceptance remain NOT AUTHORIZED. |
+
+### Corrections Applied in v1.0.22
+
+The following documentation correction was applied in the 2026-09-22 v1.0.22 pass (RC-32), under
+explicit human authorization (Authorization Act #24). Note: "D-F5" labels the human decision
+recorded in the authorizing instructions; it is the fifth entry in the existing Task 10-F "D-F"
+decision sequence (D-F1 through D-F4), and is distinct from this document's Decisions D-1 through
+D-9.
+
+1. **RC-32 — D-F5 recorded (Task 10-F)**: a human decision approving, in principle, a future,
+   separately authorized `server.js` change deferring Stripe client construction so an absent or
+   empty `STRIPE_SECRET_KEY` no longer terminates startup at module load. Shape 1 only (initialization
+   in `server.js` only; existing `stripe` identifier and all four existing call sites preserved
+   unchanged; no webhook/checkout/billing-portal/frontend/database/package-file/SDK-version/
+   logging/error-handling change; Shape 2 explicitly excluded). D-F5 is a decision record only — it
+   is **not** implementation authorization and does **not** retroactively expand Task 10-F's
+   authorization.
+2. **RC-32 — accepted webhook nuance recorded**: a deferred, still-unconfigured Stripe client may
+   still throw on first access (the SDK constructor requires a key), caught by the webhook route's
+   existing try/catch and producing its existing 400 response; this is not represented as webhook
+   signature verification working without a key, and does not authorize any webhook-handler
+   redesign.
+3. **RC-32 — security/production exclusions recorded**: D-F5 does not authorize any Stripe secret
+   action, placeholder production credentials, any change to D-8, or any Docker, DOCR, Droplet,
+   Caddy, production, `prod-v*` tag, commit, push, or reboot action.
+4. **RC-32 — governance reconciliation (narrow clarifications/cross-references only, no rule or
+   criterion wording rewritten)**: §0's application-source-code rule now names D-F5 as its specific
+   narrow exception; §3's application-logic exclusion now cross-references D-F5 as the sole
+   exception, not a general authorization; AC-B5 and AC-GOV-7 each received a one-sentence
+   cross-reference; AC-F7 received a cross-reference recording its future NOT SATISFIED treatment
+   once implementation actually occurs, with its checkbox unchanged; AC-GOV-1 received a
+   cross-reference noting D-F5 is a decision record, not implementation authorization; Gate C's
+   Docker smoke-test evidence received a note that it predates D-F5 and that fresh evidence will be
+   required after implementation; the Task 10-E first-pass/second-pass clarification received a
+   cross-reference explaining D-F5's intended reconciliation purpose. Task 10-F's own "does NOT
+   authorize: Modifying `server.js`" scope statement is unchanged.
+5. **RC-32 — historical evidence preserved unchanged**: Authorization Act #13 / AC-B5 evidence, the
+   2026-09-19 AC-F7 recording, the 2026-09-17 Gate C Docker smoke-test record, and every other prior
+   acceptance/execution record are preserved exactly as previously written; none was rewritten,
+   deleted, or retroactively altered.
+6. **RC-32 — future fresh-evidence requirements recorded (not performed now)**: once the D-F5
+   Shape 1 implementation is separately authorized and actually made, AC-B3 and AC-B4 will require
+   fresh evidence, Gate C's Docker smoke-test bullet will require fresh evidence, and AC-GOV-7 will
+   require fresh verification against the production image containing the new code; existing AC-F3
+   dry-run evidence remains valid as historical evidence and is not retroactively invalidated.
+7. **RC-32 — version references advanced (D5-style convention)**: header, status, footer, §11, and
+   §12 updated to v1.0.22; historical version records preserved.
+8. **What this pass did NOT do**: modify `server.js`, `.github/workflows/deploy.yml`, `CLAUDE.md`,
+   `package.json`, `package-lock.json`, `Dockerfile`, or `.dockerignore`; commit, tag, or push; run
+   or dispatch any GitHub Actions workflow; access DOCR, the Droplet, Caddy, or production; create,
+   modify, rotate, or read any secret; create a `prod-v*` tag; alter Task 10-F's, Task 10-G's, or
+   Gate C's requirements, or any historical acceptance/execution record. **Gate C remains NOT
+   SATISFIED, Task 10-E and Task 10-F remain NOT ACCEPTED, and production deployment remains
+   UNAUTHORIZED.**
 
 ### Corrections Applied in v1.0.21
 
@@ -4234,12 +4363,53 @@ historical Act number was renumbered, repaired, or reinterpreted.
 10. Did **not** alter any prior RC, Act, or custody record, AC-F8's or AC-N3's wording, or Gate C's
     five bullets; all are preserved unchanged above.
 
+### D-F5 Documentation Correction Record — Authorization Act #24 (2026-09-22)
+
+Under a separate, explicit human authorization (Authorization Act #24; RC-32; 2026-09-22), this
+documentation-only pass records Decision D-F5 (Task 10-F) and reconciles this document's wording
+accordingly.
+
+1. **Result: v1.0.22 recorded; D-F5 inserted into the Task 10-F "D-F1–D-F4" decision block**, now
+   D-F1 through D-F5, following that block's established convention. D-F5 is the fifth entry in the
+   Task 10-F "D-F" decision sequence, distinct from this document's Decisions D-1 through D-9.
+2. **D-F5 (human decision)**: approves, in principle, a future, separately authorized `server.js`
+   change deferring Stripe client construction (Shape 1 only — see Task 10-F for the full scope,
+   webhook nuance, and security/production exclusions). D-F5 is **not** implementation
+   authorization and does **not** retroactively expand Task 10-F's authorization; Task 10-F's own
+   "does NOT authorize: Modifying `server.js`" scope statement is unchanged.
+3. **Governance reconciliation (human decision)**: §0, §3, AC-B5, AC-F7, AC-GOV-1, AC-GOV-7, Gate
+   C, and the Task 10-E first-pass/second-pass clarification each received a narrow clarification
+   or cross-reference to D-F5, without rewriting any existing rule, criterion wording, or
+   historical evidence record. AC-F7's checkbox is unchanged; the cross-reference records only that
+   AC-F7 is to be treated as NOT SATISFIED under its literal wording once the Shape 1
+   implementation actually occurs.
+4. **Historical evidence preserved (human decision)**: Authorization Act #13 / AC-B5 evidence, the
+   2026-09-19 AC-F7 recording, the 2026-09-17 Gate C Docker smoke-test record, and every other
+   prior acceptance/execution record remain exactly as previously written.
+5. **Future fresh-evidence requirements recorded, not performed now (human decision)**: AC-B3,
+   AC-B4, Gate C's Docker smoke-test bullet, and AC-GOV-7 will require fresh evidence once the
+   D-F5 Shape 1 implementation is separately authorized and actually made; existing AC-F3 dry-run
+   evidence remains valid as historical evidence and is not retroactively invalidated.
+6. **Scope of this result**: this record does **not** authorize any `server.js` edit; any Stripe
+   secret action or placeholder production credential; any change to D-8; any Docker, DOCR,
+   Droplet, Caddy, or production action; any `prod-v*` tag creation or push; any Git commit or
+   push; any OS reboot; or Task 10-E, Task 10-F, or Gate C acceptance/satisfaction. **Gate C
+   remains NOT SATISFIED, Task 10-E and Task 10-F remain NOT ACCEPTED, and production deployment
+   remains UNAUTHORIZED.**
+7. Did **not** modify `server.js`, `.github/workflows/deploy.yml`, `CLAUDE.md`, `package.json`,
+   `package-lock.json`, `Dockerfile`, or `.dockerignore`; did **not** commit, tag, or push; did
+   **not** run or dispatch any GitHub Actions workflow; did **not** access DOCR, the Droplet,
+   Caddy, or production; did **not** create, modify, rotate, or read any secret.
+8. Did **not** alter any prior RC, Act, or custody record, Task 10-F's "does NOT authorize"
+   scope statement, or any historical acceptance/execution record; all are preserved unchanged
+   above.
+
 ---
 
 *This document is a planning specification only. It does not, by itself, authorize any
 implementation beyond what has been separately and explicitly authorized above. Separate explicit
 human authorization is required before any further task in this document may be implemented.
-Current document status: v1.0.21 is APPROVED / AUTHORITATIVE as the governance reference (baseline
+Current document status: v1.0.22 is APPROVED / AUTHORITATIVE as the governance reference (baseline
 approval carried forward from Authorization Act #2); **Task 10-B is ACCEPTED** (Authorization Act
 #16); **Decision D-1 is RESOLVED — production domain `flavourfind.com`** (Authorization Act #19);
 **Task 10-C is ACCEPTED** (Authorization Act #22, see §12 "Task 10-C Acceptance Record —
@@ -4251,6 +4421,6 @@ and §12 for the full, current criterion-by-criterion, decision-by-decision, and
 AUTHORIZATION," a generic closing statement last accurate before the v1.0.10 baseline-approval
 sequence; it was first reconciled to the then-current status in v1.0.16, updated to v1.0.17,
 updated to v1.0.18 to reflect Task 10-B's acceptance, updated to v1.0.19 to reflect Decision D-1's
-resolution, updated to v1.0.20 to reflect Task 10-C's acceptance, and is updated here to v1.0.21 to reflect the Task 10-F Option B documentation correction (Authorization Act #23; see §11 and §12; Gate C remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production deployment remains UNAUTHORIZED). Earlier dated
+resolution, updated to v1.0.20 to reflect Task 10-C's acceptance, updated to v1.0.21 to reflect the Task 10-F Option B documentation correction (Authorization Act #23; see §11 and §12; Gate C remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production deployment remains UNAUTHORIZED), and is updated here to v1.0.22 to reflect Decision D-F5's recording (Authorization Act #24; see §11 and §12; D-F5 is a human decision record only, not implementation authorization; Gate C remains NOT SATISFIED, Task 10-E and Task 10-F remain NOT ACCEPTED, and production deployment remains UNAUTHORIZED). Earlier dated
 "Document status remains: PROPOSED..." statements elsewhere in §11/§12 are historical attestations
 of status at those specific past points in time and are preserved unchanged.)*
