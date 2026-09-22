@@ -1116,10 +1116,35 @@ item for the human performing Task 10-G/Task 10-E.
 
 **Acceptance Criteria**:
 - [ ] **AC-E1**: All listed secrets are set in GitHub repository Settings → Secrets → Actions
-- [ ] **AC-E2**: No secret values appear in any file tracked by git
+- [x] **AC-E2** — **EVIDENCED (2026-09-22 — see "AC-E2 evidence recording" below)**: No secret values appear in any file tracked by git
 - [ ] **AC-E3**: Secret name `STRIPE_PREMIUM_PRICE_ID` (not `STRIPE_PRICE_ID`) confirmed
 - [ ] **AC-E4**: `CLERK_PUBLISHABLE_KEY` confirmed as `pk_live_...` (not `pk_test_...`)
 - [ ] **AC-E5**: `AI_CHAT_LIMIT_FREE` and `AI_CHAT_LIMIT_PREMIUM` values decided by human and set
+
+**AC-E2 evidence recording (2026-09-22, human-authorized read-only review)**: AC-E2 is recorded as
+evidenced based on a read-only, pattern-based scan of all 132 files currently tracked by git (via
+`git ls-files`; untracked files explicitly excluded, consistent with this criterion's "tracked by
+git" wording). The scan checked for Stripe, Clerk, Anthropic, DigitalOcean, AWS, GitHub, and Slack
+credential-shaped patterns, PEM private-key blocks, database connection strings with embedded
+credentials, JWTs, and generic long-value `*_KEY`/`*_SECRET`/`*_TOKEN` assignments. No actual
+credential-shaped secret value was found. Four database-connection-string matches occurred
+(`.env.example` line 3; `SAAS_ROADMAP.md` line 669; and this document's own §1.6 environment-
+variable table and Task 10-H specification example — see the "CRITICAL — NO REAL VALUES IN THIS
+DOCUMENT" note above), and each was confirmed to contain only generic placeholder words
+(`user`/`password`/`host`/`your-neon-user`/`your-neon-host`), not real hostnames or credentials.
+The six pre-existing, separately-authorized working-tree modifications to `.env.example`,
+`.gitignore`, `SAAS_ROADMAP.md`, `apps/web/e2e/chat.spec.ts`, `apps/web/global-setup.ts`, and
+`phase8_plan_1_4.md` were also reviewed observationally (both their `HEAD` and working-tree
+content) and contained no credential-shaped values — only explicit `_REPLACE_ME` placeholders,
+variable-name references (e.g., `process.env.DATABASE_URL`), and unrelated documentation prose. No
+secret value was read, printed, or exposed by this review, and no repository file was modified.
+**This recording evidences AC-E2 only.** It does not evidence AC-E1, AC-E3, AC-E4, or AC-E5; does
+not constitute or imply Task 10-E acceptance; does not satisfy Gate C; and does not authorize,
+initiate, or imply authorization for production deployment. The six second-pass Stripe secrets
+(`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PREMIUM_PRICE_ID`, `STRIPE_SUCCESS_URL`,
+`STRIPE_CANCEL_URL`, `STRIPE_PORTAL_RETURN_URL`) remain deferred per Task 10-E's two-pass model and
+are not documented as present. **Task 10-E remains NOT ACCEPTED, Gate C remains NOT SATISFIED, and
+production deployment remains UNAUTHORIZED.**
 
 ---
 
