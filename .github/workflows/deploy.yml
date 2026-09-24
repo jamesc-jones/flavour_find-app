@@ -67,6 +67,9 @@ jobs:
       # heredoc) to avoid the conflict between bash heredoc-terminator rules (must be
       # at column 0 unless using tab-only "<<-" indentation) and YAML literal-block-
       # scalar rules (every line must stay at or above the block's indentation level).
+      # The variables (as shell-quoted `export` statements) and the script are sent to the
+      # remote `bash -s` over stdin: ssh joins extra arguments into one string that the
+      # remote shell re-parses, which previously lost the quoting of `bash -c "$REMOTE_CMD"`.
       - name: Deploy to production Droplet
         if: github.event_name == 'push'
         env:
@@ -138,7 +141,8 @@ jobs:
           REMOTE_CMD+='docker image prune -f >/dev/null 2>&1 || true; '
           REMOTE_CMD+='echo "Deployment complete. Previous image tag recorded at /tmp/flavourfind-previous-image.txt for Task 10-N rollback."'
 
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes root@"$DROPLET_HOST" \
+          {
+            printf 'export %q; ' \
             IMAGE_REF="$IMAGE_REF" \
             DOCR_ACCESS_TOKEN="${{ secrets.DOCR_ACCESS_TOKEN }}" \
             REGISTRY="${{ env.REGISTRY }}" \
@@ -153,7 +157,8 @@ jobs:
             CLERK_SECRET_KEY="${{ secrets.CLERK_SECRET_KEY }}" \
             CLERK_PUBLISHABLE_KEY="${{ secrets.CLERK_PUBLISHABLE_KEY }}" \
             AI_CHAT_LIMIT_FREE="${{ secrets.AI_CHAT_LIMIT_FREE }}" \
-            AI_CHAT_LIMIT_PREMIUM="${{ secrets.AI_CHAT_LIMIT_PREMIUM }}" \
-            bash -c "$REMOTE_CMD"
+            AI_CHAT_LIMIT_PREMIUM="${{ secrets.AI_CHAT_LIMIT_PREMIUM }}"
+            printf '%s\n' "$REMOTE_CMD"
+          } | ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes root@"$DROPLET_HOST" 'bash -s'
 
           rm -f ~/.ssh/deploy_key
