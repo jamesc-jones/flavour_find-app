@@ -1,13 +1,14 @@
 # Flavour Find — Phase 10: Production Deployment
 
 **Document**: `phase10_plan_3.md`
-**Version**: v1.0.22
-**Status**: v1.0.22 is **APPROVED / AUTHORITATIVE** (carrying forward v1.0.21's baseline approval, Authorization Act #2, 2026-09-15), superseding v1.0.11 through v1.0.21, all of which remain preserved as historical predecessor states (see §12 "v1.0.12 Baseline Acceptance", "AC-B1 Human Interpretation and Documentation Record — Authorization Act #7", "AC-B7 Verification Result — Authorization Act #8", "AC-B2 Verification Result — Authorization Act #9", "AC-B3 / AC-B4 Verification Result — Authorization Act #10", "AC-B5 Verification Result — Authorization Act #13", "Task 10-B Acceptance State — Authorization Act #16", "Decision D-1 Resolution — Authorization Act #19", and "Task 10-C Acceptance Record — Authorization Act #22"). Task 10-A specification is documented as ACCEPTED below; Task 10-B is documented as ACCEPTED below (Authorization Act #16); Task 10-C is documented as ACCEPTED below (Authorization Act #22). Baseline approval authorizes adoption of this document as the current governance reference ONLY — it does NOT authorize Task 10-D or any later Phase 10 task, Caddy/TLS work, further application or infrastructure implementation, or any Git commit, tag, or push. **AC-B1–AC-B7: all PASS (see individual Act attributions in §5). Task 10-B: ACCEPTED (Authorization Act #16). Decision D-1: RESOLVED — production domain `flavourfind.com` (Authorization Act #19, 2026-09-17). AC-C1–AC-C3: all PASS (Authorization Act #21 implementation and verification). Task 10-C: ACCEPTED (Authorization Act #22, 2026-09-17)** — see §12 "Task 10-C Acceptance Record — Authorization Act #22." **This accepts Task 10-C's completed DNS implementation only; it does not authorize Task 10-D or any later Phase 10 task, Caddy installation, TLS/certificate configuration, or reverse-proxy work. Task 10-D and all later Phase 10 tasks remain NOT AUTHORIZED** and each requires its own separate, explicit future human authorization. **v1.0.21 (RC-31, Authorization Act #23 — human-selected, 2026-09-21) is a documentation-only correction that records the Task 10-F Option B (`prod-v*` version-tag-triggered production deployment) architecture; it does not implement the workflow change, and Gate C remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production deployment remains UNAUTHORIZED** — see §12 "v1.0.21 Documentation Correction Record — Authorization Act #23." **v1.0.22 (RC-32, Authorization Act #24, 2026-09-22) records Decision D-F5 — a human decision approving, in principle, a future, separately authorized Shape-1-only `server.js` Stripe-client-initialization deferral — and reconciles this document's wording accordingly; D-F5 is not implementation authorization, does not retroactively expand Task 10-F's authorization, and does not authorize any secret, Docker, registry, Droplet, Caddy, production, tag, commit, push, or reboot action. Gate C remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production deployment remains UNAUTHORIZED** — see §12 "D-F5 Documentation Correction Record — Authorization Act #24."
+**Version**: v1.0.23
+**Status**: v1.0.23 is **APPROVED / AUTHORITATIVE** (carrying forward v1.0.22's baseline approval, Authorization Act #2, 2026-09-15), superseding v1.0.11 through v1.0.22, all of which remain preserved as historical predecessor states (see §12 "v1.0.12 Baseline Acceptance", "AC-B1 Human Interpretation and Documentation Record — Authorization Act #7", "AC-B7 Verification Result — Authorization Act #8", "AC-B2 Verification Result — Authorization Act #9", "AC-B3 / AC-B4 Verification Result — Authorization Act #10", "AC-B5 Verification Result — Authorization Act #13", "Task 10-B Acceptance State — Authorization Act #16", "Decision D-1 Resolution — Authorization Act #19", and "Task 10-C Acceptance Record — Authorization Act #22"). Task 10-A specification is documented as ACCEPTED below; Task 10-B is documented as ACCEPTED below (Authorization Act #16); Task 10-C is documented as ACCEPTED below (Authorization Act #22). Baseline approval authorizes adoption of this document as the current governance reference ONLY — it does NOT authorize Task 10-D or any later Phase 10 task, Caddy/TLS work, further application or infrastructure implementation, or any Git commit, tag, or push. **AC-B1–AC-B7: all PASS (see individual Act attributions in §5). Task 10-B: ACCEPTED (Authorization Act #16). Decision D-1: RESOLVED — production domain `flavourfind.com` (Authorization Act #19, 2026-09-17). AC-C1–AC-C3: all PASS (Authorization Act #21 implementation and verification). Task 10-C: ACCEPTED (Authorization Act #22, 2026-09-17)** — see §12 "Task 10-C Acceptance Record — Authorization Act #22." **This accepts Task 10-C's completed DNS implementation only; it does not authorize Task 10-D or any later Phase 10 task, Caddy installation, TLS/certificate configuration, or reverse-proxy work. Task 10-D and all later Phase 10 tasks remain NOT AUTHORIZED** and each requires its own separate, explicit future human authorization. **v1.0.21 (RC-31, Authorization Act #23 — human-selected, 2026-09-21) is a documentation-only correction that records the Task 10-F Option B (`prod-v*` version-tag-triggered production deployment) architecture; it did not implement the workflow change, and at the time of v1.0.21 Gate C was NOT SATISFIED, Task 10-F was NOT ACCEPTED, and production deployment was UNAUTHORIZED** — see §12 "v1.0.21 Documentation Correction Record — Authorization Act #23." **v1.0.22 (RC-32, Authorization Act #24, 2026-09-22) records Decision D-F5 — a human decision approving, in principle, a future, separately authorized Shape-1-only `server.js` Stripe-client-initialization deferral — and reconciles this document's wording accordingly; D-F5 is not implementation authorization, does not retroactively expand Task 10-F's authorization, and does not authorize any secret, Docker, registry, Droplet, Caddy, production, tag, commit, push, or reboot action. At the time of v1.0.22's publication, Gate C was NOT SATISFIED, Task 10-F was NOT ACCEPTED, and production deployment was UNAUTHORIZED** — see §12 "D-F5 Documentation Correction Record — Authorization Act #24." **Current status (v1.0.23, RC-33, Authorization Act #25): Gate C is SATISFIED as of 2026-09-22 (see §8.1, "Gate C final prerequisite — explicit human authorization recorded"); whether a production release of the corrected commit `724fe67278df65a0f5d08125c6ed504015a8d299` is authorized remains a separate, undecided human decision (see §8.1 "Corrected-Dockerfile Docker evidence" and §12 "v1.0.23 Documentation Record — Authorization Act #25"). The first production release attempt (`prod-v1.0.0` → `a2d45cc`, run `35750588575`, 2026-09-22) FAILED at the registry push and did not deploy (see Task 10-F, "First production release attempt"). Task 10-F remains NOT ACCEPTED; no production deployment has occurred; the release mechanism for the corrected artifact (DEC-9) is intentionally unresolved.**
 **Supersedes**: `phase10_plan_2.md` v1.0.1 (2026-09-10)
-**This version**: 2026-09-22 — Documentation correction (RC-32, Authorization Act #24): records Decision D-F5, inserted into the existing Task 10-F D-F1–D-F4 decision block. D-F5 is a human decision approving, in principle, a future, separately authorized `server.js` change that defers Stripe client construction (Shape 1 only: initialization in `server.js` only, preserving the existing `stripe` identifier and all four existing Stripe call sites, excluding any webhook/checkout/billing-portal/frontend/database/package-file/SDK-version/logging/error-handling change), together with the accepted webhook nuance (a deferred, still-unconfigured Stripe client may still throw on first access, caught by the existing webhook try/catch and producing its existing 400 response) and an explicit list of what D-F5 does not authorize (any Stripe secret action, placeholder production credentials, any change to D-8, any Docker/DOCR/Droplet/Caddy/production/tag/commit/push/reboot action). This pass also reconciles §0, §3, Task 10-F, AC-B5, AC-F7, AC-GOV-1, Gate C, and the Task 10-E first-pass/second-pass clarification with D-F5 via narrow clarifications and cross-references, without rewriting any existing rule, criterion wording, or historical evidence record (Authorization Act #13 / AC-B5, the 2026-09-19 AC-F7 recording, and all other prior acceptance/execution records are preserved unchanged). AC-F7's checkbox is not changed by this pass; a note records that it is to be treated as NOT SATISFIED under its literal wording once the Shape 1 implementation actually occurs. This is a documentation-only correction: `server.js`, `.github/workflows/deploy.yml`, `package.json`, `package-lock.json`, and all other application/infrastructure files are unchanged; no Git write, workflow run, or production action occurred; and it does not authorize `server.js` implementation, any secret action, any `prod-v*` tag creation or push, any production deployment, or Task 10-F/Task 10-E acceptance. See §11 v1.0.22 correction narrative and §12 "D-F5 Documentation Correction Record — Authorization Act #24."
+**This version**: 2026-09-23 — Documentation recording (RC-33, Authorization Act #25): records Decision D-F6 (the corrected three-stage `Dockerfile`, blob `ffe54bf1caf9d90a501661e84ea4cb503bf46a34` at commit `724fe67278df65a0f5d08125c6ed504015a8d299`, replacing D-F1's `Dockerfile` reference only); corrected-Dockerfile evidence for AC-B1–AC-B7 and AC-GOV-7 (Task 10-B remains ACCEPTED; original Act-numbered PASS records preserved as historical evidence); corrected-Dockerfile Docker evidence for the Gate C Docker bullet (Gate C remains SATISFIED; release authorization for the corrected commit is not inferred); the factual record of the failed first production release attempt (`prod-v1.0.0` → `a2d45cc`, run `35750588575`, image build succeeded, DOCR push denied with `quota exceeded`, deploy skipped, no Droplet change, no retry); a manual DigitalOcean control-panel registry observation; the previously unrecorded implementation commits `7425b3d` and `a5318ab`; and current-status corrections (header, §1, Gate A, footer). AC-F1 and AC-F2 remain unchecked; no AC-F, AC-N, or other criterion is newly checked. The release mechanism for the corrected artifact (DEC-9) is intentionally unresolved. This is a documentation-only recording: no application/infrastructure file changed; no Git write, tag action, workflow run, DOCR/Droplet/secret access, or production action occurred in making it; and it does not authorize any production release, retry, tag creation/movement/push, or deployment. See §11 v1.0.23 and §12 "v1.0.23 Documentation Record — Authorization Act #25."
+**Previous version (v1.0.22)**: 2026-09-22 — Documentation correction (RC-32, Authorization Act #24): records Decision D-F5, inserted into the existing Task 10-F D-F1–D-F4 decision block. D-F5 is a human decision approving, in principle, a future, separately authorized `server.js` change that defers Stripe client construction (Shape 1 only: initialization in `server.js` only, preserving the existing `stripe` identifier and all four existing Stripe call sites, excluding any webhook/checkout/billing-portal/frontend/database/package-file/SDK-version/logging/error-handling change), together with the accepted webhook nuance (a deferred, still-unconfigured Stripe client may still throw on first access, caught by the existing webhook try/catch and producing its existing 400 response) and an explicit list of what D-F5 does not authorize (any Stripe secret action, placeholder production credentials, any change to D-8, any Docker/DOCR/Droplet/Caddy/production/tag/commit/push/reboot action). This pass also reconciles §0, §3, Task 10-F, AC-B5, AC-F7, AC-GOV-1, Gate C, and the Task 10-E first-pass/second-pass clarification with D-F5 via narrow clarifications and cross-references, without rewriting any existing rule, criterion wording, or historical evidence record (Authorization Act #13 / AC-B5, the 2026-09-19 AC-F7 recording, and all other prior acceptance/execution records are preserved unchanged). AC-F7's checkbox is not changed by this pass; a note records that it is to be treated as NOT SATISFIED under its literal wording once the Shape 1 implementation actually occurs. This is a documentation-only correction: `server.js`, `.github/workflows/deploy.yml`, `package.json`, `package-lock.json`, and all other application/infrastructure files are unchanged; no Git write, workflow run, or production action occurred; and it does not authorize `server.js` implementation, any secret action, any `prod-v*` tag creation or push, any production deployment, or Task 10-F/Task 10-E acceptance. See §11 v1.0.22 correction narrative and §12 "D-F5 Documentation Correction Record — Authorization Act #24."
 **Phase 8 baseline**: `phase8_plan_1_4.md` v1.1.8
 **Phase 8 checkpoint tag**: `phase-8-checkpoint-1` → `ad5776f5f2653785706727c9381249d587f1faf8`
-**Current HEAD at time of writing**: `a047cf07a1379fe908e5e7e5b90278f2cea1d57e`
+**Current HEAD at time of writing**: `724fe67278df65a0f5d08125c6ed504015a8d299`
 
 ---
 
@@ -253,8 +254,8 @@ authorization.
 |------|--------|
 | `.github/` directory | **DOES NOT EXIST** |
 | `.github/workflows/` | **DOES NOT EXIST** |
-| `Dockerfile` | **EXISTS (untracked)** — adopted as the current Task 10-B artifact effective 2026-09-13 (Decision D-6, artifact-adoption boundary only); original 2026-09-12 creation provenance unresolved — see §4 "D-6 current status", §11 v1.0.10, §12 v1.0.10 |
-| `.dockerignore` | **EXISTS (untracked)** — adopted as the current Task 10-B artifact effective 2026-09-13 (Decision D-6, artifact-adoption boundary only); original 2026-09-12 creation provenance unresolved — see §4 "D-6 current status", §11 v1.0.10, §12 v1.0.10 |
+| `Dockerfile` | **EXISTS (untracked)** *(baseline status at the time of this report)* — adopted as the current Task 10-B artifact effective 2026-09-13 (Decision D-6, artifact-adoption boundary only); original 2026-09-12 creation provenance unresolved — see §4 "D-6 current status", §11 v1.0.10, §12 v1.0.10. **Current status (v1.0.23): TRACKED** — first committed to `main` in `7425b3d` (it first appeared in `eeb4093` on the `phase10-f-ci-dry-run` branch) (blob `c9461fc0b74dda4812c8b900e6fb0c683749c336`); replaced by the corrected three-stage `Dockerfile` in `724fe67278df65a0f5d08125c6ed504015a8d299` (blob `ffe54bf1caf9d90a501661e84ea4cb503bf46a34`; Decision D-F6, Task 10-F) |
+| `.dockerignore` | **EXISTS (untracked)** *(baseline status at the time of this report)* — adopted as the current Task 10-B artifact effective 2026-09-13 (Decision D-6, artifact-adoption boundary only); original 2026-09-12 creation provenance unresolved — see §4 "D-6 current status", §11 v1.0.10, §12 v1.0.10. **Current status (v1.0.23): TRACKED** — committed to `main` in `7425b3d` (it first appeared in `eeb4093` on the `phase10-f-ci-dry-run` branch) (blob `e2b09c521b4060f7e2ad2060209fc4c7d7f61330`), unchanged through `724fe67` |
 | `docker-compose.yml` | **DOES NOT EXIST** |
 | `Caddyfile` | **DOES NOT EXIST** |
 
@@ -640,6 +641,21 @@ The Dockerfile must target the root Express server (`server.js`). It must NOT re
 
 Intended Dockerfile structure (planning specification only — not implementing):
 
+> **Replaced artifact note (v1.0.23, RC-33, Authorization Act #25)**: The single-stage structure
+> below is preserved unchanged as the **historical** Task 10-B planning specification and describes
+> the artifact against which the original AC-B1–AC-B7 PASS results (Authorization Acts #3, #7, #8,
+> #9, #10, #13) were recorded. It is **no longer the current production artifact.** It was replaced
+> by the corrected three-stage `Dockerfile` (stages: `builder` — full workspace install and Next.js
+> static export, with the unchanged `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` `ARG`/`ENV` interface;
+> `prod-deps` — scoped production install via
+> `npm ci --omit=dev --workspace=packages/shared --include-workspace-root`; runtime —
+> `node:22-alpine` containing only the runtime dependency tree, `packages/shared`, `server.js`,
+> `database.js`, `public/`, and the root `package.json`, with `EXPOSE 3000` and
+> `CMD ["node", "server.js"]` unchanged) committed in `724fe67278df65a0f5d08125c6ed504015a8d299`
+> (blob `ffe54bf1caf9d90a501661e84ea4cb503bf46a34`). The `npm prune --production` step below does not
+> exist in the corrected artifact. See Decision D-F6 (Task 10-F) and "Corrected-Dockerfile record"
+> below the Task 10-B acceptance criteria. `.dockerignore` is unchanged.
+
 ```dockerfile
 FROM node:22-alpine
 
@@ -729,10 +745,71 @@ CMD ["node", "server.js"]
 
 **Acceptance Criteria**:
 - [x] **AC-B1** — **PASS (Authorization Act #7, 2026-09-16 — see §12 "AC-B1 Human Interpretation and Documentation Record — Authorization Act #7")**: Dockerfile and `.dockerignore` are both created; both authorized by D-6
+
+  **AC-B1 corrected-Dockerfile record (v1.0.23, RC-33, Authorization Act #25 — governance/documentation
+  evidence, not a technical test)**: the Authorization Act #7 PASS above concerns the original
+  single-stage `Dockerfile` and is preserved unchanged as historical evidence. The current
+  `Dockerfile` is the corrected three-stage artifact committed in
+  `724fe67278df65a0f5d08125c6ed504015a8d299` (blob `ffe54bf1caf9d90a501661e84ea4cb503bf46a34`). It
+  exists and is tracked, and it was implemented under an explicit human authorization limited to that
+  file (2026-09-22; human-authorized, not formally identified by Act number in this document).
+  Decision D-F6 (Task 10-F) records the human decision that this blob replaces D-F1's `Dockerfile`
+  reference as the intended Docker release artifact. `.dockerignore` is unchanged (blob
+  `e2b09c521b4060f7e2ad2060209fc4c7d7f61330`, the D-6/D-F1 artifact). This note does not re-accept
+  or reopen Task 10-B.
 - [x] **AC-B2** — **PASS (Authorization Act #9, 2026-09-16 — see §12 "AC-B2 Verification Result — Authorization Act #9")**: `docker build --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=<pk_live_...> .` completes without error
+
+  **AC-B2 corrected-Dockerfile verification (2026-09-23, human-authorized)**: the Authorization Act #9
+  PASS above concerns the original single-stage `Dockerfile` (HEAD `c366af0`) and is preserved
+  unchanged as historical evidence. A fresh `docker build --no-cache` of the corrected three-stage
+  `Dockerfile` was performed from a `git archive` of exact commit
+  `724fe67278df65a0f5d08125c6ed504015a8d299` (so no working-tree file, including any local `.env` or
+  `.env.local`, entered the build context), with the real production `pk_live_` publishable key
+  supplied as `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` through a temporary, human-created key file that was
+  read into the build's environment without being echoed and deleted immediately after the build.
+  Build window 2026-09-23T07:39:26Z–07:46:09Z; exit code 0; both install stages completed; Next.js
+  compiled, generated 17/17 static pages, and exported; resulting image ID
+  `sha256:da5ea518dc9e151387068b2aa29a85d6d136756ae5f72f9787cee1adac853fca`, created
+  2026-09-23T07:45:59Z, 78,757,967 bytes. Provenance/SBOM attestations were disabled for the build; the
+  build log, build metadata, image configuration, and image history contained no `pk_live_` occurrence.
+  `CLERK_SECRET_KEY` was not read, supplied, or used. The single local Docker Buildx history record for
+  this build was deleted afterward; the temporary image was removed. **Result: PASS** for the corrected
+  artifact. As with the Act #9 record, this does **not** independently prove that the supplied value
+  equals the `CLERK_PUBLISHABLE_KEY` GitHub secret; AC-E4 is unchanged by this recording.
 - [x] **AC-B3** — **PASS (Authorization Act #10, 2026-09-16 — see §12 "AC-B3 / AC-B4 Verification Result — Authorization Act #10")**: Container starts and the Express server listens on port 3000; `GET /` returns HTTP 200 from within the container
+
+  **AC-B3 corrected-Dockerfile verification (2026-09-22 and 2026-09-23, human-authorized, local and
+  disposable)**: the Authorization Act #10 PASS above concerns the original single-stage `Dockerfile`
+  and is preserved unchanged as historical evidence. (1) 2026-09-22 (approximately 17:39–17:49Z): an
+  image built with `--no-cache` from a `git archive` of exact commit
+  `724fe67278df65a0f5d08125c6ed504015a8d299` (dummy, non-production Clerk publishable key) was started
+  with its own image `CMD` (`node server.js`) against a disposable, SSL-enabled local PostgreSQL 16
+  container on an isolated Docker network, with dummy non-production runtime values; readiness was
+  confirmed by bounded polling. From within the container: `GET /` → HTTP 200; `GET /api/moods` → 200
+  (8 moods); `GET /api/recipes/happy` → 200 (4 recipes); the process listened on `:::3000` with 0
+  restarts; the 13 runtime dependencies (`express`, `cors`, `helmet`, `compression`, `pino`,
+  `pino-http`, `@clerk/express`, `@anthropic-ai/sdk`, `stripe`, `pg`, `dotenv`,
+  `@flavour-find/shared`, `better-sqlite3`) loaded; `next`, `@clerk/react`, and `@capacitor/*` were
+  absent; no `MODULE_NOT_FOUND`. (2) 2026-09-23: the same disposable startup/smoke procedure was
+  repeated against the live-key image described under AC-B2, with the same results and no error-level
+  log lines. No production database, secret, DOCR, or Droplet was used; all disposable resources were
+  removed. **Result: PASS** for the corrected artifact.
 - [x] **AC-B4** — **PASS (Authorization Act #10, 2026-09-16 — see §12 "AC-B3 / AC-B4 Verification Result — Authorization Act #10")**: `POST /api/billing/webhook` path is reachable from within the container
+
+  **AC-B4 corrected-Dockerfile verification (2026-09-22 and 2026-09-23, human-authorized, local and
+  disposable)**: the Authorization Act #10 PASS above is preserved unchanged as historical evidence. In
+  both disposable runs described under AC-B3 (corrected artifact from `724fe67`, `STRIPE_SECRET_KEY`
+  absent), `POST /api/billing/webhook` was reachable from within the container and returned its
+  existing HTTP 400 `{"error":"Webhook signature verification failed"}` response — the accepted D-F5
+  webhook nuance (Task 10-F, D-F5). No Stripe API or network call was made. **Result: PASS** for the
+  corrected artifact.
 - [x] **AC-B5** — **PASS (Authorization Act #13, 2026-09-17 — see §12 "AC-B5 Verification Result — Authorization Act #13")**: No application source code was modified to make the Dockerfile work *(D-F5, recorded 2026-09-22, is a separate, later, differently-scoped human decision concerning Stripe client initialization, unrelated to the Dockerfile; it does not affect this criterion, and no fresh AC-B5 evidence is required because of D-F5)*
+
+  **AC-B5 corrected-Dockerfile record (v1.0.23, read-only Git evidence)**: the Authorization Act #13
+  PASS above is preserved unchanged as historical evidence. Commit
+  `724fe67278df65a0f5d08125c6ed504015a8d299` modifies only `Dockerfile` (read-only `git show --stat`);
+  no application source code, `package.json`, or `package-lock.json` was modified to make the corrected
+  `Dockerfile` work. **Result: PASS** for the corrected artifact (no new technical test required).
 - [x] **AC-B6** — **PASS (Authorization Act #3, 2026-09-15 — see §12 "AC-B6 Verification Result — Authorization Act #3")** *(verification method corrected in v1.0.11/RC-21; substantive credential-definition corrected in v1.0.12/RC-22 — see §11/§12 for both)*: A structurally valid production Clerk publishable-key value (`pk_live_` followed immediately by an uninterrupted Base64-alphabet run, consistent with Clerk's documented `pk_<test|live>_<base64(FAPI-hostname + "$")>` format — see Clerk, "Refactoring our frontend API key," https://clerk.com/blog/refactoring-our-api-keys) is confirmed present in the static assets produced by a `docker build` of the project's `Dockerfile` with `--build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=<pk_live_...>`, **and** no structurally valid `pk_test_` value of the same form is present anywhere in those assets. A bare `pk_test_` or `pk_live_` prefix occurrence that is **not** immediately followed by such a Base64 run (e.g., the Clerk SDK's own prefix/classification constants, or a truncated fragment inside SDK error-message text) is an SDK/reference literal, not a credential value, and does not by itself cause PASS or FAIL.
 
   **Verification procedure** (Docker/static-asset method retained unchanged from v1.0.11/RC-21):
@@ -770,7 +847,77 @@ CMD ["node", "server.js"]
   afterward. **Result: PASS**, confirming AC-B6 remains satisfied against the current, post-D-F5
   production artifact. This recording does not evidence any other AC-B, AC-F, or AC-N criterion, does
   not constitute or imply Task 10-B, Task 10-F, or Task 10-E acceptance, and does not satisfy Gate C.
+
+  **AC-B6 corrected-Dockerfile verification (2026-09-23, human-authorized)**: the 2026-09-15
+  (Authorization Act #3) PASS and the 2026-09-22 fresh post-D-F5 PASS above both concern the original
+  single-stage `Dockerfile` and are preserved unchanged as historical evidence. The same documented
+  structural test was applied to the static assets (`/app/public`, 54 files) of the corrected-artifact
+  image built from exact commit `724fe67278df65a0f5d08125c6ed504015a8d299` with the real production
+  `pk_live_` publishable key (see AC-B2 corrected-Dockerfile verification). The assets were examined by a
+  read-only scan inside a disposable container of that image (an equivalent read-only extraction under
+  step 3; the application was not started for this step), reporting only the fields permitted by the
+  evidence-handling rule above. Findings: one `pk_live_` occurrence classified as a
+  **credential-structured value** (matched-run length 30), in
+  `/app/public/_next/static/chunks/app/layout-d6381817b08c7cc6.js`; **zero** `pk_test_` occurrences
+  classified as credential-structured; three `pk_live_` and three `pk_test_` occurrences with run-length
+  0, classified as SDK/reference literals. Additional secret-boundary checks: zero structured
+  `sk_live_`/`sk_test_` values in `/app/public`, in the application source and `packages/`, and in
+  `node_modules`; the runtime image configuration contains no Clerk-related environment variable; no
+  `.env`/`.env.local` file is present in the image; `CLERK_SECRET_KEY` was not read, supplied, or used.
+  No complete or partial credential value, matched Base64 characters, decoded content, or credential
+  hash was recorded or exposed. The temporary key file, container, image, build log, and the single
+  Buildx history record for this build were removed afterward. **Result: PASS** for the corrected
+  artifact. This recording does not evidence any AC-F or AC-N criterion and does not constitute or
+  imply Task 10-F or Task 10-E acceptance.
 - [x] **AC-B7** — **PASS (Authorization Act #8, 2026-09-16 — see §12 "AC-B7 Verification Result — Authorization Act #8")**: `apps/web/.env.local` is confirmed excluded from the Docker build context (test by running `docker build` without `--build-arg` and verifying the build fails or produces an undefined key — the test key must not silently appear)
+
+  **AC-B7 corrected-Dockerfile verification (2026-09-22, human-authorized, local and disposable)**: the
+  Authorization Act #8 PASS above is preserved unchanged as historical evidence. A `docker build
+  --no-cache` of the corrected artifact was run **without** any `--build-arg`, from the working-tree
+  build context (in which `apps/web/.env.local` exists), with `Dockerfile` and `.dockerignore`
+  confirmed identical to commit `724fe67278df65a0f5d08125c6ed504015a8d299`. The build completed; a
+  read-only scan of the resulting static assets (54 files) found zero credential-structured `pk_test_`
+  or `pk_live_` values (six SDK/reference literals only), and a comparison performed without printing
+  or recording any value or hash confirmed that the `apps/web/.env.local` publishable key did not appear
+  in the output — i.e., the build produced an undefined key and the test key did not silently appear.
+  The temporary image was removed. **Result: PASS** for the corrected artifact.
+
+  **Task 10-B acceptance state after the corrected artifact (v1.0.23, human decision DEC-2)**: Task
+  10-B **remains ACCEPTED** (Authorization Act #16). It is **not** reopened and **not** re-accepted.
+  The original Act-numbered AC-B1–AC-B7 PASS results remain the historical acceptance evidence for the
+  original artifact; the corrected-Dockerfile records above additionally evidence AC-B1–AC-B7 against
+  the corrected artifact at `724fe67`, following the same treatment used for the fresh post-D-F5
+  evidence. None of the original Act results is represented as having been performed against
+  `724fe67`.
+
+  **Corrected-Dockerfile record (factual chronology, 2026-09-22 — 2026-09-23)**:
+  1. The first production release attempt (`prod-v1.0.0` → `a2d45cc`, run `35750588575`, 2026-09-22)
+     built the original single-stage image successfully in CI but failed at the DigitalOcean Container
+     Registry push with `denied: quota exceeded`; no deployment occurred (see Task 10-F, "First
+     production release attempt").
+  2. A local, read-only image-size audit (2026-09-22) found the existing local images built from the
+     original single-stage `Dockerfile` (`flavourfind-app:smoke-test-local`,
+     `flavourfind-app:phase10-smoke-test`) at approximately **2.38 GB** each, against a DOCR Starter
+     (Free) 500 MiB storage allowance.
+  3. Authorized, local-only, never-pushed trials of a multi-stage design reduced the local image to
+     approximately 994 MB (multi-stage, unscoped runtime dependencies) and then approximately 362 MB
+     (scoped runtime dependencies: root + `packages/shared` only).
+  4. The validated three-stage design was implemented in `Dockerfile` only, under explicit human
+     authorization, and verified locally with `--no-cache` and a dummy key: reported image size
+     approximately 362 MB; image size 78,762,389 bytes; `docker save` 78,782,464 bytes (approximately
+     78.8 MB); runtime `node_modules` approximately 99.8 MB; `next`, `@capacitor/*`, and `@clerk/react`
+     absent; `react`/`react-dom` retained as peer dependencies of `@clerk/shared` (via
+     `@clerk/express`).
+  5. The `repository-reviewer` agent reported **CHECKPOINT READY** with no blockers.
+  6. The change was committed as `724fe67278df65a0f5d08125c6ed504015a8d299` (Dockerfile only;
+     2026-09-22T13:18:34−04:00) and pushed to `origin/main` (fast-forward from `a2d45cc`) under
+     separate explicit human authorizations; no tag was created, moved, or pushed, and the push did not
+     trigger any workflow.
+  7. Fresh corrected-artifact evidence was then recorded above for AC-B1–AC-B7 and in §8.1 for the Gate
+     C Docker bullet.
+
+  These local measurements do not themselves prove registry acceptance; actual DOCR acceptance of the
+  corrected image remains to be demonstrated by a separately authorized production release.
 
 **Current authorization status (v1.0.10, as of 2026-09-13)**: AC-B1's file-existence half is
 satisfied (both files exist) and its "authorized by D-6" half is satisfied only for the
@@ -1189,6 +1336,14 @@ evidence recording" below). This task is no longer blocked on D-7. Each further 
 implementation, publication, and production action still requires its own separate, explicit human
 authorization, and Gate C remains NOT SATISFIED.
 
+**Current status note (v1.0.23)**: the paragraph above describes the state at the time of the v1.0.21
+correction and is preserved as written. Since then: the `prod-v*` production trigger was implemented
+and published in commit `a5318abb03bb21f56ecfde824f72be8cbf6699f5` — `ci(phase10): enable prod-v tag deployment workflow`,
+2026-09-21T14:26:35−04:00 — so `deploy.yml` is **no longer dispatch-only** (it now triggers on a push
+of a `prod-v*` tag, with `workflow_dispatch` retained as the non-production dry run); `deploy.yml` is
+unchanged from `a5318ab` through `724fe67`. Gate C is **SATISFIED** as of 2026-09-22 (§8.1). See
+"Implementation references (recorded in v1.0.23)" under the D-F decisions below.
+
 **Specification**:
 
 The CI/CD pipeline must:
@@ -1257,7 +1412,9 @@ be retained in the registry (not overwritten or deleted) to allow rollback.
 - **Publishing the workflow does not execute production.** The registered
   `.github/workflows/deploy.yml` remains dispatch-only until a separately authorized workflow
   implementation; documentation correction and workflow implementation (edit, commit, publication)
-  are separate authorization boundaries, in that order.
+  are separate authorization boundaries, in that order. *(Current status, v1.0.23: that workflow
+  implementation has since occurred and been published in `a5318abb03bb21f56ecfde824f72be8cbf6699f5`;
+  `deploy.yml` is no longer dispatch-only. The sentence above is preserved as the rule as recorded.)*
 - **Retry boundary**: a retry of the same authorized production release is permitted under the
   original authorization only when the original production attempt failed or remained incomplete,
   and only through an explicitly named retry mechanism, such as a GitHub Actions re-run of the
@@ -1266,6 +1423,14 @@ be retained in the registry (not overwritten or deleted) to allow rollback.
   deploying a different release or to a different target; a second successful production
   deployment for AC-F8; rollback testing; or any other new production action. A second production
   deployment needed for AC-F8 requires separate explicit human authorization.
+  *(Cross-reference, v1.0.23: a GitHub Actions re-run of failed run `35750588575` reuses that run's
+  original ref and commit — `prod-v1.0.0` / `a2d45cccd17aba327f4565e45d98f658887656be` — and would
+  therefore rebuild the original single-stage `Dockerfile` whose image push was denied, not the
+  corrected artifact at `724fe67`. Any mechanism that uses the corrected commit changes the commit SHA
+  and therefore falls outside this retry boundary. This note does not choose, authorize, or perform any
+  retry or release mechanism; the release mechanism (DEC-9) remains an unresolved human decision — see
+  "First production release attempt" below and §12 "v1.0.23 Documentation Record — Authorization Act
+  #25".)*
 
 **Runtime secret injection**:
 
@@ -1399,6 +1564,15 @@ as applicable to their exact wording. The references above to the `push`-to-`mai
 trigger describe the trigger as it was specified at the time of that recording and are superseded
 by Option B; no AC-F3 or AC-F6 state is changed by this note.
 
+**v1.0.23 cross-reference (human decision DEC-4)**: the statement above that the `prod-v*` path "has
+not been exercised" was accurate when written. The path was first exercised on 2026-09-22 by the
+failed first production release attempt (run `35750588575`; see "First production release attempt"
+below): the push of `prod-v1.0.0` triggered the production workflow, the workflow parsed and began
+execution, and the run reached the build and registry-push stages. That is recorded here as factual
+evidence only. **AC-F1 and AC-F2 remain unchecked** pending a separate acceptance determination; the
+failed attempt is not treated as successful production-path acceptance evidence, and no AC-F3 or AC-F6
+state is changed.
+
 **AC-F7 evidence recording (2026-09-19, human-authorized review)**: AC-F7 is recorded as evidenced
 based on a read-only review of repository source-control state, not the CI dry-run. `server.js` and
 `database.js` remain tracked-and-clean throughout the Task 10-F implementation — neither was
@@ -1528,6 +1702,79 @@ terminate application startup at module load.
   prohibition on changing webhook, checkout, or portal logic; does not authorize Task 10-G; does
   not change D-8; and does not complete Task 10-E or Task 10-F. See Task 10-E, "Task 10-E
   dependency clarification," for the related cross-reference.
+
+**D-F6 — Corrected Docker artifact (human decision DEC-1; recorded in v1.0.23, RC-33, Authorization
+Act #25)**: This is the successor decision to D-F1 **for the `Dockerfile` artifact only**. The intended
+Docker release `Dockerfile` is the corrected three-stage `Dockerfile`, blob
+`ffe54bf1caf9d90a501661e84ea4cb503bf46a34`, at commit `724fe67278df65a0f5d08125c6ed504015a8d299`. It
+replaces D-F1's `Dockerfile` reference (blob `c9461fc0b74dda4812c8b900e6fb0c683749c336` from commit
+`eeb40930c60e0f4ee325d3a42c2666b84a5a05d9`), whose image could not be pushed to the registry (see
+"First production release attempt" below). The `.dockerignore` artifact is **unchanged**: D-F1's
+`.dockerignore` reference (blob `e2b09c521b4060f7e2ad2060209fc4c7d7f61330`) remains the intended
+artifact. **D-F1's text, including its transfer instructions, is not rewritten**; it remains the
+historical record of that decision (its transfer was carried out in `7425b3d`; see below). D-F6 does
+**not** authorize any tag creation, movement, or push; any workflow run or re-run; any DOCR, Droplet,
+or secret action; any production release or deployment; or Task 10-F acceptance. Whether and how the
+corrected artifact is released is a separate human decision (DEC-9, unresolved).
+
+**Implementation references (recorded in v1.0.23; Git facts only)**: the following commits exist on
+`main` and were not previously recorded in this document. Each was made under human authorization that
+is **not formally identified by Act number or reference in this document** (human decision DEC-5); no
+Act number, authorization text, or timestamp beyond the Git record is asserted here.
+- `7425b3d05e18887ef60a7119aa9cdf526c828d4f` — `feat(phase10): add production Docker artifacts and
+  Stripe dependency` (committer date 2026-09-21T12:15:37−04:00): adds `Dockerfile` (blob
+  `c9461fc0b74dda4812c8b900e6fb0c683749c336`, the D-F1 blob), `.dockerignore` (blob
+  `e2b09c521b4060f7e2ad2060209fc4c7d7f61330`, the D-F1 blob), and the `package.json` /
+  `package-lock.json` Stripe dependency changes (D-F2).
+- `a5318abb03bb21f56ecfde824f72be8cbf6699f5` — `ci(phase10): enable prod-v tag deployment workflow`
+  (committer date 2026-09-21T14:26:35−04:00): implements the Option B `prod-v*` production trigger in
+  `.github/workflows/deploy.yml`, which is unchanged from this commit through `724fe67`.
+- `724fe67278df65a0f5d08125c6ed504015a8d299` — `fix(phase10): reduce production Docker image
+  dependencies` (2026-09-22T13:18:34−04:00): the corrected three-stage `Dockerfile` (D-F6); see Task
+  10-B, "Corrected-Dockerfile record".
+
+**First production release attempt — `prod-v1.0.0` (2026-09-22) — FAILED at registry push; NOT
+deployed (recorded in v1.0.23)**: factual record only. This was **not** a production deployment, and it
+is **not** AC-F4 or AC-F5 evidence.
+1. **Tag**: `prod-v1.0.0`, a lightweight Git tag pointing to
+   `a2d45cccd17aba327f4565e45d98f658887656be` (which contains the original single-stage `Dockerfile`,
+   blob `c9461fc0…`, and the `a5318ab` workflow). Its creation and push were human-authorized but are
+   **not formally identified by Act number or reference in this document** (DEC-5). A lightweight tag
+   records no creation time, and none is asserted here.
+2. **Workflow execution**: the tag push triggered run `35750588575` ("Deploy to Production", event
+   `push`, ref `prod-v1.0.0`, SHA `a2d45cc…`), created 2026-09-22T15:55:27Z, attempt 1.
+3. **Registry login**: "Log in to DigitalOcean Container Registry" succeeded (15:55:32Z–15:55:33Z).
+4. **Image build**: "Build Docker image" succeeded (15:55:33Z–15:58:06Z), producing the
+   `…/flavourfind-app:<sha>` and `:latest` tags inside the CI runner only.
+5. **Registry push failure**: "Push image to registry" ran 15:58:06Z–15:59:40Z and **failed** on the
+   immutable SHA-tag push with `denied: quota exceeded` (14 layers were reported as pushed before the
+   denial); the `:latest` push was never attempted.
+6. **Deployment**: "Deploy to production Droplet" was **skipped**; no SSH to, and no change on, the
+   production Droplet occurred; no container was started or replaced.
+7. **No retry**: run `35750588575` has not been re-run, and no other production workflow run has
+   occurred since.
+8. **Post-failure registry observation (human decision DEC-6)**: a **manual DigitalOcean
+   control-panel observation** — not API-level verification — made before the 2026-09-23T07:39Z
+   live-key verification build, showed registry `flavourfind` (Starter, Free, 500 MiB) at
+   **0 Bytes / 500 MiB**, with **no container images** and **0 Bytes** garbage-collectable/unused data.
+   This observation served as a pre-release capacity check only; it is **not** AC-F4, AC-F8, or AC-N3
+   evidence, and it does not satisfy the separately authorized registry evidence/read access boundary
+   for AC-F8.
+9. **Remediation**: the image-size cause and the corrected artifact are recorded in Task 10-B,
+   "Corrected-Dockerfile record", and in D-F6 above.
+10. **Acceptance-criterion effect**: none newly checked. AC-F1 and AC-F2 remain unchecked (see the
+    v1.0.23 cross-reference above); AC-F3 is unchanged; AC-F4 remains unchecked (the image was not
+    pushed); AC-F5 remains unchecked (no deployment); AC-F6 remains evidenced for the dry-run path only
+    — the push-path logs of this run have not been reviewed for AC-F6; AC-F7 remains NOT SATISFIED
+    (D-F5); AC-F8, AC-N2, and AC-N3 remain unchecked (no image was stored and no deployment occurred).
+11. **Release mechanism for the corrected artifact (DEC-9) — intentionally UNRESOLVED**: the options
+    identified (none chosen or authorized) are: (A) re-run `35750588575`, which rebuilds the original
+    `a2d45cc` artifact; (B) create a new `prod-v*` tag pointing to the corrected commit; (C) move
+    `prod-v1.0.0` to the corrected commit, which rewrites a published tag. (B) and (C) change the
+    commit SHA and fall outside the retry boundary above. Each requires its own separate, explicit
+    human authorization (for (B)/(C): tag creation/movement, then a tag push that itself starts
+    production execution; for (A): the re-run itself). **No production release of `724fe67` is
+    authorized by this document.**
 
 ---
 
@@ -2201,7 +2448,7 @@ decision is authorized.
 - [ ] **AC-GOV-4**: All pending decisions D-1 through D-9 are resolved and outcomes recorded
 - [ ] **AC-GOV-5**: Phase 8 carried-forward issues CF-1 and CF-2 are documented in checkpoint attestation as unresolved
 - [ ] **AC-GOV-6**: Production Neon database contains no `user_preferences` or `grocery_list` tables
-- [x] **AC-GOV-7** — **SATISFIED (2026-09-22 — see Task 10-B, "AC-B6 fresh post-D-F5 verification")** *(substantive credential-definition corrected in v1.0.12/RC-22 — see §11/§12)*: The production Docker image contains a structurally valid `pk_live_` Clerk publishable-key value (per the AC-B6 structural test: prefix immediately followed by an uninterrupted Base64-alphabet run) for `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, and does not contain a structurally valid `pk_test_` credential value. A bare `pk_test_` or `pk_live_` prefix occurrence without an accompanying Base64 credential structure (e.g., a Clerk SDK reference literal) does not by itself violate this criterion. This criterion is evaluated using the same evidence produced for AC-B6, not a separate test — the fresh post-D-F5 AC-B6 verification (Task 10-B) satisfies it. This does not constitute or imply Task 10-B, Task 10-E, or Task 10-F acceptance, and does not satisfy Gate C.
+- [x] **AC-GOV-7** — **SATISFIED (2026-09-22 — see Task 10-B, "AC-B6 fresh post-D-F5 verification")** *(substantive credential-definition corrected in v1.0.12/RC-22 — see §11/§12)*: The production Docker image contains a structurally valid `pk_live_` Clerk publishable-key value (per the AC-B6 structural test: prefix immediately followed by an uninterrupted Base64-alphabet run) for `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, and does not contain a structurally valid `pk_test_` credential value. A bare `pk_test_` or `pk_live_` prefix occurrence without an accompanying Base64 credential structure (e.g., a Clerk SDK reference literal) does not by itself violate this criterion. This criterion is evaluated using the same evidence produced for AC-B6, not a separate test — the fresh post-D-F5 AC-B6 verification (Task 10-B) satisfies it. This does not constitute or imply Task 10-B, Task 10-E, or Task 10-F acceptance, and does not satisfy Gate C. *(v1.0.23 cross-reference: AC-GOV-7 **remains SATISFIED** and is additionally evidenced for the corrected production artifact at `724fe67278df65a0f5d08125c6ed504015a8d299` by the same AC-B6 evidence — see Task 10-B, "AC-B6 corrected-Dockerfile verification (2026-09-23)": one credential-structured `pk_live_` value (matched-run length 30) and zero credential-structured `pk_test_` values. The 2026-09-22 post-D-F5 evidence is preserved as historical evidence for the original artifact.)*
 - [ ] **AC-GOV-8**: Rollback procedure was reviewed by a human before first deployment
 
 ---
@@ -2219,7 +2466,7 @@ Before any implementation task begins:
 
 - Verify actual Git HEAD matches the expected value recorded in this document
 - Verify working tree has no uncommitted changes that could enter the Docker image unexpectedly
-- Verify this planning document version (v1.0.22) is the active authoritative specification
+- Verify this planning document version (v1.0.23) is the active authoritative specification
 - Obtain explicit human authorization for the specific task about to begin
 
 This gate is required before each task, not only the first.
@@ -2345,6 +2592,42 @@ acceptance/authorization, does **not** constitute Gate D passing, and does **not
 deployment has occurred — no deployment, tag, or workflow action has taken place. Each of the
 excluded actions above remains a separate, later, explicitly-required authorization boundary,
 starting with the first `prod-v*` tag creation.
+
+**Corrected-Dockerfile Docker evidence (recorded in v1.0.23, RC-33, Authorization Act #25; human
+decision DEC-3)**: Following the failed first production release attempt (Task 10-F, "First production
+release attempt"), the production `Dockerfile` was corrected (Decision D-F6; commit
+`724fe67278df65a0f5d08125c6ed504015a8d299`). Fresh, human-authorized, local, disposable, non-production
+Docker evidence now exists for that corrected artifact:
+- **Build**: `--no-cache` builds from a `git archive` of exact commit `724fe67` succeeded on 2026-09-22
+  (dummy Clerk key) and on 2026-09-23 (real production `pk_live_` publishable key via a temporary key
+  file; image 78,757,967 bytes). The corrected image is approximately 78.8 MB (`docker save`
+  78,782,464 bytes, measured on the 2026-09-22 pre-commit implementation build of the same `Dockerfile`
+content, not on the later `git archive` builds), versus approximately 2.38 GB for local images of the
+  original single-stage `Dockerfile`.
+- **Smoke test**: with a disposable, SSL-enabled local PostgreSQL 16 and dummy runtime values, the
+  application container started with its image `CMD`; `GET /`, `GET /api/moods` (8 moods), and
+  `GET /api/recipes/happy` (4 recipes) each returned HTTP 200; the webhook route returned its accepted
+  D-F5 400 response; the 13 runtime dependencies loaded; no `MODULE_NOT_FOUND`; all disposable
+  resources were removed. No Neon, production `DATABASE_URL`, GitHub Actions, DOCR, Droplet, or
+  production secret was used, other than the human-supplied `pk_live_` publishable key for the
+  2026-09-23 build.
+- **Criteria**: AC-B2, AC-B3, AC-B4, AC-B6, and AC-B7 PASS for the corrected artifact, AC-B1 and AC-B5
+  recorded, and AC-GOV-7 additionally evidenced — see the Task 10-B corrected-Dockerfile records.
+- **Registry state (manual observation only)**: see Task 10-F, "First production release attempt",
+  item 8 — registry `flavourfind` observed via the DigitalOcean control panel at 0 Bytes / 500 MiB, no
+  images, 0 Bytes garbage-collectable; not API-level verification.
+
+For the purpose of documenting the corrected artifact, this evidence **supersedes** the 2026-09-17 and
+2026-09-22 (D-F5) Docker smoke-test evidence as support for the "Docker image must be built and
+smoke-tested locally or in CI" bullet; those earlier records are preserved unchanged as historical
+evidence for the original artifact. **Gate C remains SATISFIED** as recorded above (2026-09-22). This
+record does **not** state or imply that the 2026-09-22 Gate C final authorization — which names no
+commit — authorizes a production release of `724fe67`; no such authorization is inferred from the
+absence of a commit SHA. **Whether a production release of the corrected commit is authorized remains
+a separate, undecided human decision**, together with the release mechanism (DEC-9; see Task 10-F).
+This record is local, disposable evidence only: it is not registry, CI-workflow, or
+production-deployment evidence, and it does not evidence AC-F1, AC-F2, AC-F4, AC-F5, AC-F6, AC-F8, or
+any AC-N criterion.
 
 **Gate D — Pre-live-Stripe authorization**
 
@@ -2526,6 +2809,47 @@ This is a security posture note; it does not block deployment.
 | v1.0.20 | `phase10_plan_3.md` | 2026-09-17 | Governance recording (RC-30, Authorization Act #22): documents the completed Task 10-C DNS implementation (performed manually by the human operator via Namecheap — `@`/`www` A records set to `146.190.189.242`, replacing the prior parking CNAME/URL redirect), read-only technical verification (AC-C1, AC-C2, AC-C3 all PASS, confirmed via local resolution and two independent public DNS-over-HTTPS resolvers), and formal acceptance of Task 10-C (Authorization Act #22), following Authorization Act #20 (implementation-readiness review) and Authorization Act #21 (implementation authorization and verification), neither of which modified this document. Documentation-only; no DNS record created, modified, or verified by Claude as part of this recording; no application/Dockerfile/`.dockerignore`/infrastructure change; no Git write. Task 10-D and all later Phase 10 tasks remain NOT AUTHORIZED. |
 | v1.0.21 | `phase10_plan_3.md` | 2026-09-21 | Documentation correction (RC-31, Authorization Act #23 — human-selected number): records the Task 10-F Option B architecture (`prod-v*` version-tag-triggered production deployment; `workflow_dispatch` retained as non-production dry run; checkpoint tags never trigger production; event-separated concurrency with `cancel-in-progress: false`; no GitHub Environment), the AC-F8 first/second-deployment consequence, the bounded retry rule, and the AC-F1/AC-F2 revert to unchecked (2026-09-17 `workflow_dispatch` evidence preserved as historical); applies the named corrections (stale D-7 gate text; live version references in §8.1 Gate A and §8.2 advanced to v1.0.21; "immutable image tag (Git commit SHA)" terminology in Task 10-F); removes the "(proposed)" label from the AC-F4/AC-F8 clarification. Documentation-only; `deploy.yml`, `CLAUDE.md`, and all application/infrastructure files unchanged; no Git write, workflow run, or production action. Workflow implementation, production tag creation/push, production deployment, and Task 10-F acceptance remain NOT AUTHORIZED. |
 | v1.0.22 | `phase10_plan_3.md` | 2026-09-22 | Documentation correction (RC-32, Authorization Act #24): records Decision D-F5 (Task 10-F), a human decision approving, in principle, a future, separately authorized Shape-1-only `server.js` Stripe-client-initialization deferral (preserving the existing `stripe` identifier and all four existing call sites; excluding webhook/checkout/billing-portal/frontend/database/package-file/SDK-version/logging/error-handling changes), the accepted webhook nuance, and an explicit non-authorization list (no secret, Docker, DOCR, Droplet, Caddy, production, tag, commit, push, or reboot action). Reconciles §0, §3, AC-B5, AC-F7, AC-GOV-1, AC-GOV-7, Gate C, and the Task 10-E first-pass/second-pass clarification with narrow clarifications/cross-references only; does not rewrite any existing rule, criterion wording, or historical evidence record; does not alter Task 10-F's "does NOT authorize: Modifying `server.js`" scope statement. AC-F7's checkbox is unchanged; a note records its future NOT SATISFIED treatment once the Shape 1 implementation actually occurs. Documentation-only; `server.js`, `deploy.yml`, `package.json`, `package-lock.json`, `CLAUDE.md`, and all other application/infrastructure files unchanged; no Git write, workflow run, or production action. `server.js` implementation, any secret action, production tag creation/push, production deployment, and Task 10-E/Task 10-F acceptance remain NOT AUTHORIZED. |
+| v1.0.23 | `phase10_plan_3.md` | 2026-09-23 | Documentation recording (RC-33, Authorization Act #25): records Decision D-F6 (corrected three-stage `Dockerfile`, blob `ffe54bf1…` at `724fe67`, replacing D-F1's `Dockerfile` reference only; `.dockerignore` unchanged; D-F1 text preserved); corrected-Dockerfile evidence for AC-B1–AC-B7 (Task 10-B remains ACCEPTED, not reopened or re-accepted; original Act-numbered PASS records preserved) and AC-GOV-7 (remains SATISFIED); corrected-Dockerfile Docker evidence for the Gate C Docker bullet (Gate C remains SATISFIED; release authorization for `724fe67` not inferred); the failed first production release attempt (`prod-v1.0.0` → `a2d45cc`, run `35750588575`: build succeeded, DOCR push denied `quota exceeded`, deploy skipped, no Droplet change, no retry) and a manual control-panel registry observation; previously unrecorded implementation commits `7425b3d` and `a5318ab`; a retry-boundary cross-reference; and current-status corrections (header, §1, Task 10-F D-7 gate note, Gate A, footer). AC-F1/AC-F2 remain unchecked; no criterion newly checked. DEC-9 (release mechanism) intentionally unresolved. Documentation-only; no application/infrastructure file changed; no Git write, tag action, workflow run, DOCR/Droplet/secret access, or production action. Production release, retry, tag creation/movement/push, and deployment remain NOT AUTHORIZED. |
+
+### Corrections Applied in v1.0.23
+
+The following documentation recording was applied in the 2026-09-23 v1.0.23 pass (RC-33), under
+explicit human authorization (Authorization Act #25), incorporating the human decisions labelled DEC-1
+through DEC-8 in the authorizing instructions (DEC-9 intentionally left unresolved). "D-F6" is the sixth
+entry in the Task 10-F "D-F" decision sequence and is distinct from this document's Decisions D-1
+through D-9.
+
+1. **RC-33 — D-F6 recorded (Task 10-F; DEC-1)**: successor to D-F1 for the `Dockerfile` artifact
+   only (blob `c9461fc0…` from `eeb4093` → blob `ffe54bf1caf9d90a501661e84ea4cb503bf46a34` at
+   `724fe67`); `.dockerignore` blob `e2b09c52…` unchanged; D-F1's text and transfer instructions
+   preserved as historical.
+2. **RC-33 — Task 10-B corrected-artifact evidence (DEC-2)**: dated corrected-Dockerfile records added
+   under AC-B1–AC-B7, a "Replaced artifact note" added above the preserved §10-B.2 single-stage
+   specification, a Task 10-B acceptance-state note (remains ACCEPTED; not reopened or re-accepted),
+   and a factual "Corrected-Dockerfile record" chronology. Original Act-numbered PASS records are
+   unchanged.
+3. **RC-33 — AC-GOV-7 cross-reference**: remains SATISFIED; additionally evidenced for the corrected
+   artifact by the corrected-Dockerfile AC-B6 evidence.
+4. **RC-33 — Gate C corrected-Dockerfile Docker evidence (DEC-3)**: added to §8.1; supersedes the
+   earlier Docker smoke-test evidence for documenting the corrected artifact; Gate C remains SATISFIED;
+   no release authorization for `724fe67` is inferred from the 2026-09-22 final authorization.
+5. **RC-33 — failed first production release attempt (Task 10-F; DEC-4, DEC-5, DEC-6)**: factual
+   record of `prod-v1.0.0` / run `35750588575` (tag, trigger, login, build, registry-push denial,
+   skipped deploy, no Droplet change, no retry) and the manual post-failure control-panel registry
+   observation (not API-level verification; not AC-F4/AC-F8/AC-N3 evidence). AC-F1/AC-F2 factual
+   evidence cross-referenced; both remain unchecked. Authorization references for the tag and for
+   `7425b3d`/`a5318ab` recorded conservatively as human-authorized but not formally identified.
+6. **RC-33 — implementation references**: `7425b3d` (Docker artifacts + Stripe dependency) and
+   `a5318ab` (`prod-v*` trigger) recorded from Git; stale "dispatch-only" statements annotated with
+   current-status notes rather than rewritten.
+7. **RC-33 — retry-boundary cross-reference**: a re-run of `35750588575` would rebuild `a2d45cc`; using
+   the corrected commit falls outside the retry boundary; no mechanism chosen (DEC-9 unresolved).
+8. **RC-33 — current-status corrections**: header (version, status, "This version", "Current HEAD");
+   §1 `Dockerfile`/`.dockerignore` rows (baseline wording preserved, current status added); Gate A
+   version reference; footer. Historical "Gate C remains NOT SATISFIED" statements inside dated records
+   are preserved unchanged.
+9. **Not recorded (DEC-8)**: local Docker build-cache state is not an acceptance requirement and is not
+   recorded.
 
 ### Corrections Applied in v1.0.22
 
@@ -4523,14 +4847,91 @@ accordingly.
    scope statement, or any historical acceptance/execution record; all are preserved unchanged
    above.
 
+### v1.0.23 Documentation Record — Authorization Act #25 (2026-09-23)
+
+Under a separate, explicit human authorization (Authorization Act #25; RC-33; 2026-09-23), this
+documentation-only pass records the corrected Docker artifact, the fresh evidence for it, and the failed
+first production release attempt, and corrects genuinely stale current-status statements.
+
+1. **Result: v1.0.23 recorded.**
+2. **Human decisions recorded**:
+   - **DEC-1 — D-F6 APPROVED**: the corrected three-stage `Dockerfile` (blob
+     `ffe54bf1caf9d90a501661e84ea4cb503bf46a34`, commit `724fe67278df65a0f5d08125c6ed504015a8d299`)
+     replaces D-F1's `Dockerfile` reference only; `.dockerignore` (blob `e2b09c52…`) unchanged; D-F1
+     preserved as historical.
+   - **DEC-2 — Task 10-B remains ACCEPTED**: not reopened or re-accepted; original Act-numbered
+     AC-B1–AC-B7 PASS records preserved; corrected-artifact evidence recorded under AC-B1–AC-B7.
+   - **DEC-3 — Gate C scope**: Gate C remains SATISFIED (§8.1); the corrected-Dockerfile evidence
+     supersedes the earlier Docker evidence for documenting the corrected artifact; the 2026-09-22
+     final authorization is **not** read as authorizing a production release of `724fe67`; that remains
+     a separate human decision.
+   - **DEC-4 — AC-F1/AC-F2**: factual evidence from run `35750588575` recorded; **both remain
+     unchecked** pending a separate acceptance determination.
+   - **DEC-5 — authorization references**: `7425b3d`, `a5318ab`, and `prod-v1.0.0` creation and push
+     recorded as human-authorized but not formally identified in this document; no Act number,
+     timestamp, authorization text, authorship, or tag-creation time invented.
+   - **DEC-6 — DOCR observation**: recorded as a manual control-panel observation made before the
+     2026-09-23T07:39Z live-key build (0 Bytes / 500 MiB; no images; 0 Bytes garbage-collectable); not
+     API-level verification; not AC-F8 or AC-N3 evidence.
+   - **DEC-7 — change record**: v1.0.23, RC-33, Authorization Act #25.
+   - **DEC-8 — build cache**: local Docker build-cache state intentionally not recorded (not an
+     acceptance requirement).
+   - **DEC-9 — release mechanism: intentionally UNRESOLVED.** No choice is made among re-running
+     `35750588575`, creating a new `prod-v*` tag, moving `prod-v1.0.0`, or any other mechanism.
+3. **Evidence sources recorded** (each separately human-authorized earlier; not re-performed by this
+   pass): local corrected-artifact implementation build and repository-reviewer checkpoint (2026-09-22);
+   Dockerfile-only commit `724fe67` and its push to `origin/main` (2026-09-22); disposable local
+   AC-B3/AC-B4/AC-B7 and Gate C smoke verification (2026-09-22); live-key AC-B2/AC-B6/AC-GOV-7
+   verification (2026-09-23); read-only GitHub Actions metadata for run `35750588575`.
+4. **Status after this pass**: Task 10-B ACCEPTED (unchanged); Gate C SATISFIED (unchanged);
+   AC-GOV-7 SATISFIED (unchanged); **Task 10-F NOT ACCEPTED**; AC-F1, AC-F2, AC-F4, AC-F5, AC-F8
+   unchecked; AC-F6 evidenced for the dry-run path only; AC-F7 NOT SATISFIED; AC-N2–AC-N5 unchecked;
+   Gate D NOT SATISFIED (Task 10-D, deployed-and-running state, HTTPS webhook reachability, and D-8
+   all outstanding); **no production deployment has occurred.**
+5. **Production release authorization remains separate**: this record does **not** authorize any
+   production release of `724fe67` or any other commit; any re-run of `35750588575`; any `prod-v*` tag
+   creation, movement, or push; any workflow run or dispatch; any DOCR, Droplet, Caddy, Neon, or secret
+   action; any deployment or rollback; Task 10-D, Task 10-G, or D-8; or Task 10-F acceptance. Each
+   remains a separate, explicit human authorization boundary.
+6. Did **not** modify `Dockerfile`, `.dockerignore`, `.github/workflows/deploy.yml`, `package.json`,
+   `package-lock.json`, `server.js`, `database.js`, any `.env` file, or any file other than this
+   document; did **not** commit, tag, or push; did **not** run or dispatch any workflow; did **not**
+   access DOCR, the Droplet, or any secret. No credential value, key body, credential hash, or `.env`
+   content is recorded in this document.
+7. Did **not** alter any prior RC, Act, custody, acceptance, or execution record. **Authorized tense
+   changes were made to three historical summary clauses** so that they no longer read as current
+   status, without changing their historical meaning: (a) the header status line's v1.0.21 summary
+   ("it does not implement the workflow change, and Gate C remains NOT SATISFIED, Task 10-F remains
+   NOT ACCEPTED, and production deployment remains UNAUTHORIZED" → "it did not implement the
+   workflow change, and at the time of v1.0.21 Gate C was NOT SATISFIED, Task 10-F was NOT ACCEPTED,
+   and production deployment was UNAUTHORIZED"); (b) the header status line's v1.0.22 summary
+   ("Gate C remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production deployment remains
+   UNAUTHORIZED" → "At the time of v1.0.22's publication, Gate C was NOT SATISFIED, Task 10-F was NOT
+   ACCEPTED, and production deployment was UNAUTHORIZED"); and (c) the footer's v1.0.22 history
+   clause ("Gate C remains NOT SATISFIED, Task 10-E and Task 10-F remain NOT ACCEPTED, and production
+   deployment remains UNAUTHORIZED" → "at that time Gate C was NOT SATISFIED, Task 10-E and Task 10-F
+   were NOT ACCEPTED, and production deployment was UNAUTHORIZED", with the surrounding "and is
+   updated here to v1.0.22" adjusted to "updated to v1.0.22" so the v1.0.23 entry could follow). The
+   former "This version" description of v1.0.22 is retained verbatim under a "Previous version
+   (v1.0.22)" label, and the §1 baseline `Dockerfile`/`.dockerignore` rows retain their original
+   wording with a "(baseline status at the time of this report)" label and appended current-status
+   text. All other historical statements — including every dated "Gate C remains NOT SATISFIED"
+   statement within dated records, the footer's v1.0.21 history clause, D-F1, and all Act-numbered
+   records and original PASS evidence — are preserved unchanged; elsewhere, current status was
+   conveyed only by added notes or cross-references.
+
 ---
 
 *This document is a planning specification only. It does not, by itself, authorize any
 implementation beyond what has been separately and explicitly authorized above. Separate explicit
 human authorization is required before any further task in this document may be implemented.
-Current document status: v1.0.22 is APPROVED / AUTHORITATIVE as the governance reference (baseline
+Current document status: v1.0.23 is APPROVED / AUTHORITATIVE as the governance reference (baseline
 approval carried forward from Authorization Act #2); **Task 10-B is ACCEPTED** (Authorization Act
-#16); **Decision D-1 is RESOLVED — production domain `flavourfind.com`** (Authorization Act #19);
+#16; additionally evidenced for the corrected artifact at `724fe67`, v1.0.23); **Gate C is SATISFIED**
+(2026-09-22, §8.1) — production release of the corrected commit `724fe67` is **not** authorized by
+this document and remains a separate human decision, together with the release mechanism (DEC-9,
+unresolved); **Task 10-F is NOT ACCEPTED** — the first production release attempt (`prod-v1.0.0`, run
+`35750588575`) failed at the registry push and **no production deployment has occurred**; **Decision D-1 is RESOLVED — production domain `flavourfind.com`** (Authorization Act #19);
 **Task 10-C is ACCEPTED** (Authorization Act #22, see §12 "Task 10-C Acceptance Record —
 Authorization Act #22") — its DNS implementation was performed manually by the human operator and
 independently verified read-only by Claude (AC-C1–AC-C3 all PASS); none of these extend to Task
@@ -4540,6 +4941,6 @@ and §12 for the full, current criterion-by-criterion, decision-by-decision, and
 AUTHORIZATION," a generic closing statement last accurate before the v1.0.10 baseline-approval
 sequence; it was first reconciled to the then-current status in v1.0.16, updated to v1.0.17,
 updated to v1.0.18 to reflect Task 10-B's acceptance, updated to v1.0.19 to reflect Decision D-1's
-resolution, updated to v1.0.20 to reflect Task 10-C's acceptance, updated to v1.0.21 to reflect the Task 10-F Option B documentation correction (Authorization Act #23; see §11 and §12; Gate C remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production deployment remains UNAUTHORIZED), and is updated here to v1.0.22 to reflect Decision D-F5's recording (Authorization Act #24; see §11 and §12; D-F5 is a human decision record only, not implementation authorization; Gate C remains NOT SATISFIED, Task 10-E and Task 10-F remain NOT ACCEPTED, and production deployment remains UNAUTHORIZED). Earlier dated
+resolution, updated to v1.0.20 to reflect Task 10-C's acceptance, updated to v1.0.21 to reflect the Task 10-F Option B documentation correction (Authorization Act #23; see §11 and §12; Gate C remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production deployment remains UNAUTHORIZED), updated to v1.0.22 to reflect Decision D-F5's recording (Authorization Act #24; see §11 and §12; D-F5 is a human decision record only, not implementation authorization; at that time Gate C was NOT SATISFIED, Task 10-E and Task 10-F were NOT ACCEPTED, and production deployment was UNAUTHORIZED), and is updated here to v1.0.23 (Authorization Act #25; see §11 and §12) to record Decision D-F6, the corrected-artifact evidence, and the failed first production release attempt, and to correct the current Gate C status to SATISFIED (2026-09-22) consistent with §8.1. Earlier dated
 "Document status remains: PROPOSED..." statements elsewhere in §11/§12 are historical attestations
 of status at those specific past points in time and are preserved unchanged.)*
