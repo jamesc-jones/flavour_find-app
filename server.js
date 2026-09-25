@@ -1,5 +1,8 @@
 require('dotenv').config();
 
+const Sentry = require('@sentry/node');
+Sentry.init({ dsn: process.env.SENTRY_DSN });
+
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -94,7 +97,7 @@ app.use(helmet({
 }));
 app.use(compression());
 app.use(pinoHttp({ logger }));
-app.use(cors());
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
 
 // ─── Stripe webhook — MUST be registered before express.json() ────────────
 // (§3.1 item 6 / §6 Middleware Ordering): express.json() would consume the
@@ -172,6 +175,11 @@ app.post('/api/billing/webhook',
 app.use(express.json());
 app.use(express.static('public'));
 app.use(clerkMiddleware());
+
+// Health check endpoint — authorized by Decision D-2 (phase10_plan_3.md v1.0.25)
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok' });
+});
 
 // API Routes
 app.get('/api/moods', async (req, res) => {
@@ -667,6 +675,8 @@ app.post('/api/v1/chat', async (req, res) => {
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
+Sentry.setupExpressErrorHandler(app);
 
 // Await the existing T6.A.3 dbReady initialization Promise (the single
 // initDatabase() invocation already kicked off at database.js module load)
