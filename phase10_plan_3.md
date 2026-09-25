@@ -1,17 +1,18 @@
 # Flavour Find — Phase 10: Production Deployment
 
 **Document**: `phase10_plan_3.md`
-**Version**: v1.0.26
-**Status**: v1.0.26 is **APPROVED / AUTHORITATIVE** (carrying forward v1.0.25's baseline approval, Authorization Act #2, 2026-09-15), superseding v1.0.11 through v1.0.25, all of which remain preserved as historical predecessor states (see §12 "v1.0.12 Baseline Acceptance", "AC-B1 Human Interpretation and Documentation Record — Authorization Act #7", "AC-B7 Verification Result — Authorization Act #8", "AC-B2 Verification Result — Authorization Act #9", "AC-B3 / AC-B4 Verification Result — Authorization Act #10", "AC-B5 Verification Result — Authorization Act #13", "Task 10-B Acceptance State — Authorization Act #16", "Decision D-1 Resolution — Authorization Act #19", and "Task 10-C Acceptance Record — Authorization Act #22"). Task 10-A specification is documented as ACCEPTED below; Task 10-B is documented as ACCEPTED below (Authorization Act #16); Task 10-C is documented as ACCEPTED below (Authorization Act #22). Baseline approval authorizes adoption of this document as the current governance reference ONLY — it does NOT authorize Task 10-D or any later Phase 10 task, Caddy/TLS work, further application or infrastructure implementation, or any Git commit, tag, or push. **AC-B1–AC-B7: all PASS (see individual Act attributions in §5). Task 10-B: ACCEPTED (Authorization Act #16). Decision D-1: RESOLVED — production domain `flavourfind.com` (Authorization Act #19, 2026-09-17). AC-C1–AC-C3: all PASS (Authorization Act #21 implementation and verification). Task 10-C: ACCEPTED (Authorization Act #22, 2026-09-17)** — see §12 "Task 10-C Acceptance Record — Authorization Act #22." **This accepts Task 10-C's completed DNS implementation only; it does not authorize Task 10-D or any later Phase 10 task, Caddy installation, TLS/certificate configuration, or reverse-proxy work. Task 10-D and all later Phase 10 tasks remain NOT AUTHORIZED** and each requires its own separate, explicit future human authorization. **v1.0.21 (RC-31, Authorization Act #23 — human-selected, 2026-09-21) is a documentation-only correction that records the Task 10-F Option B (`prod-v*` version-tag-triggered production deployment) architecture; it did not implement the workflow change, and at the time of v1.0.21 Gate C was NOT SATISFIED, Task 10-F was NOT ACCEPTED, and production deployment was UNAUTHORIZED** — see §12 "v1.0.21 Documentation Correction Record — Authorization Act #23." **v1.0.22 (RC-32, Authorization Act #24, 2026-09-22) records Decision D-F5 — a human decision approving, in principle, a future, separately authorized Shape-1-only `server.js` Stripe-client-initialization deferral — and reconciles this document's wording accordingly; D-F5 is not implementation authorization, does not retroactively expand Task 10-F's authorization, and does not authorize any secret, Docker, registry, Droplet, Caddy, production, tag, commit, push, or reboot action. At the time of v1.0.22's publication, Gate C was NOT SATISFIED, Task 10-F was NOT ACCEPTED, and production deployment was UNAUTHORIZED** — see §12 "D-F5 Documentation Correction Record — Authorization Act #24." **v1.0.23 status summary (RC-33, Authorization Act #25, 2026-09-23 — historical; its release-target reference to `724fe67` is superseded by v1.0.24): Gate C is SATISFIED as of 2026-09-22 (see §8.1, "Gate C final prerequisite — explicit human authorization recorded"); whether a production release of the corrected commit `724fe67278df65a0f5d08125c6ed504015a8d299` is authorized remains a separate, undecided human decision (see §8.1 "Corrected-Dockerfile Docker evidence" and §12 "v1.0.23 Documentation Record — Authorization Act #25"). The first production release attempt (`prod-v1.0.0` → `a2d45cc`, run `35750588575`, 2026-09-22) FAILED at the registry push and did not deploy (see Task 10-F, "First production release attempt"). Task 10-F remains NOT ACCEPTED; no production deployment has occurred; the release mechanism for the corrected artifact (DEC-9) is intentionally unresolved.** **v1.0.24 status summary (RC-34, Authorization Act #26, 2026-09-24 — historical; its "no production deployment has occurred" and "DEC-9 … remains an undecided human decision" statements are superseded by v1.0.25): Gate C remains SATISFIED (2026-09-22, §8.1); Task 10-B remains ACCEPTED; Task 10-H remains ACCEPTED; Task 10-F remains NOT ACCEPTED; no production deployment has occurred. `724fe67` remains the historical evidence commit for the corrected `Dockerfile` (Decision D-F6; Task 10-B). The Deploy step's SSH remote-command defect was corrected in `48d62ac2bd47888e6ea67f726e5fcd1dfd7f8519` (pushed to `origin/main`); a production release must therefore target `48d62ac` or a later commit containing that fix — a tag at `724fe67` or `253e7df` would run the defective Deploy step (see Task 10-F, "Deploy-step SSH remote-command defect and correction" and "Release-readiness record (v1.0.24)"). DEC-9 (release mechanism, tag name, tag target, and explicit production-release authorization) remains an undecided human decision; no production release is authorized by this document.** **v1.0.25 status summary (RC-35, Authorization Act #27, 2026-09-24 — historical; superseded by v1.0.26): the first production deployment HAS OCCURRED — `prod-v1.0.1` → `c2249c90247e88a7679f9828478f692b7727fe4a`, GitHub Actions run `36003636133` attempt 2 (attempt 1 failed at SSH authentication before any remote command), image `sha256:e000b840828c6c6e1ade33fcd75eeac5b5f1e1a0365ba85b3816d206d3f06a09`, independently verified on the Droplet by the human (see Task 10-F, "Production release record (v1.0.25)"). The application is NOT publicly reachable: it is bound to `127.0.0.1:3000` and no Caddy/TLS exists (Task 10-D NOT AUTHORIZED). DEC-9 is RESOLVED (option B: new tag `prod-v1.0.1`). Gate C remains SATISFIED and was used for this release; Task 10-B, Task 10-C, Task 10-H remain ACCEPTED; Task 10-F remains NOT ACCEPTED; D-8 is not authorized within Phase 10 (deferred). Stage 1 human decisions (D-2, D-3, D-5 authorized in principle only; D-4 not authorized; D-8 deferred; AC-F7, AC-N4, AC-N5, PostgreSQL SSL, AC-E5) and the v1.0.25 decisions C1–C15 are recorded (§4 "Decision status (v1.0.25)"; §12 "v1.0.25 Documentation Record — Authorization Act #27"). No production release beyond `prod-v1.0.1`, no implementation of D-2/D-3/D-5 or the SSL change, and no Task 10-D work is authorized by this document.** **Current status (v1.0.26, RC-__, Authorization Act #__ — numbers to be assigned by the human, 2026-09-25): the Day 2 PostgreSQL SSL change (`ssl: { rejectUnauthorized: true }`) is committed and pushed in `9448d2f15663b89a736be89084d29e9927029ede` (which contains only `database.js`) but is NOT deployed; P4 is OPEN (§1.5). The Day 3 implementation (D-2 `GET /health`, D-3 Sentry, D-5 environment-driven CORS, and the `SENTRY_DSN`/`CORS_ORIGIN` `deploy.yml` wiring) is implemented, its diff reviewed, and its non-production validation completed and reviewed; it is UNCOMMITTED at the time of writing, no Day 3 commit hash exists, and it is NOT deployed. Production is unchanged at `prod-v1.0.1` → `c2249c9`. No Day 3 commit, push, tag, secret creation, second production deployment, P4, or Task 10-D work is authorized by this document (§4 "Decision status (v1.0.26)"; §12 "Day 3 Non-Production Validation Record (v1.0.26)" and "v1.0.26 Documentation Record — Authorization Act #__").**
+**Version**: v1.0.27
+**Status**: v1.0.27 is **APPROVED / AUTHORITATIVE** (carrying forward v1.0.26's baseline approval, Authorization Act #2, 2026-09-15), superseding v1.0.11 through v1.0.26, all of which remain preserved as historical predecessor states (see §12 "v1.0.12 Baseline Acceptance", "AC-B1 Human Interpretation and Documentation Record — Authorization Act #7", "AC-B7 Verification Result — Authorization Act #8", "AC-B2 Verification Result — Authorization Act #9", "AC-B3 / AC-B4 Verification Result — Authorization Act #10", "AC-B5 Verification Result — Authorization Act #13", "Task 10-B Acceptance State — Authorization Act #16", "Decision D-1 Resolution — Authorization Act #19", and "Task 10-C Acceptance Record — Authorization Act #22"). Task 10-A specification is documented as ACCEPTED below; Task 10-B is documented as ACCEPTED below (Authorization Act #16); Task 10-C is documented as ACCEPTED below (Authorization Act #22). Baseline approval authorizes adoption of this document as the current governance reference ONLY — it does NOT authorize Task 10-D or any later Phase 10 task, Caddy/TLS work, further application or infrastructure implementation, or any Git commit, tag, or push. **AC-B1–AC-B7: all PASS (see individual Act attributions in §5). Task 10-B: ACCEPTED (Authorization Act #16). Decision D-1: RESOLVED — production domain `flavourfind.com` (Authorization Act #19, 2026-09-17). AC-C1–AC-C3: all PASS (Authorization Act #21 implementation and verification). Task 10-C: ACCEPTED (Authorization Act #22, 2026-09-17)** — see §12 "Task 10-C Acceptance Record — Authorization Act #22." **This accepts Task 10-C's completed DNS implementation only; it does not authorize Task 10-D or any later Phase 10 task, Caddy installation, TLS/certificate configuration, or reverse-proxy work. Task 10-D and all later Phase 10 tasks remain NOT AUTHORIZED** and each requires its own separate, explicit future human authorization. **v1.0.21 (RC-31, Authorization Act #23 — human-selected, 2026-09-21) is a documentation-only correction that records the Task 10-F Option B (`prod-v*` version-tag-triggered production deployment) architecture; it did not implement the workflow change, and at the time of v1.0.21 Gate C was NOT SATISFIED, Task 10-F was NOT ACCEPTED, and production deployment was UNAUTHORIZED** — see §12 "v1.0.21 Documentation Correction Record — Authorization Act #23." **v1.0.22 (RC-32, Authorization Act #24, 2026-09-22) records Decision D-F5 — a human decision approving, in principle, a future, separately authorized Shape-1-only `server.js` Stripe-client-initialization deferral — and reconciles this document's wording accordingly; D-F5 is not implementation authorization, does not retroactively expand Task 10-F's authorization, and does not authorize any secret, Docker, registry, Droplet, Caddy, production, tag, commit, push, or reboot action. At the time of v1.0.22's publication, Gate C was NOT SATISFIED, Task 10-F was NOT ACCEPTED, and production deployment was UNAUTHORIZED** — see §12 "D-F5 Documentation Correction Record — Authorization Act #24." **v1.0.23 status summary (RC-33, Authorization Act #25, 2026-09-23 — historical; its release-target reference to `724fe67` is superseded by v1.0.24): Gate C is SATISFIED as of 2026-09-22 (see §8.1, "Gate C final prerequisite — explicit human authorization recorded"); whether a production release of the corrected commit `724fe67278df65a0f5d08125c6ed504015a8d299` is authorized remains a separate, undecided human decision (see §8.1 "Corrected-Dockerfile Docker evidence" and §12 "v1.0.23 Documentation Record — Authorization Act #25"). The first production release attempt (`prod-v1.0.0` → `a2d45cc`, run `35750588575`, 2026-09-22) FAILED at the registry push and did not deploy (see Task 10-F, "First production release attempt"). Task 10-F remains NOT ACCEPTED; no production deployment has occurred; the release mechanism for the corrected artifact (DEC-9) is intentionally unresolved.** **v1.0.24 status summary (RC-34, Authorization Act #26, 2026-09-24 — historical; its "no production deployment has occurred" and "DEC-9 … remains an undecided human decision" statements are superseded by v1.0.25): Gate C remains SATISFIED (2026-09-22, §8.1); Task 10-B remains ACCEPTED; Task 10-H remains ACCEPTED; Task 10-F remains NOT ACCEPTED; no production deployment has occurred. `724fe67` remains the historical evidence commit for the corrected `Dockerfile` (Decision D-F6; Task 10-B). The Deploy step's SSH remote-command defect was corrected in `48d62ac2bd47888e6ea67f726e5fcd1dfd7f8519` (pushed to `origin/main`); a production release must therefore target `48d62ac` or a later commit containing that fix — a tag at `724fe67` or `253e7df` would run the defective Deploy step (see Task 10-F, "Deploy-step SSH remote-command defect and correction" and "Release-readiness record (v1.0.24)"). DEC-9 (release mechanism, tag name, tag target, and explicit production-release authorization) remains an undecided human decision; no production release is authorized by this document.** **v1.0.25 status summary (RC-35, Authorization Act #27, 2026-09-24 — historical; superseded by v1.0.26): the first production deployment HAS OCCURRED — `prod-v1.0.1` → `c2249c90247e88a7679f9828478f692b7727fe4a`, GitHub Actions run `36003636133` attempt 2 (attempt 1 failed at SSH authentication before any remote command), image `sha256:e000b840828c6c6e1ade33fcd75eeac5b5f1e1a0365ba85b3816d206d3f06a09`, independently verified on the Droplet by the human (see Task 10-F, "Production release record (v1.0.25)"). The application is NOT publicly reachable: it is bound to `127.0.0.1:3000` and no Caddy/TLS exists (Task 10-D NOT AUTHORIZED). DEC-9 is RESOLVED (option B: new tag `prod-v1.0.1`). Gate C remains SATISFIED and was used for this release; Task 10-B, Task 10-C, Task 10-H remain ACCEPTED; Task 10-F remains NOT ACCEPTED; D-8 is not authorized within Phase 10 (deferred). Stage 1 human decisions (D-2, D-3, D-5 authorized in principle only; D-4 not authorized; D-8 deferred; AC-F7, AC-N4, AC-N5, PostgreSQL SSL, AC-E5) and the v1.0.25 decisions C1–C15 are recorded (§4 "Decision status (v1.0.25)"; §12 "v1.0.25 Documentation Record — Authorization Act #27"). No production release beyond `prod-v1.0.1`, no implementation of D-2/D-3/D-5 or the SSL change, and no Task 10-D work is authorized by this document.** **v1.0.26 status summary (RC-__, Authorization Act #__ — numbers to be assigned by the human, 2026-09-25 — historical; its "UNCOMMITTED at the time of writing" and "no Day 3 commit hash exists" statements are superseded by v1.0.27): the Day 2 PostgreSQL SSL change (`ssl: { rejectUnauthorized: true }`) is committed and pushed in `9448d2f15663b89a736be89084d29e9927029ede` (which contains only `database.js`) but is NOT deployed; P4 is OPEN (§1.5). The Day 3 implementation (D-2 `GET /health`, D-3 Sentry, D-5 environment-driven CORS, and the `SENTRY_DSN`/`CORS_ORIGIN` `deploy.yml` wiring) is implemented, its diff reviewed, and its non-production validation completed and reviewed; it is UNCOMMITTED at the time of writing, no Day 3 commit hash exists, and it is NOT deployed. Production is unchanged at `prod-v1.0.1` → `c2249c9`. No Day 3 commit, push, tag, secret creation, second production deployment, P4, or Task 10-D work is authorized by this document (§4 "Decision status (v1.0.26)"; §12 "Day 3 Non-Production Validation Record (v1.0.26)" and "v1.0.26 Documentation Record — Authorization Act #__").** **Current status (v1.0.27, RC-__, Authorization Act #__ — numbers to be assigned by the human, 2026-09-25): the Day 2 implementation commit `9448d2f15663b89a736be89084d29e9927029ede` and the Day 3 implementation commit `d1eaa1045fa4df09125e7e19eebb894211515c36` are committed and pushed to `origin/main`; neither is deployed; P4 is OPEN. Production is unchanged at `prod-v1.0.1` → `c2249c9`. Human decisions A1–F2 are recorded (§4 "Decision status (v1.0.27)"); AC-L4 is SATISFIED by human decision A1 (Task 10-L). `CORS_ORIGIN` and `SENTRY_DSN` are decided (B1, C1) but NOT authorized and NOT created; Sentry is not set up. Retrospective repository-reviewer reviews of `9448d2f` and `d1eaa10` are complete (§12 "Retrospective Repository-Reviewer Evidence (v1.0.27)"); they do not retroactively satisfy the original pre-checkpoint timing requirement. No secret creation, Sentry setup, documentation commit or push, `prod-v*` tag creation or push, second production deployment, P4, production verification, registry read, Task 10-D work, or checkpoint tag is authorized by this document (§12 "v1.0.27 Documentation Record — Authorization Act #__").**
 **Supersedes**: `phase10_plan_2.md` v1.0.1 (2026-09-10)
-**This version**: 2026-09-25 — Documentation recording (v1.0.26, RC-__, Authorization Act #__ — numbers to be assigned by the human): records the Day 2 PostgreSQL SSL change (committed and pushed in `9448d2f`, containing only `database.js`; Day 2 validation evidence; not deployed; P4 OPEN); the Day 3 implementation of D-2, D-3, and D-5 with the `SENTRY_DSN`/`CORS_ORIGIN` `deploy.yml` wiring and the two `.env.example` lines (uncommitted at the time of writing; no Day 3 commit hash exists); the Day 3 decisions K1–K5 and K7–K14 (no K6 issued); the Day 3 non-production validation record (Playwright E2E NOT RUN; AC-J4 DEFERRED; AC-J2 OPEN; AC-L2/AC-L3 UNVERIFIED); an AC-L3 interpretation note (K7) that leaves the criterion wording unchanged; the existing §1.6 discrepancy (recorded, not corrected); and an out-of-scope validation-session governance deviation (`docker builder prune -f --filter until=2h`). No acceptance-criterion wording changed and no checkbox changed; no task newly accepted. Documentation-only: no other file changed; no Git write, tag action, workflow run, secret access, or production action occurred in making it; it does not authorize any commit, push, deployment, P4, secret creation, Task 10-D work, or Task acceptance. See §11 v1.0.26 and §12 "v1.0.26 Documentation Record — Authorization Act #__."
+**This version**: 2026-09-25 — Documentation recording (v1.0.27, RC-__, Authorization Act #__ — numbers to be assigned by the human): records the human Day 4 governance decisions A1 (AC-L4 satisfied for Phase 10; AC-L4 checkbox changed by this human decision), B1 (create `CORS_ORIGIN` = `https://flavourfind.com` — decision only), C1 (set up Sentry and create `SENTRY_DSN` — decision only), D1 (retrospective repository-reviewer reviews), E1 (a separately authorized `prod-v*` release tag permitted for the second production deployment, distinct from the Phase 10 checkpoint tag), and F2 (intended release target: the later documentation-only commit containing this v1.0.27 document, SHA not yet known); the retrospective repository-reviewer evidence for `9448d2f` and `d1eaa10` (original pre-checkpoint requirement not met; retrospective CHECKPOINT READY for content/scope), including a Day 2 reviewer observation not adopted as evidence and a Day 3 reviewer temporary-file process slip; and that `d1eaa10` is committed and pushed. AC-L4 is the only checkbox changed; no acceptance-criterion wording changed; no task newly accepted. Documentation-only: no other file was modified by this documentation pass; no Git write, tag action, workflow run, secret access, or production action occurred in making it; it does not authorize any secret creation, Sentry setup, commit, push, tag creation or push, deployment, P4, production verification, registry read, Task 10-D work, or Task acceptance. See §11 v1.0.27 and §12 "v1.0.27 Documentation Record — Authorization Act #__."
+**Previous version (v1.0.26)**: 2026-09-25 — Documentation recording (v1.0.26, RC-__, Authorization Act #__ — numbers to be assigned by the human): records the Day 2 PostgreSQL SSL change (committed and pushed in `9448d2f`, containing only `database.js`; Day 2 validation evidence; not deployed; P4 OPEN); the Day 3 implementation of D-2, D-3, and D-5 with the `SENTRY_DSN`/`CORS_ORIGIN` `deploy.yml` wiring and the two `.env.example` lines (uncommitted at the time of writing; no Day 3 commit hash exists); the Day 3 decisions K1–K5 and K7–K14 (no K6 issued); the Day 3 non-production validation record (Playwright E2E NOT RUN; AC-J4 DEFERRED; AC-J2 OPEN; AC-L2/AC-L3 UNVERIFIED); an AC-L3 interpretation note (K7) that leaves the criterion wording unchanged; the existing §1.6 discrepancy (recorded, not corrected); and an out-of-scope validation-session governance deviation (`docker builder prune -f --filter until=2h`). No acceptance-criterion wording changed and no checkbox changed; no task newly accepted. Documentation-only: no other file changed; no Git write, tag action, workflow run, secret access, or production action occurred in making it; it does not authorize any commit, push, deployment, P4, secret creation, Task 10-D work, or Task acceptance. See §11 v1.0.26 and §12 "v1.0.26 Documentation Record — Authorization Act #__."
 **Previous version (v1.0.25)**: 2026-09-24 — Documentation recording (RC-35, Authorization Act #27): records the first production deployment (`prod-v1.0.1` → `c2249c9`, run `36003636133` attempt 1 failed at SSH; credential correction; attempt 2 succeeded; human Droplet verification; non-public state) and DEC-9's resolution; the human AC-F6 production-path determination (SATISFIED); the Stage 1 human decisions (D-2, D-3, D-5 authorized in principle only; D-4 not authorized; D-8 not authorized within Phase 10 (deferred); AC-F7 disposition; AC-N4; AC-N5; PostgreSQL SSL; AC-E5) and decisions C1–C15, including checkbox changes for AC-F1, AC-F2, AC-F4, AC-E5 (AC-F5 left unchecked), the C11 human-run SSL-mode log check result, single-origin CORS, Play Store outside Phase 10, and a pre-go-live Clerk check; an effective-TLS-behavior nuance for §1.5 (recorded as unverified); rollback-evidence status (AC-N2 first-deployment record is a single newline); status notes for Tasks 10-A, 10-B, 10-D, 10-E, 10-G, 10-I, 10-J, 10-K, 10-L, 10-N and Gates A, C, D; and the §8.2 template's stale version reference. No acceptance-criterion wording changed; AC-F5, AC-F7 (literally NOT SATISFIED), AC-F8, AC-E1, AC-E3, AC-N2–AC-N5 remain open; no task newly accepted. Documentation-only: no application/infrastructure file changed; no Git write, tag action, workflow run, DOCR/secret access, or production action occurred in making it; it does not authorize any implementation, deployment, release, Task 10-D work, or Task acceptance. See §11 v1.0.25 and §12 "v1.0.25 Documentation Record — Authorization Act #27."
 **Previous version (v1.0.24)**: 2026-09-24 — Documentation recording (RC-34, Authorization Act #26): reconciles this document to the actual release state at `48d62ac2bd47888e6ea67f726e5fcd1dfd7f8519`. Records the Deploy-step SSH remote-command defect and its correction in `48d62ac` (the only change to `.github/workflows/deploy.yml` since `a5318ab`); records that a production release must target `48d62ac` or a later commit containing that fix, while `724fe67` remains the historical evidence commit for the corrected `Dockerfile` (unchanged through `48d62ac`); records the human-reported read-only Droplet Docker-readiness checkpoint; records the `DROPLET_SSH_KEY` non-interactive-use uncertainty as an operational risk tested by AC-F5, not a pre-tag requirement; records the `${{ secrets.X }}` inline-interpolation concern as a separate non-blocking follow-up; and updates current-status references (header, Gate A, Gate C note, footer). No acceptance status changes; no criterion newly checked. DEC-9 remains an undecided human decision. Documentation-only: no application/infrastructure file changed; no Git write, tag action, workflow run, DOCR/Droplet/secret access, or production action occurred in making it; and it does not authorize any production release, retry, tag creation/movement/push, or deployment. See §11 v1.0.24 and §12 "v1.0.24 Documentation Record — Authorization Act #26."
 **Previous version (v1.0.23)**: 2026-09-23 — Documentation recording (RC-33, Authorization Act #25): records Decision D-F6 (the corrected three-stage `Dockerfile`, blob `ffe54bf1caf9d90a501661e84ea4cb503bf46a34` at commit `724fe67278df65a0f5d08125c6ed504015a8d299`, replacing D-F1's `Dockerfile` reference only); corrected-Dockerfile evidence for AC-B1–AC-B7 and AC-GOV-7 (Task 10-B remains ACCEPTED; original Act-numbered PASS records preserved as historical evidence); corrected-Dockerfile Docker evidence for the Gate C Docker bullet (Gate C remains SATISFIED; release authorization for the corrected commit is not inferred); the factual record of the failed first production release attempt (`prod-v1.0.0` → `a2d45cc`, run `35750588575`, image build succeeded, DOCR push denied with `quota exceeded`, deploy skipped, no Droplet change, no retry); a manual DigitalOcean control-panel registry observation; the previously unrecorded implementation commits `7425b3d` and `a5318ab`; and current-status corrections (header, §1, Gate A, footer). AC-F1 and AC-F2 remain unchecked; no AC-F, AC-N, or other criterion is newly checked. The release mechanism for the corrected artifact (DEC-9) is intentionally unresolved. This is a documentation-only recording: no application/infrastructure file changed; no Git write, tag action, workflow run, DOCR/Droplet/secret access, or production action occurred in making it; and it does not authorize any production release, retry, tag creation/movement/push, or deployment. See §11 v1.0.23 and §12 "v1.0.23 Documentation Record — Authorization Act #25."
 **Previous version (v1.0.22)**: 2026-09-22 — Documentation correction (RC-32, Authorization Act #24): records Decision D-F5, inserted into the existing Task 10-F D-F1–D-F4 decision block. D-F5 is a human decision approving, in principle, a future, separately authorized `server.js` change that defers Stripe client construction (Shape 1 only: initialization in `server.js` only, preserving the existing `stripe` identifier and all four existing Stripe call sites, excluding any webhook/checkout/billing-portal/frontend/database/package-file/SDK-version/logging/error-handling change), together with the accepted webhook nuance (a deferred, still-unconfigured Stripe client may still throw on first access, caught by the existing webhook try/catch and producing its existing 400 response) and an explicit list of what D-F5 does not authorize (any Stripe secret action, placeholder production credentials, any change to D-8, any Docker/DOCR/Droplet/Caddy/production/tag/commit/push/reboot action). This pass also reconciles §0, §3, Task 10-F, AC-B5, AC-F7, AC-GOV-1, Gate C, and the Task 10-E first-pass/second-pass clarification with D-F5 via narrow clarifications and cross-references, without rewriting any existing rule, criterion wording, or historical evidence record (Authorization Act #13 / AC-B5, the 2026-09-19 AC-F7 recording, and all other prior acceptance/execution records are preserved unchanged). AC-F7's checkbox is not changed by this pass; a note records that it is to be treated as NOT SATISFIED under its literal wording once the Shape 1 implementation actually occurs. This is a documentation-only correction: `server.js`, `.github/workflows/deploy.yml`, `package.json`, `package-lock.json`, and all other application/infrastructure files are unchanged; no Git write, workflow run, or production action occurred; and it does not authorize `server.js` implementation, any secret action, any `prod-v*` tag creation or push, any production deployment, or Task 10-F/Task 10-E acceptance. See §11 v1.0.22 correction narrative and §12 "D-F5 Documentation Correction Record — Authorization Act #24."
 **Phase 8 baseline**: `phase8_plan_1_4.md` v1.1.8
 **Phase 8 checkpoint tag**: `phase-8-checkpoint-1` → `ad5776f5f2653785706727c9381249d587f1faf8`
-**Current HEAD at time of writing**: `9448d2f15663b89a736be89084d29e9927029ede` — the existing Day 2 SSL commit, which contains only `database.js`; this is the base HEAD before any Day 3 commit. At the time of writing, the Day 3 implementation changes are uncommitted working-tree changes and no Day 3 commit hash exists. If the Day 3 implementation and this v1.0.26 documentation are later committed together under separate authorization, that commit's hash will be recorded only in a later documentation pass, after the commit exists.
+**Current HEAD at time of writing**: `d1eaa1045fa4df09125e7e19eebb894211515c36` — the Day 3 implementation commit (pushed to `origin/main`), whose parent `9448d2f15663b89a736be89084d29e9927029ede` is the Day 2 implementation commit. If this v1.0.27 document is committed under separate authorization, that commit's SHA will be recorded only in a later documentation pass, after the commit exists.
 
 ---
 
@@ -622,6 +623,36 @@ preserved unchanged. Since v1.0.25:
 - **Secrets**: the `SENTRY_DSN` and `CORS_ORIGIN` GitHub secrets have NOT been created.
 
 None of these authorizes a commit, push, tag, secret creation, deployment, P4, or Task 10-D work.
+
+**Decision status (v1.0.27 — human decisions, 2026-09-25)**: The notes above are preserved unchanged.
+The human has made the following six Day 4 governance decisions. Each is a decision only; none is
+authorization to execute the corresponding action.
+- **A1 — AC-L4 satisfied for Phase 10**: Capacitor origins were reviewed; the known Capacitor origin
+  is `https://localhost` (`androidScheme: 'https'`); no production-pointed Capacitor client exists;
+  Phase 10 does not build or deploy Android; Play Store work is outside Phase 10 (C9); the future
+  Capacitor compatibility case remains conditional (C12). Capacitor compatibility was **not**
+  implemented, and `https://localhost` is **not** an allowed production CORS origin. See Task 10-L,
+  "AC-L4 human disposition (v1.0.27)".
+- **B1 — create `CORS_ORIGIN` with the intended value `https://flavourfind.com`**: decision only.
+  Creation of the secret is **NOT AUTHORIZED** and the secret has **NOT** been created.
+- **C1 — set up Sentry, obtain a DSN, and create `SENTRY_DSN` for production**: decision only. Sentry
+  project/DSN setup and creation of the secret are **NOT AUTHORIZED** and have **NOT** been done; the
+  secret does not exist and Sentry is not active in production.
+- **D1 — retrospective repository-reviewer reviews of the Day 2 and Day 3 implementation commits**:
+  completed; see §12, "Retrospective Repository-Reviewer Evidence (v1.0.27)".
+- **E1 — production release tag**: a separately authorized `prod-v*` production release tag is
+  permitted for the second production deployment, because pushing a `prod-v*` tag is the documented
+  production deployment trigger. Tag creation and tag push remain separate authorization boundaries.
+  The Phase 10 checkpoint tag (`phase-10-checkpoint-1`, Gate E) remains a separate later governance
+  event and must never trigger production. See Task 10-F, "v1.0.27 note — release-tag boundary and
+  release target (E1, F2)".
+- **F2 — release target**: the intended release target is the later documentation-only commit that
+  contains this v1.0.27 document, if that commit is created, reviewed, committed, and pushed under
+  separate authorizations. Its SHA is not yet known and is not recorded here.
+
+None of these authorizes secret creation, Sentry setup, a documentation commit or push, `prod-v*` tag
+creation or push, deployment, production verification, registry read, Task 10-D work, or the
+checkpoint tag.
 
 ---
 
@@ -2146,6 +2177,21 @@ implementation together and to supply the P4 evidence (§1.5, v1.0.26 note). Thi
 only; the second production deployment, and any commit, push, tag, or secret action it would
 require, is **NOT AUTHORIZED** by this document.
 
+**v1.0.27 note — release-tag boundary and release target (E1, F2)**: The notes above, including
+"Production release trigger and tag namespace (Option B — recorded in v1.0.21)", are unchanged.
+`prod-v*` is the production release tag; pushing it is the documented production deployment trigger.
+By human decision E1, a separately authorized `prod-v*` release tag is permitted for the second
+production deployment. Tag creation and tag push remain separate authorization boundaries. The
+Phase 10 checkpoint tag (`phase-10-checkpoint-1`, Gate E) is a separate later governance event and
+must never trigger production. E1 is a governance decision, not authorization to create or push a
+tag. No release tag name is fixed by this document. By human decision F2, the intended release
+target is the later documentation-only commit that contains this v1.0.27 document, if it is created,
+reviewed, committed, and pushed under separate authorizations; `d1eaa1045fa4df09125e7e19eebb894211515c36`
+is therefore not the final intended release target if that commit is created. The target SHA is not
+yet known and is not recorded here, because a document cannot record the SHA of its own commit (see
+"Gate A and the eventual tag target" above). The future `prod-v*` tag must point to the verified SHA
+of that commit.
+
 ---
 
 ### Task 10-G: Stripe Live Mode Activation
@@ -2489,6 +2535,13 @@ uncommitted — checkboxes unchanged. **AC-J2: OPEN** — the production `SENTRY
 exist. **AC-J4: DEFERRED** (K4, C13) — real Sentry event delivery was not tested. Production
 acceptance has not been given. A completed checkbox would not itself authorize any next action.
 
+**Status (v1.0.27)**: The v1.0.26 status above is preserved as historical. The Sentry implementation
+is committed in `d1eaa1045fa4df09125e7e19eebb894211515c36` and pushed; it is NOT deployed. Human
+decision C1 (set up Sentry, obtain a DSN, and create `SENTRY_DSN` for production) is recorded as a
+decision only: Sentry project/DSN setup and `SENTRY_DSN` secret creation are **NOT AUTHORIZED** and
+have **NOT** been done; the secret does not exist and Sentry is not active in production. **AC-J2:
+OPEN.** **AC-J4: DEFERRED.** Checkboxes unchanged.
+
 ---
 
 ### Task 10-K: PostHog Analytics
@@ -2574,7 +2627,7 @@ be included. Review at implementation time.
 - [ ] **AC-L1**: `server.js` consumes `CORS_ORIGIN` env var; documented fallback is `'*'` when `CORS_ORIGIN` is unset
 - [ ] **AC-L2**: Preflight requests from `https://<domain>` receive correct CORS headers
 - [ ] **AC-L3**: When production `CORS_ORIGIN` is configured to the authorized production origin, preflight requests from unauthorized origins are rejected by the CORS policy. **Note**: AC-L3 is only verifiable when `CORS_ORIGIN` is explicitly set. While the documented `*` fallback (`process.env.CORS_ORIGIN || '*'`) is active, all origins are permitted and this criterion cannot pass. AC-L3 verification requires the production `CORS_ORIGIN` environment variable to be set in the container.
-- [ ] **AC-L4**: Capacitor app origins (if applicable) reviewed and handled before `CORS_ORIGIN` is restricted
+- [x] **AC-L4** — **SATISFIED (human decision A1, v1.0.27 — see "AC-L4 human disposition (v1.0.27)" below)**: Capacitor app origins (if applicable) reviewed and handled before `CORS_ORIGIN` is restricted
 
 **Status (v1.0.25)**: Task 10-L is **APPLICABLE** — D-5 authorized in principle for a single origin,
 `https://flavourfind.com` (C12), with the eventual implementation authorization to include the narrowly
@@ -2599,6 +2652,25 @@ configured origin was advertised with `CORS_ORIGIN=https://example.test`) — ch
 **AC-L2 and AC-L3: UNVERIFIED** — they require the production `CORS_ORIGIN` configuration and public
 HTTPS evidence. AC-L4: unchanged (C12). Production acceptance has not been given. A completed
 checkbox would not itself authorize any next action.
+
+**AC-L4 human disposition (v1.0.27)**: By human decision A1, AC-L4 is **SATISFIED for Phase 10**.
+Capacitor origins were reviewed: the known Capacitor origin is `https://localhost`
+(`apps/web/capacitor.config.ts`, `androidScheme: 'https'`); no production-pointed Capacitor client
+exists (no tracked configuration sets `NEXT_PUBLIC_API_URL` to a production URL, and no Android build
+artifact is tracked); Phase 10 does not build or deploy Android; Play Store work is outside Phase 10
+(C9). The future Capacitor compatibility case remains conditional (C12: an Android build calling the
+production API from `https://localhost` would require a future CORS decision and change). Capacitor
+compatibility was **not** implemented by this decision, and `https://localhost` is **not** an allowed
+production CORS origin. The disposition was made before `CORS_ORIGIN` is restricted: the
+`CORS_ORIGIN` secret does not exist and production still runs `app.use(cors())`. Only the AC-L4
+checkbox and label changed; the criterion wording after the colon is unchanged. A completed checkbox
+does not itself authorize any next action.
+
+**Status (v1.0.27)**: The v1.0.26 status above is preserved as historical. Environment-driven CORS is
+committed in `d1eaa1045fa4df09125e7e19eebb894211515c36` and pushed; it is NOT deployed. Human decision
+B1 (create `CORS_ORIGIN` with the intended value `https://flavourfind.com`) is recorded as a decision
+only: creation of the secret is **NOT AUTHORIZED** and the secret has **NOT** been created. AC-L1:
+checkbox unchanged. **AC-L2 and AC-L3: UNVERIFIED.** AC-L4: SATISFIED (human decision A1, above).
 
 ---
 
@@ -2922,7 +2994,7 @@ Before any implementation task begins:
 
 - Verify actual Git HEAD matches the expected value recorded in this document
 - Verify working tree has no uncommitted changes that could enter the Docker image unexpectedly
-- Verify this planning document version (v1.0.26) is the active authoritative specification
+- Verify this planning document version (v1.0.27) is the active authoritative specification
 - Obtain explicit human authorization for the specific task about to begin
 
 This gate is required before each task, not only the first.
@@ -3137,7 +3209,7 @@ a push authorization is not a push; pushing without a tag authorization does not
 
 ```
 PHASE 10 CHECKPOINT ATTESTATION
-Document: phase10_plan_3.md v1.0.26
+Document: phase10_plan_3.md v1.0.27
 Date: [YYYY-MM-DD]
 Attested by: [Name]
 
@@ -3301,6 +3373,44 @@ requires the production `CORS_ORIGIN` secret, which does not yet exist.
 | v1.0.24 | `phase10_plan_3.md` | 2026-09-24 | Documentation recording (RC-34, Authorization Act #26): reconciles the document to the release state at `48d62ac`. Records the Deploy-step SSH remote-command defect and its correction in `48d62ac` (implementation reference, factual record, local dummy-value verification, `repository-reviewer` READY, push with no workflow run); the release-commit requirement (`48d62ac` or later; `724fe67` remains the historical `Dockerfile` evidence commit); the human-reported read-only Droplet Docker-readiness checkpoint; the `DROPLET_SSH_KEY` non-interactive-use uncertainty as an AC-F5-tested operational risk (no claim about the secret's contents); the `${{ secrets.X }}` inline-interpolation concern as a separate non-blocking follow-up; the Gate A / tag-target analysis; and the remaining DEC-9 decision. Updates header, Task 10-F cross-references, Gate A, Gate C (note), and footer. No acceptance status changes; no criterion newly checked; DEC-9 undecided. Documentation-only; no application/infrastructure file changed; no Git write, tag action, workflow run, DOCR/Droplet/secret access, or production action. Production release, retry, tag creation/movement/push, and deployment remain NOT AUTHORIZED. |
 | v1.0.25 | `phase10_plan_3.md` | 2026-09-24 | Documentation recording (RC-35, Authorization Act #27): records the first production deployment (`prod-v1.0.1` → `c2249c9`; run `36003636133` attempt 1 failed at SSH authentication with no remote command executed, digest `3e13aba0…`; dedicated CI/CD key and `DROPLET_SSH_KEY` update; attempt 2 succeeded, digest `sha256:e000b840…06a09`; human Droplet verification; not publicly reachable) and DEC-9's resolution (option B); the human AC-F6 production-path determination (SATISFIED); Stage 1 decisions (D-2, D-3, D-5 authorized in principle only, with `deploy.yml` wiring scope for D-3/D-5; D-4 not authorized — Task 10-K omitted; D-8 not authorized within Phase 10 (deferred) — Task 10-G deferred; AC-F7 exception disposition with literal NOT SATISFIED preserved; AC-N4 non-production exercise; AC-N5 conditional; PostgreSQL SSL change by separate authorization; AC-E5 attestation) and decisions C1–C15 (AC-F1, AC-F2, AC-F4, AC-E5 checked; AC-F5 left unchecked; AC-E1/AC-E3 open; C7, C8, C13 left open; Play Store outside Phase 10; C10 `rejectUnauthorized: true`; C11 log-check result 1; single-origin CORS; pre-go-live Clerk check); the §1.5 effective-TLS nuance (unverified); rollback-evidence status; status notes for Tasks 10-A, 10-B, 10-D, 10-E, 10-G, 10-I, 10-J, 10-K, 10-L, 10-N and Gates A, C, D; §3 Play Store scope line; §10 SSL cross-reference; §8.2 stale version reference (v1.0.22 → v1.0.25). No acceptance-criterion wording changed; no task newly accepted. Documentation-only; no application/infrastructure file changed; no Git write, tag action, workflow run, DOCR/secret access, or production action. Implementation of D-2/D-3/D-5 and the SSL change, any further production release, Task 10-D, and all task acceptances remain NOT AUTHORIZED. |
 | v1.0.26 | `phase10_plan_3.md` | 2026-09-25 | Documentation recording (RC-__, Authorization Act #__ — numbers to be assigned by the human): Day 2 PostgreSQL SSL change (committed and pushed in `9448d2f`, containing only `database.js`; not deployed; P4 OPEN); Day 3 implementation of D-2/D-3/D-5 with `deploy.yml` wiring and two `.env.example` lines (uncommitted at the time of writing; no Day 3 commit hash exists; not deployed); Day 3 decisions K1–K5, K7–K14 (no K6 issued); Day 3 non-production validation record (Playwright E2E NOT RUN; AC-J4 DEFERRED; AC-J2 OPEN; AC-L2/AC-L3 UNVERIFIED); AC-L3 interpretation note (K7; criterion wording unchanged); existing §1.6 discrepancy recorded, not corrected; out-of-scope validation-session governance deviation (`docker builder prune -f --filter until=2h`). No acceptance-criterion wording or checkbox changed; no task newly accepted. Documentation-only. |
+| v1.0.27 | `phase10_plan_3.md` | 2026-09-25 | Documentation recording (RC-__, Authorization Act #__ — numbers to be assigned by the human): human Day 4 governance decisions A1 (AC-L4 satisfied for Phase 10), B1 (create `CORS_ORIGIN` = `https://flavourfind.com` — decision only), C1 (set up Sentry and create `SENTRY_DSN` — decision only), D1 (retrospective repository-reviewer reviews), E1 (separately authorized `prod-v*` release tag permitted for the second production deployment; checkpoint tag separate), F2 (intended release target: the later documentation-only commit containing this document; SHA not yet known); retrospective repository-reviewer evidence for `9448d2f` and `d1eaa10` (original pre-checkpoint requirement not met; retrospective CHECKPOINT READY for content/scope; not retroactive); `d1eaa10` committed and pushed. AC-L4 checkbox changed by human decision A1 (the only checkbox change); no acceptance-criterion wording changed; no task newly accepted. Documentation-only. |
+
+### Corrections Applied in v1.0.27
+
+The following documentation recording was applied in the 2026-09-25 v1.0.27 pass under explicit
+human documentation-edit authorization (Authorization Act #__, number to be assigned by the human).
+*Items P1–P12 below identify the documentation edits made in this pass. They are not independent
+acceptance decisions. The only acceptance-criterion checkbox change is AC-L4, made by recorded human
+decision A1.*
+
+1. **P1 — header**: version updated to v1.0.27.
+2. **P2 — header status line**: "v1.0.27 … superseding v1.0.11 through v1.0.26"; the v1.0.26
+   "Current status" clause relabelled "v1.0.26 status summary (… historical; its 'UNCOMMITTED at the
+   time of writing' and 'no Day 3 commit hash exists' statements are superseded by v1.0.27)" with its
+   wording otherwise unchanged; a v1.0.27 "Current status" clause added.
+3. **P3 — header "This version"**: new v1.0.27 description; the v1.0.26 "This version" description
+   retained verbatim under a "Previous version (v1.0.26)" label.
+4. **P4 — header "Current HEAD at time of writing"**: `d1eaa10…` (Day 3 implementation commit, pushed;
+   parent `9448d2f…`).
+5. **P5 — §4**: "Decision status (v1.0.27)" added (A1, B1, C1, D1, E1, F2).
+6. **P6 — Task 10-F**: "v1.0.27 note — release-tag boundary and release target (E1, F2)" added.
+7. **P7 — Task 10-J**: "Status (v1.0.27)" added (C1 decision only; AC-J2 OPEN; AC-J4 DEFERRED;
+   checkboxes unchanged).
+8. **P8 — Task 10-L**: AC-L4 checkbox and label changed by human decision A1 (criterion wording after
+   the colon unchanged); "AC-L4 human disposition (v1.0.27)" and "Status (v1.0.27)" added (B1 decision
+   only; AC-L2/AC-L3 UNVERIFIED).
+9. **P9 — §8.1, §8.2**: Gate A and template version references updated to v1.0.27.
+10. **P10 — §11**: this v1.0.27 table row and corrections list added.
+11. **P11 — §12**: "Retrospective Repository-Reviewer Evidence (v1.0.27)" and "v1.0.27 Documentation
+    Record — Authorization Act #__" added.
+12. **P12 — footer**: current-status text updated to v1.0.27; the v1.0.26 footer-history clause is
+    retained with its wording unchanged except for the one-word adjustment needed for the v1.0.27
+    clause to follow.
+13. **Not changed**: the wording of any acceptance criterion; every acceptance-criterion checkbox other
+    than AC-L4 (including AC-I1–AC-I4, AC-J1–AC-J4, AC-L1–AC-L3, AC-F5, AC-F7, AC-F8, AC-N2–AC-N5,
+    AC-E1, AC-E3, and all AC-GOV items); Gates A–E status; §1.5 (whose existing description of `pg`
+    connection-string precedence is correct and unchanged); §1.6; every prior RC, Act, custody,
+    acceptance, execution, and v1.0.26 record. No other file was modified by this documentation pass.
 
 ### Corrections Applied in v1.0.26
 
@@ -5708,15 +5818,91 @@ be assigned by the human; RC-__), this documentation-only pass records the Day 2
     **not** run or dispatch any workflow; did **not** access any secret value or production system. No
     credential value or `.env` content is recorded in this document.
 
+### Retrospective Repository-Reviewer Evidence (v1.0.27)
+
+Recorded under the v1.0.27 documentation-edit authorization (Authorization Act #__, number to be
+assigned by the human). The retrospective reviews were performed on 2026-09-25 under a separate,
+explicit human authorization (decision D1), using the read-only `repository-reviewer` agent against
+the commit objects (not the working tree).
+
+1. **ORIGINAL PRE-CHECKPOINT REQUIREMENT**: CLAUDE.md requires that, "Before a human performs a Git
+   checkpoint after an implementation task," the `repository-reviewer` agent be invoked. This
+   requirement was **NOT met** for the Day 2 implementation commit
+   `9448d2f15663b89a736be89084d29e9927029ede` or the Day 3 implementation commit
+   `d1eaa1045fa4df09125e7e19eebb894211515c36`: no repository-reviewer run occurred before either
+   commit was created.
+2. **RETROSPECTIVE EVIDENCE**:
+   - `9448d2f` (parent `ac5238b`): **RETROSPECTIVE VERDICT: CHECKPOINT READY** for the commit's
+     content and scope — `database.js` only, +1/−1 (`rejectUnauthorized: false` → `true`); no
+     unrelated file; no secret found.
+   - `d1eaa10` (parent `9448d2f`): **RETROSPECTIVE VERDICT: CHECKPOINT READY** for the commit's
+     content and scope — exactly `server.js`, `package.json`, `package-lock.json`,
+     `.github/workflows/deploy.yml`, `.env.example` (two lines only), and `phase10_plan_3.md`, each
+     matching the Day 3 specification (K1–K5, K7–K14); `database.js`, `Dockerfile`, `.dockerignore`,
+     and `apps/web/` unchanged; no secret found.
+   - Classification for both commits: **ORIGINAL PRE-CHECKPOINT REVIEW EVIDENCE MISSING;
+     RETROSPECTIVE REVIEW COMPLETED.**
+   - The retrospective reviews do **not** retroactively satisfy the original pre-checkpoint timing
+     requirement, do not state that the historical checkpoints were reviewer-approved before they
+     occurred, and do not accept any acceptance criterion.
+3. **Day 2 reviewer observation — NOT ADOPTED as evidence**: The Day 2 retrospective report contained
+   an observation that the explicit `ssl` object passed to `Pool` takes precedence over `sslmode` and
+   that `sslmode=require` does not by itself enforce certificate verification. That statement is
+   **not adopted** as evidence. The pinned `pg` 8.23.0 source shows that connection-string settings
+   override pool options (`pg/lib/connection-parameters.js` line 60,
+   `Object.assign({}, config, parse(config.connectionString))`), and `pg-connection-string` sets
+   `config.ssl = {}` when `sslmode` is present (`index.js` line 78), consistent with §1.5, whose
+   existing text is unchanged. The Day 2 CHECKPOINT READY verdict, which concerns the commit's
+   content and scope, is unaffected.
+4. **Day 3 reviewer process slip (recorded)**: During its lockfile comparison, the Day 3 retrospective
+   reviewer redirected output into `/tmp/parent_keys.json`, outside the repository, contrary to its
+   no-redirect/no-temporary-file instruction. The reviewer deleted the file itself and repeated the
+   comparison without writing to disk; the file's absence was confirmed afterwards. The file contained
+   only package-name key lists. The repository was not modified, and the working-tree status
+   fingerprint was identical before and after the audit (`365b67ae…`). This is recorded as a process
+   slip; no repository change was made to compensate for it.
+
+### v1.0.27 Documentation Record — Authorization Act #__ (2026-09-25)
+
+Under a separate, explicit human documentation-edit authorization (Authorization Act #__, number to
+be assigned by the human; RC-__), this documentation-only pass records the Day 4 human governance
+decisions and the retrospective repository-reviewer evidence.
+
+1. **Result: v1.0.27 recorded.**
+2. **Git state at time of writing**: HEAD and `origin/main` are
+   `d1eaa1045fa4df09125e7e19eebb894211515c36` (Day 3 implementation commit, pushed; parent
+   `9448d2f15663b89a736be89084d29e9927029ede`, Day 2 implementation commit). Production is
+   `prod-v1.0.1` → `c2249c9`; neither `9448d2f` nor `d1eaa10` is deployed; P4 is OPEN.
+3. **Human decisions recorded**: A1, B1, C1, D1, E1, F2 — see §4, "Decision status (v1.0.27)". Each is
+   a decision only, not authorization to execute.
+4. **Acceptance criteria**: AC-L4 checkbox and label changed by human decision A1 (criterion wording
+   after the colon unchanged) — the only checkbox change. AC-J2 OPEN; AC-J4 DEFERRED; AC-L2/AC-L3
+   UNVERIFIED; all other criteria, checkboxes, and gate statuses unchanged.
+5. **Retrospective evidence**: see "Retrospective Repository-Reviewer Evidence (v1.0.27)" above.
+6. **Release target (F2)**: the later documentation-only commit containing this v1.0.27 document, if
+   created, reviewed, committed, and pushed under separate authorizations; its SHA is not yet known
+   and is not recorded here. No release tag name is fixed.
+7. **Not authorized by this record**: `CORS_ORIGIN` or `SENTRY_DSN` creation; Sentry project/DSN
+   setup; any commit, push, or tag creation or push (including the `prod-v*` release tag and the
+   checkpoint tag); any deployment, including the second production deployment; P4; production
+   verification; registry read; Task 10-D; any remediation; any task acceptance.
+8. No other file was modified by this documentation pass (the pre-existing, unrelated working-tree
+   modifications and untracked entries are unaffected and remain as they were). Did **not** stage,
+   commit, tag, or push; did **not** run or dispatch any workflow; did **not** access any secret value
+   or production system. No credential value, DSN, or `.env` content is recorded in this document.
+
 ---
 
 *This document is a planning specification only. It does not, by itself, authorize any
 implementation beyond what has been separately and explicitly authorized above. Separate explicit
 human authorization is required before any further task in this document may be implemented.
-Current document status: v1.0.26 is APPROVED / AUTHORITATIVE as the governance reference (baseline
+Current document status: v1.0.27 is APPROVED / AUTHORITATIVE as the governance reference (baseline
 approval carried forward from Authorization Act #2); **the Day 2 PostgreSQL SSL change is committed
 and pushed in `9448d2f` but NOT deployed (P4 OPEN)**; **the Day 3 implementation (D-2, D-3, D-5) is
-uncommitted at the time of writing (no Day 3 commit hash exists) and NOT deployed**; production
+committed and pushed in `d1eaa10` and NOT deployed**; human decisions A1–F2 are recorded (AC-L4
+SATISFIED by human decision A1; `CORS_ORIGIN` and `SENTRY_DSN` decided but not authorized or created;
+a `prod-v*` release tag permitted in principle for the second production deployment, not authorized);
+retrospective repository-reviewer evidence is recorded (not retroactive); production
 remains `prod-v1.0.1` → `c2249c9`; no commit, push, tag, secret creation, or second production
 deployment is authorized by this document; **Task 10-B is ACCEPTED** (Authorization Act
 #16; additionally evidenced for the corrected artifact at `724fe67`, v1.0.23); **Gate C is SATISFIED**
@@ -5736,6 +5922,6 @@ and §12 for the full, current criterion-by-criterion, decision-by-decision, and
 AUTHORIZATION," a generic closing statement last accurate before the v1.0.10 baseline-approval
 sequence; it was first reconciled to the then-current status in v1.0.16, updated to v1.0.17,
 updated to v1.0.18 to reflect Task 10-B's acceptance, updated to v1.0.19 to reflect Decision D-1's
-resolution, updated to v1.0.20 to reflect Task 10-C's acceptance, updated to v1.0.21 to reflect the Task 10-F Option B documentation correction (Authorization Act #23; see §11 and §12; Gate C remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production deployment remains UNAUTHORIZED), updated to v1.0.22 to reflect Decision D-F5's recording (Authorization Act #24; see §11 and §12; D-F5 is a human decision record only, not implementation authorization; at that time Gate C was NOT SATISFIED, Task 10-E and Task 10-F were NOT ACCEPTED, and production deployment was UNAUTHORIZED), updated to v1.0.23 (Authorization Act #25; see §11 and §12) to record Decision D-F6, the corrected-artifact evidence, and the failed first production release attempt, and to correct the current Gate C status to SATISFIED (2026-09-22) consistent with §8.1, updated to v1.0.24 (Authorization Act #26; see §11 and §12) to record the Deploy-step SSH correction in `48d62ac`, the resulting release-commit requirement, the human-reported Docker-readiness checkpoint, and the remaining DEC-9 decision, updated to v1.0.25 (Authorization Act #27; see §11 and §12) to record the first production deployment of `prod-v1.0.1`, DEC-9's resolution, the human AC-F6 determination, and the Stage 1 and C1–C15 human decisions, and is updated here to v1.0.26 (Authorization Act #__, number to be assigned by the human; see §11 and §12) to record the Day 2 SSL commit `9448d2f` (not deployed; P4 OPEN), the uncommitted Day 3 implementation and its non-production validation, and the recorded governance deviation. Earlier dated
+resolution, updated to v1.0.20 to reflect Task 10-C's acceptance, updated to v1.0.21 to reflect the Task 10-F Option B documentation correction (Authorization Act #23; see §11 and §12; Gate C remains NOT SATISFIED, Task 10-F remains NOT ACCEPTED, and production deployment remains UNAUTHORIZED), updated to v1.0.22 to reflect Decision D-F5's recording (Authorization Act #24; see §11 and §12; D-F5 is a human decision record only, not implementation authorization; at that time Gate C was NOT SATISFIED, Task 10-E and Task 10-F were NOT ACCEPTED, and production deployment was UNAUTHORIZED), updated to v1.0.23 (Authorization Act #25; see §11 and §12) to record Decision D-F6, the corrected-artifact evidence, and the failed first production release attempt, and to correct the current Gate C status to SATISFIED (2026-09-22) consistent with §8.1, updated to v1.0.24 (Authorization Act #26; see §11 and §12) to record the Deploy-step SSH correction in `48d62ac`, the resulting release-commit requirement, the human-reported Docker-readiness checkpoint, and the remaining DEC-9 decision, updated to v1.0.25 (Authorization Act #27; see §11 and §12) to record the first production deployment of `prod-v1.0.1`, DEC-9's resolution, the human AC-F6 determination, and the Stage 1 and C1–C15 human decisions, updated to v1.0.26 (Authorization Act #__, number to be assigned by the human; see §11 and §12) to record the Day 2 SSL commit `9448d2f` (not deployed; P4 OPEN), the uncommitted Day 3 implementation and its non-production validation, and the recorded governance deviation, and is updated here to v1.0.27 (Authorization Act #__, number to be assigned by the human; see §11 and §12) to record the Day 4 human governance decisions A1–F2, the AC-L4 disposition, and the retrospective repository-reviewer evidence. Earlier dated
 "Document status remains: PROPOSED..." statements elsewhere in §11/§12 are historical attestations
 of status at those specific past points in time and are preserved unchanged.)*
