@@ -31,6 +31,9 @@ COPY apps/web/ ./apps/web/
 # Copy the root application files.
 COPY server.js database.js ./
 
+# CSP hash generator (build stage only; its output is copied into the runtime image).
+COPY scripts/generate-csp-hashes.js ./scripts/
+
 # Copy the public/ directory (contains static assets served by express.static('public')).
 COPY public/ ./public/
 
@@ -58,6 +61,11 @@ RUN npm run build --workspace=apps/web
 
 # Copy the static export into public/ so express.static('public') serves it.
 RUN cp -r apps/web/out/. public/
+
+# Hash every inline <script> in the HTML that will be served, for server.js's CSP
+# script-src. Fails the build if no HTML files or no inline scripts are found.
+# Written outside public/ so it is never served.
+RUN node scripts/generate-csp-hashes.js public csp-script-hashes.json
 
 # ---- Stage 2: prod-deps — a separate, scoped install (root + packages/shared only) ----
 FROM node:22-alpine AS prod-deps
@@ -91,7 +99,7 @@ WORKDIR /app
 
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=prod-deps /app/packages ./packages
-COPY --from=builder /app/server.js /app/database.js ./
+COPY --from=builder /app/server.js /app/database.js /app/csp-script-hashes.json ./
 COPY --from=builder /app/public ./public
 COPY --from=prod-deps /app/package.json ./package.json
 

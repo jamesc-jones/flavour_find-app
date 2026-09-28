@@ -4,6 +4,7 @@ const Sentry = require('@sentry/node');
 Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -86,12 +87,58 @@ You can only reply with text. You cannot browse the internet, place orders, send
 
 Be practical about food safety: note when a substitution affects a known allergen or safety concern, and avoid definitive medical or nutritional advice — suggest a professional for medical dietary needs when it's relevant. Keep responses concise, friendly, and focused on food.`;
 
+// CSP inline-script hashes, generated at Docker build time by
+// scripts/generate-csp-hashes.js from the exported HTML served out of public/.
+// A missing or invalid file (e.g. local `node server.js`) warns and adds no
+// inline allowance; 'unsafe-inline' is never used.
+function loadCspScriptHashes() {
+    const file = path.join(__dirname, 'csp-script-hashes.json');
+    try {
+        const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+        const hashes = (Array.isArray(parsed.hashes) ? parsed.hashes : [])
+            .filter((h) => typeof h === 'string' && /^sha256-[A-Za-z0-9+/]{43}=$/.test(h))
+            .map((h) => `'${h}'`);
+        if (hashes.length === 0) {
+            logger.warn('CSP: csp-script-hashes.json contains no valid hashes; inline scripts will be blocked');
+        }
+        return hashes;
+    } catch (err) {
+        logger.warn({ code: err.code }, 'CSP: csp-script-hashes.json not loaded; inline scripts will be blocked');
+        return [];
+    }
+}
+
+// Clerk Frontend API origin, derived from the publishable key: pk_(live|test)_<base64>,
+// where the Base64 decodes to "<host>$". Used only to build the CSP. The key value is
+// never logged; a missing or malformed key leaves the Clerk origin out of the CSP.
+function deriveClerkOrigin() {
+    const key = (process.env.CLERK_PUBLISHABLE_KEY || '').trim();
+    if (!key) {
+        logger.warn('CSP: CLERK_PUBLISHABLE_KEY is not set; Clerk origin omitted');
+        return null;
+    }
+    const match = /^pk_(live|test)_([A-Za-z0-9+/=]+)$/.exec(key);
+    const decoded = match ? Buffer.from(match[2], 'base64').toString('utf8') : '';
+    const host = decoded.endsWith('$') ? decoded.slice(0, -1) : '';
+    if (!/^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(host)) {
+        logger.warn('CSP: CLERK_PUBLISHABLE_KEY is malformed; Clerk origin omitted');
+        return null;
+    }
+    return `https://${host}`;
+}
+
+const CSP_SCRIPT_HASHES = loadCspScriptHashes();
+const CLERK_ORIGIN = deriveClerkOrigin();
+
 // Middleware
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            'script-src': ["'self'", 'https://cdn.tailwindcss.com'],
+            'script-src': ["'self'", ...CSP_SCRIPT_HASHES, 'https://cdn.tailwindcss.com', CLERK_ORIGIN, 'https://challenges.cloudflare.com'].filter(Boolean),
+            'connect-src': ["'self'", CLERK_ORIGIN].filter(Boolean),
+            'frame-src': ["'self'", 'https://challenges.cloudflare.com'],
+            'worker-src': ["'self'", 'blob:'],
         },
     },
 }));
